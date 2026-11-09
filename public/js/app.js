@@ -39,8 +39,13 @@ function route() {
 function renderNav() {
   const { path } = parseHash();
   const link = (href, label) => `<a href="${href}" class="${path === href.slice(1) || (href !== '#/' && path.startsWith(href.slice(1))) ? 'on' : ''}">${label}</a>`;
+  // Botón "En vivo" mientras haya una fecha en juego (si hay más de una, la más reciente)
+  const live = [...S.db.tournaments].filter((t) => t.status === 'running').sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0))[0];
+  const liveHref = live ? (isAdmin() ? `#/admin/fecha/${live.id}` : `#/torneo/${live.id}`) : '';
+  const onLive = live && (path === liveHref.slice(1));
   nav.innerHTML = `
     <a class="brand" href="#/">♠ ${esc(S.db.settings.clubName)}</a>
+    ${live ? `<a class="live-btn ${onLive ? 'on' : ''}" href="${liveHref}" title="${esc(live.label)} en juego"><span class="dot-live"></span>En vivo</a>` : ''}
     <button class="burger" aria-label="Menú" onclick="document.body.classList.toggle('menu-open')">☰</button>
     <div class="links">
       ${link('#/calendario', 'Calendario')}
