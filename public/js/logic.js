@@ -625,6 +625,35 @@ export function bountyHunter(t) {
   return ev && ev.byPlayerId ? ev.byPlayerId : null;
 }
 
+// Regla del club: el bounty es quien ganó la fecha anterior de la temporada; en la primera fecha, el campeón
+// de la temporada anterior. Si el ganador de la fecha anterior fue invitado, el jugador del club mejor ubicado.
+export function bountyTargetFor(db, t) {
+  const isClub = (id) => {
+    const p = (db.players || []).find((x) => x.id === id);
+    return !!p && p.type !== 'invitado';
+  };
+  const prev = seasonTournaments(db, t.seasonId)
+    .filter((x) => x.status === 'finished' && x.number < t.number)
+    .pop();
+  if (prev) {
+    const res = results(prev, db.settings);
+    const winner = res.find((r) => r.position === 1);
+    if (winner && isClub(winner.playerId)) return { playerId: winner.playerId, reason: `ganó la ${prev.label}` };
+    const best = res
+      .filter((r) => isClub(r.playerId) && r.position !== 1)
+      .sort((a, b) => (a.position || 999) - (b.position || 999) || b.points - a.points)[0];
+    return best ? { playerId: best.playerId, reason: `mejor jugador del club en la ${prev.label} (ganó un invitado)` } : null;
+  }
+  const seasons = db.seasons || [];
+  const i = seasons.findIndex((s) => s.id === t.seasonId);
+  const prevSeason = i > 0 ? seasons[i - 1] : null;
+  if (prevSeason && seasonFinished(db, prevSeason.id)) {
+    const champ = ranking(db, prevSeason.id).rows[0];
+    if (champ) return { playerId: champ.player.id, reason: `campeón de la ${prevSeason.name}` };
+  }
+  return null;
+}
+
 // ---------- Dinero: ganancias y pérdidas ----------
 // fin: datos históricos por fecha { tid: { playerId: { e: entradas, f: fee, p: premio, j: jackpot } } }
 export function moneyByTournament(t, settings, fin = {}) {
@@ -860,6 +889,19 @@ export function newTournament(seasonId, number) {
     jackpots: [],
     bonus: [],
   };
+}
+
+// Devuelve una fecha a "Programada": borra inscritos, mesas, eliminaciones, reloj, jackpots y resumen,
+// conservando lo del calendario (número, nombre, opciones de día, sede, formato, dealers).
+export function resetTournament(t) {
+  const keep = ['id', 'seasonId', 'number', 'label', 'dateOptions', 'finalDate', 'venue', 'modality', 'type', 'dealerIds', 'trainee'];
+  const fresh = newTournament(t.seasonId, t.number);
+  Object.keys(t).forEach((k) => {
+    if (!keep.includes(k)) delete t[k];
+  });
+  ['entries', 'tables', 'events', 'jackpots', 'bonus'].forEach((k) => (t[k] = []));
+  t.status = 'planned';
+  return Object.assign(fresh, t);
 }
 
 export function emptyDb() {

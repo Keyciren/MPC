@@ -325,3 +325,51 @@ test('bounty: quien elimina al jugador asignado suma un punto extra', async () =
   const t3 = mk(outs(order), { bountyPlayerId: 'a' });
   assert.equal(m.bountyHunter(t3), null);
 });
+
+test('bounty según la regla del club', async () => {
+  const m = await import('../public/js/logic.js');
+  const mkT = (sid, n, extra) => ({ ...m.newTournament(sid, n), id: `${sid}t${n}`, ...extra });
+  const db = {
+    settings: { pointTables: m.defaultPointTables() },
+    players: [
+      { id: 'a', name: 'A', type: 'club' }, { id: 'b', name: 'B', type: 'club' }, { id: 'c', name: 'C', type: 'club' },
+      { id: 'g', name: 'Invitado', type: 'invitado' },
+    ],
+    seasons: [{ id: 's1', name: 'Temporada 1', finalOrder: ['b', 'a', 'c'] }, { id: 's2', name: 'Temporada 2', config: m.defaultSeasonConfig() }],
+    tournaments: [
+      mkT('s1', 1, { status: 'finished', imported: { points: { a: 10, b: 20, c: 5 }, winnerId: 'b' } }),
+      mkT('s2', 1, {}),
+      mkT('s2', 2, {}),
+    ],
+  };
+  // primera fecha de la temporada: campeón de la temporada anterior
+  const t1 = db.tournaments[1];
+  assert.deepEqual(m.bountyTargetFor(db, t1), { playerId: 'b', reason: 'campeón de la Temporada 1' });
+  // fecha 1 jugada en la app y ganada por un invitado: el bounty de la fecha 2 es el mejor del club
+  Object.assign(t1, {
+    status: 'finished', modality: 'freezeout', config: m.buildConfig(db.seasons[1], 'freezeout', 'normal'),
+    entries: ['a', 'b', 'c', 'g'].map((id) => ({ playerId: id })),
+    events: [['c', 'g'], ['a', 'g'], ['b', 'g']].map(([p, by], i) => ({ id: 'e' + i, type: 'bust', playerId: p, byPlayerId: by, outcome: 'out' })),
+  });
+  const r2 = m.bountyTargetFor(db, db.tournaments[2]);
+  assert.equal(r2.playerId, 'b', 'b quedó 2°, el mejor del club');
+  assert.match(r2.reason, /ganó un invitado/);
+  // si el ganador es del club, es él
+  t1.events = [['c', 'a'], ['g', 'a'], ['b', 'a']].map(([p, by], i) => ({ id: 'e' + i, type: 'bust', playerId: p, byPlayerId: by, outcome: 'out' }));
+  assert.deepEqual(m.bountyTargetFor(db, db.tournaments[2]), { playerId: 'a', reason: 'ganó la Fecha 1' });
+});
+
+test('reiniciar una fecha la deja programada y conserva el calendario', async () => {
+  const m = await import('../public/js/logic.js');
+  const t = { ...m.newTournament('s', 11), venue: 'Santiago', modality: 'freezeout', dateOptions: ['2026-12-04'], dealerIds: ['a'],
+    status: 'running', config: { x: 1 }, entries: [{ playerId: 'a' }], tables: [{}], events: [{}], clock: { level: 3 }, startedAt: 1, bountyPlayerId: 'a', prizePercents: [50] };
+  m.resetTournament(t);
+  assert.equal(t.status, 'planned');
+  assert.deepEqual([t.entries, t.tables, t.events], [[], [], []]);
+  assert.equal(t.config, undefined);
+  assert.equal(t.clock, undefined);
+  assert.equal(t.bountyPlayerId, undefined);
+  assert.equal(t.venue, 'Santiago');
+  assert.equal(t.modality, 'freezeout');
+  assert.deepEqual(t.dateOptions, ['2026-12-04']);
+});

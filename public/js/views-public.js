@@ -269,12 +269,23 @@ export function prizeCards(pz, currency) {
 export function resultsTable(t) {
   const cfg = t.config;
   const res = results(t, S.db.settings);
-  return `<div class="table-wrap"><table class="tbl">
+  const hunter = bountyHunter(t);
+  const bpts = bountyPoints(t);
+  const bountyInfo = t.bountyPlayerId
+    ? `<div class="bounty-box">🎯 <b>Punto extra:</b> ${
+        hunter
+          ? `<b>${esc(pname(hunter))}</b> eliminó al bounty <b>${esc(pname(t.bountyPlayerId))}</b> y suma +${bpts} ${bpts === 1 ? 'punto' : 'puntos'} al ranking.`
+          : outEvents(t).some((e) => e.playerId === t.bountyPlayerId)
+            ? `el bounty era <b>${esc(pname(t.bountyPlayerId))}</b>, pero no se registró quién lo eliminó.`
+            : `el bounty era <b>${esc(pname(t.bountyPlayerId))}</b> y nadie lo eliminó: no se entregó el punto.`
+      }</div>`
+    : '';
+  return `${bountyInfo}<div class="table-wrap"><table class="tbl">
     <thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Premio</th><th>Elim.</th>${t.modality === 'rebuy' ? '<th>Rec.</th><th>Add on</th>' : '<th>Lucky</th>'}</tr></thead>
     <tbody>${res
       .map((r) => {
         const p = playerById(r.playerId);
-        return `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position || ''}</td><td>${esc(pname(r.playerId))}${p && p.type === 'invitado' ? ' <span class="tag guest">invitado</span>' : ''}</td>
+        return `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position || ''}</td><td>${esc(pname(r.playerId))}${p && p.type === 'invitado' ? ' <span class="tag guest">invitado</span>' : ''}${r.playerId === hunter ? ` <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +${bpts} bounty</span>` : ''}${r.playerId === t.bountyPlayerId ? ' <span class="tag">era el bounty</span>' : ''}</td>
         <td><b>${r.points}</b>${r.bonus ? ` <small class="muted">(+${r.bonus} extra)</small>` : ''}</td><td>${r.prize ? money(r.prize, cfg.currency) : ''}</td><td>${r.kills || ''}</td>
         ${t.modality === 'rebuy' ? `<td>${r.rebuys || ''}</td><td>${r.addon ? '✔' : ''}</td>` : `<td>${r.luckyLoser ? '✔' : ''}</td>`}</tr>`;
       })

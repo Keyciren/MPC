@@ -53,6 +53,8 @@ import {
   tableName,
   bountyHunter,
   bountyPoints,
+  bountyTargetFor,
+  resetTournament,
   prizePercentsOf,
   defaultPrizeTable,
 } from './logic.js';
@@ -539,13 +541,25 @@ export function tournamentAdminView(id) {
   const labels = { config: 'Inscripción y valores', mesas: 'Mesas', vivo: t.status === 'finished' ? 'Registro' : 'En vivo', resultados: 'Resultados', resumen: 'Resumen' };
   const head = `<div class="row between wrap"><div><h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>
     <p>${t.finalDate ? fmtDate(t.finalDate) : 'Sin fecha final'} ${t.venue ? '· ' + esc(t.venue) : ''} ${badges(t)} <span class="status ${t.status}">${STATUS[t.status]}</span></p></div>
-    <div class="row"><a class="btn ghost sm" href="#/torneo/${t.id}">Vista jugador</a></div></div>
+    <div class="row">${t.status !== 'planned' ? '<button class="btn ghost sm danger" data-reset>↺ Reiniciar fecha</button>' : ''}<a class="btn ghost sm" href="#/torneo/${t.id}">Vista jugador</a></div></div>
     <div class="tabs">${available.map((k) => `<button class="${k === tab ? 'on' : ''}" data-atab="${k}">${labels[k]}</button>`).join('')}</div>`;
   const body = { config: setupTab, mesas: tablesTab, vivo: liveTab, resultados: resultsTab, resumen: summaryTab }[tab](t, season);
   return {
     html: head + body.html,
     tick: body.tick,
     bind(root) {
+      const rs = root.querySelector('[data-reset]');
+      if (rs)
+        rs.onclick = async () => {
+          const msg =
+            t.status === 'finished'
+              ? `${t.label} ya está FINALIZADA. Reiniciarla borra sus resultados, puntos y premios del ranking. ¿Seguro?`
+              : `¿Reiniciar ${t.label}? Se borran inscritos, mesas, eliminaciones, reloj y jackpots, y vuelve a "Programada". Se mantienen el día, la sede, el formato y los dealers del calendario.`;
+          if (!(await confirmDlg(msg, 'Reiniciar'))) return;
+          await upT(t.id, (x) => resetTournament(x), false);
+          tabState[t.id] = 'config';
+          refresh();
+        };
       on(root, '[data-atab]', 'click', (b) => {
         tabState[id] = b.dataset.atab;
         refresh();
@@ -705,9 +719,10 @@ function tablesTab(t) {
         })
       );
       root.querySelector('[data-build]').onclick = () =>
-        upT(t.id, (x) => {
+        upT(t.id, (x, db) => {
           const ids = x.entries.map((e) => e.playerId);
           x.tables = buildTables(ids, x.config.perTable, (x.tableDealers || []).slice(0, Math.ceil(ids.length / x.config.perTable)));
+          if (!x.bountyManual) x.bountyPlayerId = ruleBounty(x, db);
         }, false);
       bindMoveSelects(root, t);
       bindBounty(root, t);
@@ -716,6 +731,7 @@ function tablesTab(t) {
         st.onclick = async () => {
           if (!(await confirmDlg(`¿Iniciar ${t.label} con ${n} jugadores?`, 'Iniciar'))) return;
           upT(t.id, (x) => {
+            if (!x.bountyManual) x.bountyPlayerId = ruleBounty(x, S.db);
             x.status = 'running';
             x.startedAt = Date.now();
             x.initialTables = x.tables.length;
@@ -727,15 +743,27 @@ function tablesTab(t) {
   };
 }
 
-// --- Bounty: se elige al armar las mesas (o se sortea); se puede cambiar mientras no lo eliminen
+// --- Bounty: lo asigna la regla del club (ganador de la fecha anterior / campeón de la temporada anterior)
+function ruleBounty(x, db) {
+  const target = bountyTargetFor(db, x);
+  return target && (x.entries || []).some((e) => e.playerId === target.playerId) ? target.playerId : null;
+}
 function bountyEditor(t, compact = false) {
-  if (bountyHunter(t) || (t.bountyPlayerId && outEvents(t).some((e) => e.playerId === t.bountyPlayerId))) return bountyLine(t);
-  const alive = alivePlayers(t).map((e) => e.playerId);
+  if (t.bountyPlayerId && outEvents(t).some((e) => e.playerId === t.bountyPlayerId)) return bountyLine(t);
+  const target = bountyTargetFor(S.db, t);
+  const plays = target && (t.entries || []).some((e) => e.playerId === target.playerId);
   const pts = bountyPoints(t);
-  return `<div class="bounty-box ${compact ? 'compact' : ''}"><b>🎯 Bounty</b> <span class="muted small">quien lo elimine suma ${pts === 1 ? '1 punto extra' : pts + ' puntos extra'} para el ranking</span>
-    <div class="row wrap"><select data-bounty>${playerOptions(alive, t.bountyPlayerId || '', '— Sin bounty —')}</select>
-    <button type="button" class="btn sm ghost" data-bountydraw>🎲 Sortear</button>
-    <label class="fld inline small"><span>Puntos</span><input type="number" min="0" class="w-xs" data-bountypts value="${pts}"></label></div></div>`;
+  const alive = alivePlayers(t).map((e) => e.playerId);
+  const ruleText = !target
+    ? 'No hay fecha anterior ni campeón de la temporada pasada: esta fecha no tiene bounty por regla.'
+    : plays
+      ? `Por regla: <b>${esc(pname(target.playerId))}</b> (${esc(target.reason)}).`
+      : `Por regla sería ${esc(pname(target.playerId))} (${esc(target.reason)}), pero no juega esta fecha: no hay bounty.`;
+  const current = t.bountyPlayerId ? `<b>${esc(pname(t.bountyPlayerId))}</b>${t.bountyManual ? ' <span class="muted small">(cambiado a mano)</span>' : ''}` : '<span class="muted">sin bounty</span>';
+  return `<div class="bounty-box ${compact ? 'compact' : ''}"><b>🎯 Bounty:</b> ${current} <span class="muted small">— quien lo elimine suma ${pts === 1 ? '1 punto extra' : pts + ' puntos extra'}</span>
+    <div class="small">${ruleText}${plays && t.bountyPlayerId !== target.playerId ? ' <button type="button" class="link" data-bountyrule>Aplicar regla</button>' : ''}</div>
+    <details class="small"><summary>Cambiar a mano</summary><div class="row wrap"><select data-bounty>${playerOptions(alive, t.bountyPlayerId || '', '— Sin bounty —')}</select>
+    <label class="fld inline"><span>Puntos</span><input type="number" min="0" class="w-xs" data-bountypts value="${pts}"></label></div></details></div>`;
 }
 function bountyLine(t) {
   if (!t.bountyPlayerId) return '';
@@ -747,16 +775,19 @@ function bountyLine(t) {
 }
 function bindBounty(root, t) {
   const sel = root.querySelector('[data-bounty]');
-  if (sel) sel.onchange = () => upT(t.id, (x) => (x.bountyPlayerId = sel.value || null), false);
-  const dr = root.querySelector('[data-bountydraw]');
-  if (dr)
-    dr.onclick = () => {
-      const alive = alivePlayers(t).map((e) => e.playerId);
-      if (!alive.length) return;
-      const pick = alive[Math.floor(Math.random() * alive.length)];
-      upT(t.id, (x) => (x.bountyPlayerId = pick), false);
-      toast(`🎯 El bounty es ${pname(pick)}`);
-    };
+  if (sel)
+    sel.onchange = () =>
+      upT(t.id, (x) => {
+        x.bountyPlayerId = sel.value || null;
+        x.bountyManual = true;
+      }, false);
+  const rule = root.querySelector('[data-bountyrule]');
+  if (rule)
+    rule.onclick = () =>
+      upT(t.id, (x, db) => {
+        x.bountyPlayerId = ruleBounty(x, db);
+        x.bountyManual = false;
+      }, false);
   const pts = root.querySelector('[data-bountypts]');
   if (pts) pts.onchange = () => upT(t.id, (x) => (x.bountyPoints = Math.max(0, Number(pts.value) || 0)));
 }
