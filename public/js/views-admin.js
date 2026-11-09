@@ -107,6 +107,49 @@ function textToLevels(txt) {
 }
 const LEVELS_HELP = 'Una línea por nivel: ciega chica / ciega grande / ante / minutos (ej: 600/1200/1200/15). Para un descanso escribe: descanso/5';
 
+// ---------- Formato de la fecha (modalidad + tipo) ----------
+const FORMATS = [
+  { id: 'rebuy', modality: 'rebuy', type: 'normal', label: 'Rebuy' },
+  { id: 'freezeout', modality: 'freezeout', type: 'normal', label: 'Freezeout' },
+  { id: 'gs', modality: 'rebuy', type: 'gs', label: 'Grand Slam' },
+  { id: 'gs-freezeout', modality: 'freezeout', type: 'gs', label: 'Grand Slam freezeout', rare: true },
+];
+function formatOf(t) {
+  return FORMATS.find((f) => f.modality === t.modality && f.type === (t.type || 'normal')) || FORMATS[0];
+}
+function formatSelect(t, attrs = '') {
+  const cur = formatOf(t);
+  return `<select data-format ${attrs}>${FORMATS.filter((f) => !f.rare || f.id === cur.id)
+    .map((f) => `<option value="${f.id}" ${f.id === cur.id ? 'selected' : ''}>${f.label}</option>`)
+    .join('')}</select>`;
+}
+// Cambia el formato y, si la fecha ya está en preparación, recarga montos, fichas y estructura de ciegas
+function applyFormat(x, db, fid) {
+  const f = FORMATS.find((y) => y.id === fid) || FORMATS[0];
+  x.modality = f.modality;
+  x.type = f.type;
+  if (x.config && x.status !== 'running' && x.status !== 'finished') {
+    const season = db.seasons.find((s) => s.id === x.seasonId);
+    x.config = { ...buildConfig(season, x.modality, x.type), perTable: x.config.perTable, luckyLoserAllowed: x.config.luckyLoserAllowed ?? true };
+  }
+}
+function formatSummary(t) {
+  const c = t.config;
+  if (!c) return '';
+  const cur = c.currency;
+  const rounds = c.levels.filter((l) => !l.break).length;
+  const breaks = c.levels.filter((l) => l.break).length;
+  const parts = [`Buy-in ${money(c.buyIn, cur)} · ${c.startChips.toLocaleString('es-CL')} fichas`];
+  if (t.modality === 'rebuy') {
+    parts.push(`Recompra ${money(c.rebuyCost, cur)} · ${c.rebuyChips.toLocaleString('es-CL')} fichas hasta el nivel ${c.rebuyUntilLevel}`);
+    parts.push(`Add on ${money(c.addonCost, cur)} · ${c.addonChips.toLocaleString('es-CL')} fichas`);
+  } else if (c.luckyLoserAllowed) {
+    parts.push(`Lucky loser ${money(c.luckyLoserCost, cur)}${c.luckyLoserUntilLevel ? ` hasta el nivel ${c.luckyLoserUntilLevel}` : ''}`);
+  }
+  parts.push(`${rounds} niveles${breaks ? ` + ${breaks} descanso${breaks > 1 ? 's' : ''}` : ''}, parte en ${c.levels[0].sb}/${c.levels[0].bb} (${c.levels[0].minutes} min)`);
+  return `<div class="format-box"><b>Formato cargado: ${formatOf(t).label}</b><ul>${parts.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
+}
+
 // ---------- Login ----------
 export function loginView() {
   const newTokenUrl = 'https://github.com/settings/personal-access-tokens/new';
@@ -219,8 +262,7 @@ export function seasonAdminView(q) {
           )
           .join('')}<input type="date" data-adddate class="w-date" title="Agregar opción de fecha"></td>
         <td><input class="w-sm" data-tf="venue" value="${esc(t.venue || '')}" placeholder="Sede"></td>
-        <td><select data-tf="modality" ${t.status === 'running' || t.status === 'finished' ? 'disabled' : ''}><option value="rebuy" ${t.modality === 'rebuy' ? 'selected' : ''}>Rebuy</option><option value="freezeout" ${t.modality === 'freezeout' ? 'selected' : ''}>Freezeout</option></select></td>
-        <td><select data-tf="type"><option value="normal" ${t.type !== 'gs' ? 'selected' : ''}>Normal</option><option value="gs" ${t.type === 'gs' ? 'selected' : ''}>Grand Slam</option></select></td>
+        <td>${formatSelect(t, t.status === 'running' || t.status === 'finished' ? 'disabled' : '')}</td>
         <td><button class="btn sm ghost" data-dealers>${(t.dealerIds || []).map(pname).join(', ') || 'Asignar'}</button>${t.trainee ? `<br><small class="muted">Trainee: ${esc(t.trainee)}</small>` : ''}</td>
         <td><span class="status ${t.status}">${STATUS[t.status]}</span></td>
         <td><a class="btn sm" href="#/admin/fecha/${t.id}">Abrir</a></td>
@@ -240,7 +282,7 @@ export function seasonAdminView(q) {
     </div>
     <div class="panel"><h3>Calendario de fechas</h3>
       <p class="muted small">Agrega opciones de fecha con el selector y luego haz clic sobre una opción para dejarla como fecha final (queda destacada).</p>
-      <div class="table-wrap"><table class="tbl cal-edit"><thead><tr><th>Fecha</th><th>Opciones / Día final</th><th>Sede</th><th>Modalidad</th><th>Tipo</th><th>Dealers</th><th>Estado</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="table-wrap"><table class="tbl cal-edit"><thead><tr><th>Fecha</th><th>Opciones / Día final</th><th>Sede</th><th>Formato</th><th>Dealers</th><th>Estado</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     </div>
     <div class="panel"><h3>Valores y fichas de la temporada</h3>
       <p class="muted small">Cada fecha copia estos valores al prepararla; después se pueden ajustar solo para esa fecha.</p>
@@ -317,13 +359,8 @@ export function seasonAdminView(q) {
       root.querySelectorAll('tr[data-t]').forEach((tr) => {
         const tid = tr.dataset.t;
         const upd = (fn, silent = true) => mutate((db) => fn(db.tournaments.find((t) => t.id === tid)), { silent }).catch(() => {});
-        tr.querySelectorAll('[data-tf]').forEach((el) => (el.onchange = () => upd((t) => {
-          t[el.dataset.tf] = el.value;
-          if (el.dataset.tf === 'modality' && t.config) {
-            const s = S.db.seasons.find((x) => x.id === t.seasonId);
-            t.config = { ...buildConfig(s, el.value, t.type), perTable: t.config.perTable };
-          }
-        })));
+        tr.querySelectorAll('[data-tf]').forEach((el) => (el.onchange = () => upd((t) => (t[el.dataset.tf] = el.value))));
+        tr.querySelector('[data-format]').onchange = (e) => mutate((db) => applyFormat(db.tournaments.find((t) => t.id === tid), db, e.target.value)).catch(() => {});
         tr.querySelector('[data-adddate]').onchange = (e) => {
           const d = e.target.value;
           if (d) upd((t) => {
@@ -487,15 +524,13 @@ const upT = (id, fn, silent = true) => mutate((db) => fn(db.tournaments.find((x)
 function setupTab(t, season) {
   if (t.status === 'planned') {
     return {
-      html: `<div class="panel"><p>Esta fecha está programada. Al prepararla se copian los valores de la temporada para la modalidad <b>${t.modality === 'rebuy' ? 'Rebuy' : 'Freezeout'}</b> y podrás inscribir jugadores.</p>
-      <div class="row"><label class="fld inline"><span>Modalidad</span><select data-mod><option value="rebuy" ${t.modality === 'rebuy' ? 'selected' : ''}>Rebuy</option><option value="freezeout" ${t.modality === 'freezeout' ? 'selected' : ''}>Freezeout</option></select></label>
-      <label class="fld inline"><span>Tipo</span><select data-type><option value="normal" ${t.type !== 'gs' ? 'selected' : ''}>Normal</option><option value="gs" ${t.type === 'gs' ? 'selected' : ''}>Grand Slam</option></select></label></div>
+      html: `<div class="panel"><p>Esta fecha está programada. Elige el formato y presiona <b>Preparar fecha</b>: se cargan los montos, las fichas y la estructura de ciegas de ese formato (definidos en Temporada) y podrás inscribir jugadores.</p>
+      <div class="row"><label class="fld inline"><span>Formato</span>${formatSelect(t)}</label></div>
       <button class="btn" data-prepare>Preparar fecha</button></div>`,
       bind(root) {
         root.querySelector('[data-prepare]').onclick = () =>
           upT(t.id, (x, db) => {
-            x.modality = root.querySelector('[data-mod]').value;
-            x.type = root.querySelector('[data-type]').value;
+            applyFormat(x, db, root.querySelector('[data-format]').value);
             x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), luckyLoserAllowed: true };
             x.prizePercents = [...x.config.prizePercents];
             x.status = 'setup';
@@ -521,10 +556,10 @@ function setupTab(t, season) {
         .map((p) => `<label class="${entryIds.has(p.id) ? 'on' : ''}"><input type="checkbox" data-entry="${p.id}" ${entryIds.has(p.id) ? 'checked' : ''}> ${esc(p.nickname || p.name)}${p.type === 'invitado' ? ' <span class="tag guest">inv</span>' : ''}</label>`)
         .join('')}</div></div>`
     }
-    <div class="panel"><h3>Modalidad y valores de esta fecha</h3>
+    <div class="panel"><h3>Formato y valores de esta fecha</h3>
+      ${formatSummary(t)}
       <div class="form-grid">
-        <label class="fld"><span>Modalidad</span><select data-mod ${locked ? 'disabled' : ''}><option value="rebuy" ${t.modality === 'rebuy' ? 'selected' : ''}>Rebuy</option><option value="freezeout" ${t.modality === 'freezeout' ? 'selected' : ''}>Freezeout</option></select></label>
-        <label class="fld"><span>Tipo de fecha</span><select data-ttype><option value="normal" ${t.type !== 'gs' ? 'selected' : ''}>Normal</option><option value="gs" ${t.type === 'gs' ? 'selected' : ''}>Grand Slam</option></select></label>
+        <label class="fld"><span>Formato</span>${formatSelect(t, locked ? 'disabled' : '')}</label>
         ${field('Jugadores por mesa', 'config.perTable', c.perTable)}
         ${field('Buy-in', 'config.buyIn', c.buyIn)}
         ${field('Fichas iniciales', 'config.startChips', c.startChips)}
@@ -548,19 +583,11 @@ function setupTab(t, season) {
     bind(root) {
       bindFields(root, (db) => db.tournaments.find((x) => x.id === t.id));
       root.querySelector('[data-levels]').onchange = (e) => upT(t.id, (x) => (x.config.levels = textToLevels(e.target.value)));
-      root.querySelector('[data-ttype]').onchange = (e) =>
-        upT(t.id, (x, db) => {
-          x.type = e.target.value;
-          if (x.status === 'setup')
-            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), perTable: x.config.perTable, luckyLoserAllowed: x.config.luckyLoserAllowed, prizePercents: x.config.prizePercents };
-        });
-      const mod = root.querySelector('[data-mod]');
-      if (mod)
-        mod.onchange = () =>
-          upT(t.id, (x, db) => {
-            x.modality = mod.value;
-            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), perTable: x.config.perTable, luckyLoserAllowed: true };
-          });
+      const fmt = root.querySelector('[data-format]');
+      if (fmt && !locked)
+        fmt.onchange = () => {
+          upT(t.id, (x, db) => applyFormat(x, db, fmt.value), false);
+        };
       if (locked) return;
       on(root, '[data-entry]', 'change', (el) =>
         upT(t.id, (x) => {
