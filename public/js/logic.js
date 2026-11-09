@@ -293,7 +293,31 @@ export function tableOf(t, playerId) {
 }
 
 // ---------- Resultados ----------
+// Fechas cargadas desde la planilla histórica: solo puntos, premios y ganador
+function importedResults(t) {
+  const im = t.imported;
+  return Object.entries(im.points || {})
+    .map(([pid, pts]) => ({
+      playerId: pid,
+      position: im.winnerId === pid ? 1 : null,
+      points: Number(pts) || 0,
+      bonus: 0,
+      prize: (im.prizes || {})[pid] || 0,
+      kills: (im.kills || {})[pid] || 0,
+      rebuys: 0,
+      addon: false,
+      luckyLoser: false,
+    }))
+    .sort((a, b) => (a.position === 1 ? -1 : b.position === 1 ? 1 : b.points - a.points));
+}
+
+export function attendedIds(t) {
+  if (t.imported) return Object.keys(t.imported.points || {});
+  return (t.entries || []).map((e) => e.playerId);
+}
+
 export function results(t, settings) {
+  if (t.imported) return importedResults(t);
   const st = entryState(t);
   const n = st.length;
   const cfg = t.config || {};
@@ -341,7 +365,11 @@ export function seasonTournaments(db, seasonId) {
 
 export function ranking(db, seasonId) {
   const ts = seasonTournaments(db, seasonId);
-  const players = (db.players || []).filter((p) => p.type !== 'invitado');
+  const season = (db.seasons || []).find((x) => x.id === seasonId);
+  const order = season && season.finalOrder; // orden final oficial (temporadas cargadas de la planilla)
+  const players = order
+    ? order.map((id) => (db.players || []).find((p) => p.id === id)).filter(Boolean)
+    : (db.players || []).filter((p) => p.type !== 'invitado' && (p.active !== false || ts.some((t) => attendedIds(t).includes(p.id))));
   const resByT = {};
   ts.forEach((t) => {
     if (t.status === 'finished') resByT[t.id] = Object.fromEntries(results(t, db.settings).map((r) => [r.playerId, r]));
@@ -361,6 +389,10 @@ export function ranking(db, seasonId) {
     });
     return { player: p, total, wins, played, cells };
   });
+  if (order) {
+    rows.forEach((r, i) => (r.position = i + 1));
+    return { tournaments: ts, rows };
+  }
   rows.sort((a, b) => b.total - a.total || b.wins - a.wins || a.player.name.localeCompare(b.player.name));
   let pos = 0;
   let prev = null;
@@ -396,6 +428,42 @@ export function seasonStats(db, seasonId) {
     });
   });
   return { finished: finished.length, total: ts.length, players: Object.values(per) };
+}
+
+export function seasonFinished(db, seasonId) {
+  const ts = seasonTournaments(db, seasonId);
+  return ts.length > 0 && ts.every((t) => t.status === 'finished');
+}
+
+// Historial de todas las temporadas: campeones y salón de la fama
+export function history(db) {
+  const seasons = (db.seasons || []).filter((s) => seasonTournaments(db, s.id).some((t) => t.status === 'finished'));
+  const fame = {};
+  const get = (p) => (fame[p.id] = fame[p.id] || { player: p, titles: 0, podiums: 0, seasons: 0, points: 0, fechas: 0, best: null, titleSeasons: [] });
+  const list = seasons.map((s) => {
+    const rk = ranking(db, s.id);
+    const done = seasonFinished(db, s.id);
+    rk.rows.forEach((r) => {
+      if (!r.played) return;
+      const f = get(r.player);
+      f.seasons++;
+      f.points += r.total;
+      f.fechas += r.wins;
+      if (done) {
+        if (f.best == null || r.position < f.best) f.best = r.position;
+        if (r.position <= 3) f.podiums++;
+        if (r.position === 1) {
+          f.titles++;
+          f.titleSeasons.push(s.name);
+        }
+      }
+    });
+    const st = seasonStats(db, s.id);
+    const hit = [...st.players].sort((a, b) => b.kills - a.kills)[0];
+    return { season: s, done, podium: rk.rows.slice(0, 3), played: rk.tournaments.filter((t) => t.status === 'finished').length, total: rk.tournaments.length, hitman: hit && hit.kills ? hit : null };
+  });
+  const hall = Object.values(fame).sort((a, b) => b.titles - a.titles || b.podiums - a.podiums || b.points - a.points);
+  return { seasons: list, hall };
 }
 
 // ---------- Resumen lúdico ----------

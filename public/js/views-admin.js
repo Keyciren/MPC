@@ -43,7 +43,7 @@ import {
   defaultLevels,
   newTournament,
 } from './logic.js';
-import { badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
+import { importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
 // ---------- utilidades de formularios ----------
 function getPath(obj, path) {
@@ -427,6 +427,8 @@ export function tournamentAdminView(id) {
   const t = S.db.tournaments.find((x) => x.id === id);
   if (!t) return { html: '<p>Fecha no encontrada</p>' };
   const season = S.db.seasons.find((s) => s.id === t.seasonId);
+  if (t.imported)
+    return { html: `<h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>${importedTournament(t)}` };
   const available = {
     planned: ['config'],
     setup: ['config', 'mesas'],

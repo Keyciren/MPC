@@ -1,5 +1,5 @@
 import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG } from './core.js';
-import { homeView, calendarView, tournamentView, rankingView, pointsView, statsView, bindTabs, clockState, fmtMs } from './views-public.js';
+import { historyView, homeView, calendarView, tournamentView, rankingView, pointsView, statsView, bindTabs, clockState, fmtMs } from './views-public.js';
 import { loginView, playersView, seasonAdminView, pointsAdminView, tournamentAdminView, settingsView } from './views-admin.js';
 
 const main = document.getElementById('main');
@@ -22,6 +22,7 @@ function route() {
   if (a === 'ranking') return rankingView(q);
   if (a === 'puntajes') return pointsView();
   if (a === 'estadisticas') return statsView(q);
+  if (a === 'historial') return historyView();
   if (a === 'login') return loginView();
   if (a === 'admin') {
     if (!isAdmin()) return loginView();
@@ -46,6 +47,7 @@ function renderNav() {
       ${link('#/ranking', 'Posiciones')}
       ${link('#/puntajes', 'Puntajes')}
       ${link('#/estadisticas', 'Estadísticas')}
+      ${link('#/historial', 'Historial')}
       ${
         isAdmin()
           ? `<span class="sep"></span><button class="btn sm ${S.dirty ? '' : 'ghost'} pub-btn" data-publish ${S.publishing ? 'disabled' : ''} title="${S.dirty ? 'Hay cambios guardados solo en este navegador' : 'Todo publicado'}">${S.publishing ? 'Publicando…' : S.dirty ? '⬆ Publicar cambios' : '✓ Publicado'}</button>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`

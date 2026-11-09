@@ -1,0 +1,4614 @@
+{
+ "version": 1,
+ "settings": {
+  "clubName": "Poker Marginales",
+  "pointTables": {
+   "normal": {
+    "name": "Normal",
+    "columns": [
+     {
+      "label": "19 o 20",
+      "min": 19,
+      "max": 20,
+      "points": [
+       22,
+       17,
+       13,
+       10,
+       8,
+       6,
+       4,
+       3,
+       2,
+       1
+      ]
+     },
+     {
+      "label": "17 o 18",
+      "min": 17,
+      "max": 18,
+      "points": [
+       20,
+       15,
+       11,
+       8,
+       6,
+       4,
+       3,
+       2,
+       1
+      ]
+     },
+     {
+      "label": "15 o 16",
+      "min": 15,
+      "max": 16,
+      "points": [
+       18,
+       13,
+       10,
+       7,
+       5,
+       4,
+       3,
+       2
+      ]
+     },
+     {
+      "label": "13 o 14",
+      "min": 13,
+      "max": 14,
+      "points": [
+       16,
+       12,
+       9,
+       6,
+       5,
+       3,
+       2
+      ]
+     },
+     {
+      "label": "11 o 12",
+      "min": 11,
+      "max": 12,
+      "points": [
+       13,
+       10,
+       7,
+       5,
+       4,
+       3,
+       1
+      ]
+     },
+     {
+      "label": "9 o 10",
+      "min": 9,
+      "max": 10,
+      "points": [
+       11,
+       8,
+       6,
+       4,
+       3,
+       1
+      ]
+     },
+     {
+      "label": "8 o menos",
+      "min": 0,
+      "max": 8,
+      "points": [
+       9,
+       7,
+       5,
+       4,
+       1
+      ]
+     }
+    ]
+   },
+   "gs": {
+    "name": "Grand Slam",
+    "columns": [
+     {
+      "label": "GS",
+      "min": 0,
+      "max": 999,
+      "points": [
+       25,
+       20,
+       16,
+       13,
+       10,
+       8,
+       6,
+       4,
+       3,
+       2
+      ]
+     }
+    ]
+   }
+  },
+  "currentSeasonId": "s6"
+ },
+ "players": [
+  {
+   "id": "p_andrea",
+   "name": "Andrea",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_andres",
+   "name": "Andres",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_billy",
+   "name": "Billy",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_carlos",
+   "name": "Carlos",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_edgar",
+   "name": "Edgar",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_gaby",
+   "name": "Gaby",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": false
+  },
+  {
+   "id": "p_glenda",
+   "name": "Glenda",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_guillermo",
+   "name": "Guillermo",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_harry",
+   "name": "Harry",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_joan",
+   "name": "Joan",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_julio",
+   "name": "Julio",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_kc",
+   "name": "KC",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_kari",
+   "name": "Kari",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_les",
+   "name": "Les",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_meli",
+   "name": "Meli",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_miguel",
+   "name": "Miguel",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_nadia",
+   "name": "Nadia",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_pancho",
+   "name": "Pancho",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_pollito",
+   "name": "Pollito",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": false
+  },
+  {
+   "id": "p_rene_harb",
+   "name": "Rene Harb",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": false
+  },
+  {
+   "id": "p_rene_lander",
+   "name": "Rene Lander",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_serrano",
+   "name": "Serrano",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  },
+  {
+   "id": "p_xelo",
+   "name": "Xelo",
+   "nickname": "",
+   "email": "",
+   "type": "club",
+   "active": true
+  }
+ ],
+ "seasons": [
+  {
+   "id": "s1",
+   "name": "Temporada 1",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   },
+   "finalOrder": [
+    "p_rene_lander",
+    "p_andres",
+    "p_nadia",
+    "p_kc",
+    "p_julio",
+    "p_les",
+    "p_carlos",
+    "p_serrano",
+    "p_rene_harb",
+    "p_pancho",
+    "p_miguel",
+    "p_gaby",
+    "p_glenda",
+    "p_meli",
+    "p_pollito"
+   ]
+  },
+  {
+   "id": "s2",
+   "name": "Temporada 2",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   },
+   "finalOrder": [
+    "p_andres",
+    "p_miguel",
+    "p_edgar",
+    "p_rene_lander",
+    "p_julio",
+    "p_carlos",
+    "p_kc",
+    "p_glenda",
+    "p_guillermo",
+    "p_meli",
+    "p_andrea",
+    "p_nadia",
+    "p_les",
+    "p_serrano",
+    "p_rene_harb",
+    "p_pancho",
+    "p_pollito"
+   ]
+  },
+  {
+   "id": "s3",
+   "name": "Temporada 3",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   },
+   "finalOrder": [
+    "p_rene_lander",
+    "p_guillermo",
+    "p_nadia",
+    "p_kc",
+    "p_meli",
+    "p_andres",
+    "p_julio",
+    "p_carlos",
+    "p_les",
+    "p_edgar",
+    "p_miguel",
+    "p_serrano",
+    "p_andrea",
+    "p_pancho",
+    "p_rene_harb",
+    "p_joan",
+    "p_pollito",
+    "p_glenda"
+   ]
+  },
+  {
+   "id": "s4",
+   "name": "Temporada 4",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   },
+   "finalOrder": [
+    "p_serrano",
+    "p_guillermo",
+    "p_xelo",
+    "p_andres",
+    "p_edgar",
+    "p_nadia",
+    "p_joan",
+    "p_kc",
+    "p_julio",
+    "p_pancho",
+    "p_carlos",
+    "p_les",
+    "p_miguel",
+    "p_rene_harb",
+    "p_rene_lander",
+    "p_meli",
+    "p_billy",
+    "p_andrea",
+    "p_glenda"
+   ]
+  },
+  {
+   "id": "s5",
+   "name": "Temporada 5",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   },
+   "finalOrder": [
+    "p_guillermo",
+    "p_andres",
+    "p_edgar",
+    "p_andrea",
+    "p_miguel",
+    "p_nadia",
+    "p_kc",
+    "p_billy",
+    "p_xelo",
+    "p_serrano",
+    "p_rene_lander",
+    "p_joan",
+    "p_glenda",
+    "p_julio",
+    "p_carlos",
+    "p_kari",
+    "p_pancho",
+    "p_harry",
+    "p_meli",
+    "p_les",
+    "p_rene_harb"
+   ]
+  },
+  {
+   "id": "s6",
+   "name": "Temporada 6",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   }
+  },
+  {
+   "id": "s7",
+   "name": "Temporada 7",
+   "tournamentsCount": 12,
+   "config": {
+    "currency": "$",
+    "fee": 1000,
+    "perTable": 9,
+    "prizePercents": [
+     50,
+     30,
+     20
+    ],
+    "roundTo": 1000,
+    "luckyLoserCost": 20000,
+    "freezeout": {
+     "buyIn": 20000,
+     "startChips": 20000
+    },
+    "rebuy": {
+     "buyIn": 10000,
+     "startChips": 10000,
+     "rebuyCost": 10000,
+     "rebuyChips": 10000,
+     "addonCost": 10000,
+     "addonChips": 15000,
+     "rebuyUntilLevel": 6
+    },
+    "levels": [
+     {
+      "sb": 50,
+      "bb": 100,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 100,
+      "bb": 200,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 150,
+      "bb": 300,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 200,
+      "bb": 400,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 300,
+      "bb": 600,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 400,
+      "bb": 800,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 500,
+      "bb": 1000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 750,
+      "bb": 1500,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1000,
+      "bb": 2000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 1500,
+      "bb": 3000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 2000,
+      "bb": 4000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 3000,
+      "bb": 6000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 4000,
+      "bb": 8000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 5000,
+      "bb": 10000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 7500,
+      "bb": 15000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 10000,
+      "bb": 20000,
+      "ante": 0,
+      "minutes": 20
+     },
+     {
+      "sb": 15000,
+      "bb": 30000,
+      "ante": 0,
+      "minutes": 20
+     }
+    ]
+   }
+  }
+ ],
+ "tournaments": [
+  {
+   "id": "s1t1",
+   "seasonId": "s1",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 18,
+     "p_andres": 0,
+     "p_nadia": 0,
+     "p_kc": 7,
+     "p_julio": 3,
+     "p_les": 0,
+     "p_carlos": 0,
+     "p_serrano": 5,
+     "p_rene_harb": 10,
+     "p_pancho": 0,
+     "p_miguel": 2,
+     "p_glenda": 4,
+     "p_meli": 0
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t2",
+   "seasonId": "s1",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 9,
+     "p_andres": 12,
+     "p_nadia": 16,
+     "p_kc": 6,
+     "p_julio": 2,
+     "p_les": 0,
+     "p_carlos": 3,
+     "p_serrano": 0,
+     "p_pancho": 0,
+     "p_miguel": 5,
+     "p_glenda": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_nadia",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t3",
+   "seasonId": "s1",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 12,
+     "p_andres": 9,
+     "p_nadia": 0,
+     "p_kc": 0,
+     "p_julio": 0,
+     "p_les": 5,
+     "p_carlos": 6,
+     "p_serrano": 16,
+     "p_pancho": 0,
+     "p_miguel": 3,
+     "p_gaby": 0,
+     "p_glenda": 0,
+     "p_meli": 2
+    },
+    "winnerId": "p_serrano",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t4",
+   "seasonId": "s1",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_andres": 6,
+     "p_nadia": 3,
+     "p_kc": 12,
+     "p_julio": 5,
+     "p_les": 16,
+     "p_carlos": 0,
+     "p_serrano": 2,
+     "p_rene_harb": 0,
+     "p_pancho": 0,
+     "p_miguel": 0,
+     "p_gaby": 9,
+     "p_glenda": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_les",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t5",
+   "seasonId": "s1",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 2,
+     "p_andres": 0,
+     "p_nadia": 5,
+     "p_kc": 18,
+     "p_julio": 13,
+     "p_les": 0,
+     "p_carlos": 10,
+     "p_serrano": 4,
+     "p_rene_harb": 0,
+     "p_pancho": 3,
+     "p_miguel": 7,
+     "p_gaby": 0,
+     "p_glenda": 0,
+     "p_meli": 0,
+     "p_pollito": 0
+    },
+    "winnerId": "p_kc",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t6",
+   "seasonId": "s1",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_andres": 0,
+     "p_nadia": 20,
+     "p_kc": 0,
+     "p_julio": 4,
+     "p_les": 6,
+     "p_carlos": 2,
+     "p_serrano": 8,
+     "p_rene_harb": 15,
+     "p_pancho": 11,
+     "p_miguel": 3,
+     "p_gaby": 0,
+     "p_glenda": 0,
+     "p_meli": 0,
+     "p_pollito": 0
+    },
+    "winnerId": "p_nadia",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t7",
+   "seasonId": "s1",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 3,
+     "p_andres": 16,
+     "p_nadia": 9,
+     "p_kc": 2,
+     "p_julio": 6,
+     "p_carlos": 12,
+     "p_serrano": 0,
+     "p_rene_harb": 5,
+     "p_pancho": 0,
+     "p_miguel": 0,
+     "p_gaby": 0,
+     "p_glenda": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_andres",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t8",
+   "seasonId": "s1",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_andres": 10,
+     "p_nadia": 2,
+     "p_kc": 5,
+     "p_julio": 0,
+     "p_les": 0,
+     "p_carlos": 7,
+     "p_serrano": 0,
+     "p_rene_harb": 3,
+     "p_pancho": 0,
+     "p_miguel": 0,
+     "p_gaby": 18,
+     "p_glenda": 0,
+     "p_meli": 4
+    },
+    "winnerId": "p_gaby",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t9",
+   "seasonId": "s1",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 18,
+     "p_andres": 3,
+     "p_nadia": 4,
+     "p_kc": 0,
+     "p_julio": 0,
+     "p_les": 0,
+     "p_carlos": 7,
+     "p_serrano": 5,
+     "p_rene_harb": 0,
+     "p_pancho": 0,
+     "p_miguel": 10,
+     "p_gaby": 0,
+     "p_glenda": 13,
+     "p_meli": 2,
+     "p_pollito": 0
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t10",
+   "seasonId": "s1",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 16,
+     "p_andres": 5,
+     "p_nadia": 3,
+     "p_kc": 0,
+     "p_julio": 9,
+     "p_les": 6,
+     "p_carlos": 0,
+     "p_serrano": 0,
+     "p_rene_harb": 2,
+     "p_pancho": 12,
+     "p_miguel": 0,
+     "p_glenda": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t11",
+   "seasonId": "s1",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 7,
+     "p_andres": 10,
+     "p_nadia": 4,
+     "p_kc": 2,
+     "p_julio": 3,
+     "p_les": 18,
+     "p_carlos": 0,
+     "p_serrano": 0,
+     "p_rene_harb": 0,
+     "p_pancho": 5,
+     "p_miguel": 0,
+     "p_gaby": 0,
+     "p_glenda": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_les",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s1t12",
+   "seasonId": "s1",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 6,
+     "p_andres": 5,
+     "p_nadia": 9,
+     "p_kc": 16,
+     "p_julio": 12,
+     "p_les": 0,
+     "p_carlos": 2,
+     "p_serrano": 0,
+     "p_rene_harb": 0,
+     "p_pancho": 0,
+     "p_miguel": 0,
+     "p_glenda": 0,
+     "p_meli": 3
+    },
+    "winnerId": "p_kc",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s2t1",
+   "seasonId": "s2",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 0,
+     "p_miguel": 0,
+     "p_rene_lander": 2,
+     "p_julio": 12,
+     "p_carlos": 16,
+     "p_kc": 0,
+     "p_glenda": 0,
+     "p_meli": 9,
+     "p_nadia": 6,
+     "p_les": 0,
+     "p_serrano": 0,
+     "p_rene_harb": 3
+    },
+    "winnerId": "p_carlos",
+    "kills": {
+     "p_rene_lander": 1,
+     "p_julio": 3,
+     "p_carlos": 2,
+     "p_nadia": 1,
+     "p_kc": 1
+    }
+   }
+  },
+  {
+   "id": "s2t2",
+   "seasonId": "s2",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 0,
+     "p_miguel": 10,
+     "p_rene_lander": 13,
+     "p_carlos": 0,
+     "p_kc": 5,
+     "p_glenda": 3,
+     "p_meli": 4,
+     "p_nadia": 7,
+     "p_les": 0,
+     "p_serrano": 1
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {
+     "p_rene_lander": 3,
+     "p_miguel": 3,
+     "p_nadia": 1,
+     "p_kc": 1,
+     "p_serrano": 2
+    }
+   }
+  },
+  {
+   "id": "s2t3",
+   "seasonId": "s2",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 4,
+     "p_miguel": 6,
+     "p_edgar": 11,
+     "p_rene_lander": 0,
+     "p_carlos": 3,
+     "p_glenda": 8,
+     "p_meli": 0,
+     "p_nadia": 0,
+     "p_serrano": 1
+    },
+    "winnerId": "p_edgar",
+    "kills": {
+     "p_edgar": 5,
+     "p_andres": 1,
+     "p_glenda": 3
+    }
+   }
+  },
+  {
+   "id": "s2t4",
+   "seasonId": "s2",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 3,
+     "p_miguel": 13,
+     "p_edgar": 10,
+     "p_rene_lander": 5,
+     "p_julio": 0,
+     "p_carlos": 7,
+     "p_kc": 4,
+     "p_glenda": 0,
+     "p_meli": 0,
+     "p_les": 1,
+     "p_pancho": 0
+    },
+    "winnerId": "p_miguel",
+    "kills": {
+     "p_edgar": 3,
+     "p_rene_lander": 2,
+     "p_miguel": 4,
+     "p_carlos": 2
+    }
+   }
+  },
+  {
+   "id": "s2t5",
+   "seasonId": "s2",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 13,
+     "p_miguel": 5,
+     "p_edgar": 2,
+     "p_rene_lander": 0,
+     "p_julio": 18,
+     "p_carlos": 4,
+     "p_kc": 3,
+     "p_glenda": 10,
+     "p_meli": 0,
+     "p_andrea": 7,
+     "p_nadia": 0,
+     "p_les": 0,
+     "p_serrano": 0
+    },
+    "winnerId": "p_julio",
+    "kills": {
+     "p_edgar": 1,
+     "p_andres": 1,
+     "p_miguel": 2,
+     "p_glenda": 1,
+     "p_julio": 5,
+     "p_nadia": 3
+    }
+   }
+  },
+  {
+   "id": "s2t6",
+   "seasonId": "s2",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 16,
+     "p_edgar": 12,
+     "p_rene_lander": 0,
+     "p_carlos": 9,
+     "p_kc": 3,
+     "p_glenda": 0,
+     "p_meli": 0,
+     "p_andrea": 5,
+     "p_nadia": 6,
+     "p_serrano": 0,
+     "p_pancho": 0
+    },
+    "winnerId": "p_andres",
+    "kills": {
+     "p_edgar": 5,
+     "p_andres": 3,
+     "p_carlos": 3
+    }
+   }
+  },
+  {
+   "id": "s2t7",
+   "seasonId": "s2",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 0,
+     "p_miguel": 0,
+     "p_edgar": 0,
+     "p_rene_lander": 16,
+     "p_julio": 9,
+     "p_carlos": 0,
+     "p_kc": 12,
+     "p_meli": 6,
+     "p_andrea": 0,
+     "p_les": 5,
+     "p_pancho": 0
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {
+     "p_rene_lander": 6,
+     "p_julio": 2,
+     "p_meli": 5
+    }
+   }
+  },
+  {
+   "id": "s2t8",
+   "seasonId": "s2",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 13,
+     "p_miguel": 4,
+     "p_edgar": 5,
+     "p_rene_lander": 0,
+     "p_carlos": 0,
+     "p_kc": 10,
+     "p_glenda": 0,
+     "p_meli": 1,
+     "p_nadia": 0,
+     "p_serrano": 0
+    },
+    "winnerId": "p_andres",
+    "kills": {
+     "p_edgar": 1,
+     "p_andres": 6,
+     "p_glenda": 1,
+     "p_kc": 1
+    }
+   }
+  },
+  {
+   "id": "s2t9",
+   "seasonId": "s2",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 7,
+     "p_miguel": 1,
+     "p_edgar": 0,
+     "p_rene_lander": 0,
+     "p_carlos": 5,
+     "p_kc": 0,
+     "p_glenda": 10,
+     "p_guillermo": 13,
+     "p_meli": 3,
+     "p_les": 0
+    },
+    "winnerId": "p_guillermo",
+    "kills": {
+     "p_edgar": 1,
+     "p_andres": 3,
+     "p_glenda": 2,
+     "p_carlos": 1,
+     "p_guillermo": 1,
+     "p_meli": 1
+    }
+   }
+  },
+  {
+   "id": "s2t10",
+   "seasonId": "s2",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 3,
+     "p_miguel": 0,
+     "p_edgar": 16,
+     "p_julio": 0,
+     "p_carlos": 0,
+     "p_kc": 0,
+     "p_guillermo": 12,
+     "p_meli": 5,
+     "p_andrea": 0,
+     "p_nadia": 6,
+     "p_les": 9,
+     "p_serrano": 2,
+     "p_pancho": 0
+    },
+    "winnerId": "p_edgar",
+    "kills": {
+     "p_edgar": 6,
+     "p_guillermo": 4,
+     "p_les": 3
+    }
+   }
+  },
+  {
+   "id": "s2t11",
+   "seasonId": "s2",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 11,
+     "p_miguel": 0,
+     "p_edgar": 0,
+     "p_rene_lander": 6,
+     "p_julio": 0,
+     "p_carlos": 2,
+     "p_kc": 3,
+     "p_glenda": 0,
+     "p_guillermo": 0,
+     "p_andrea": 15,
+     "p_les": 1,
+     "p_pancho": 0
+    },
+    "winnerId": "p_andrea",
+    "kills": {
+     "p_edgar": 2,
+     "p_andres": 1,
+     "p_rene_lander": 1,
+     "p_carlos": 1,
+     "p_kc": 1,
+     "p_andrea": 2
+    }
+   }
+  },
+  {
+   "id": "s2t12",
+   "seasonId": "s2",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 2,
+     "p_miguel": 18,
+     "p_edgar": 0,
+     "p_rene_lander": 7,
+     "p_julio": 10,
+     "p_kc": 5,
+     "p_glenda": 13,
+     "p_guillermo": 4,
+     "p_andrea": 0,
+     "p_nadia": 0,
+     "p_les": 0,
+     "p_serrano": 0
+    },
+    "winnerId": "p_miguel",
+    "kills": {
+     "p_andres": 1,
+     "p_rene_lander": 2,
+     "p_miguel": 4,
+     "p_glenda": 4,
+     "p_guillermo": 2
+    }
+   }
+  },
+  {
+   "id": "s3t1",
+   "seasonId": "s3",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 12,
+     "p_guillermo": 9,
+     "p_kc": 3,
+     "p_andres": 5,
+     "p_julio": 0,
+     "p_carlos": 16,
+     "p_les": 0,
+     "p_miguel": 0,
+     "p_andrea": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_carlos",
+    "kills": {
+     "p_rene_lander": 5,
+     "p_julio": 1,
+     "p_kc": 1,
+     "p_andres": 2,
+     "p_carlos": 2
+    }
+   }
+  },
+  {
+   "id": "s3t2",
+   "seasonId": "s3",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_guillermo": 11,
+     "p_nadia": 0,
+     "p_kc": 0,
+     "p_andres": 7,
+     "p_julio": 13,
+     "p_carlos": 1,
+     "p_les": 0,
+     "p_edgar": 4,
+     "p_serrano": 5,
+     "p_andrea": 0,
+     "p_pancho": 3
+    },
+    "winnerId": "p_julio",
+    "kills": {
+     "p_julio": 6,
+     "p_guillermo": 2,
+     "p_edgar": 1,
+     "p_serrano": 2
+    }
+   }
+  },
+  {
+   "id": "s3t3",
+   "seasonId": "s3",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_guillermo": 3,
+     "p_nadia": 10,
+     "p_kc": 13,
+     "p_andres": 5,
+     "p_carlos": 1,
+     "p_les": 0,
+     "p_edgar": 8,
+     "p_miguel": 0,
+     "p_serrano": 0,
+     "p_andrea": 0
+    },
+    "winnerId": "p_kc",
+    "kills": {
+     "p_kc": 5,
+     "p_andres": 2,
+     "p_edgar": 3,
+     "p_carlos": 1
+    }
+   }
+  },
+  {
+   "id": "s3t4",
+   "seasonId": "s3",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 7,
+     "p_nadia": 0,
+     "p_kc": 5,
+     "p_andres": 1,
+     "p_julio": 14,
+     "p_les": 3,
+     "p_edgar": 0,
+     "p_miguel": 0,
+     "p_serrano": 0,
+     "p_andrea": 4
+    },
+    "winnerId": "p_julio",
+    "kills": {
+     "p_julio": 5,
+     "p_guillermo": 3,
+     "p_kc": 1,
+     "p_andrea": 1
+    }
+   }
+  },
+  {
+   "id": "s3t5",
+   "seasonId": "s3",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 12,
+     "p_guillermo": 1,
+     "p_kc": 0,
+     "p_meli": 8,
+     "p_andres": 4,
+     "p_julio": 0,
+     "p_carlos": 6,
+     "p_les": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {
+     "p_rene_lander": 7,
+     "p_kc": 1,
+     "p_meli": 1
+    }
+   }
+  },
+  {
+   "id": "s3t6",
+   "seasonId": "s3",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 10,
+     "p_nadia": 13,
+     "p_kc": 7,
+     "p_meli": 0,
+     "p_andres": 0,
+     "p_carlos": 4,
+     "p_les": 5,
+     "p_edgar": 0,
+     "p_miguel": 18,
+     "p_serrano": 2,
+     "p_andrea": 0,
+     "p_pancho": 3
+    },
+    "winnerId": "p_miguel",
+    "kills": {
+     "p_guillermo": 7,
+     "p_edgar": 1,
+     "p_nadia": 4,
+     "p_serrano": 1,
+     "p_miguel": 1
+    }
+   }
+  },
+  {
+   "id": "s3t7",
+   "seasonId": "s3",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 12,
+     "p_guillermo": 5,
+     "p_nadia": 0,
+     "p_kc": 16,
+     "p_meli": 0,
+     "p_andres": 6,
+     "p_julio": 4,
+     "p_carlos": 0,
+     "p_les": 0,
+     "p_edgar": 0,
+     "p_miguel": 0,
+     "p_serrano": 0,
+     "p_andrea": 9,
+     "p_joan": 2
+    },
+    "winnerId": "p_kc",
+    "kills": {
+     "p_rene_lander": 3,
+     "p_julio": 2,
+     "p_kc": 2,
+     "p_andres": 2,
+     "p_andrea": 2,
+     "p_joan": 2
+    }
+   }
+  },
+  {
+   "id": "s3t8",
+   "seasonId": "s3",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_guillermo": 0,
+     "p_nadia": 0,
+     "p_kc": 7,
+     "p_meli": 4,
+     "p_andres": 2,
+     "p_julio": 0,
+     "p_carlos": 10,
+     "p_les": 13,
+     "p_edgar": 19,
+     "p_miguel": 5,
+     "p_serrano": 3,
+     "p_andrea": 0,
+     "p_pancho": 0,
+     "p_joan": 0
+    },
+    "winnerId": "p_edgar",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s3t9",
+   "seasonId": "s3",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 16,
+     "p_guillermo": 0,
+     "p_nadia": 7,
+     "p_kc": 2,
+     "p_meli": 0,
+     "p_andres": 12,
+     "p_julio": 5,
+     "p_carlos": 9,
+     "p_les": 0,
+     "p_miguel": 3,
+     "p_serrano": 0,
+     "p_andrea": 0,
+     "p_joan": 0
+    },
+    "winnerId": "p_rene_lander",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s3t10",
+   "seasonId": "s3",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_guillermo": 10,
+     "p_nadia": 13,
+     "p_kc": 0,
+     "p_meli": 7,
+     "p_andres": 3,
+     "p_carlos": 0,
+     "p_les": 18,
+     "p_edgar": 5,
+     "p_miguel": 0,
+     "p_serrano": 0,
+     "p_andrea": 0,
+     "p_pancho": 4,
+     "p_rene_harb": 3,
+     "p_joan": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_les",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s3t11",
+   "seasonId": "s3",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 3,
+     "p_guillermo": 1,
+     "p_nadia": 11,
+     "p_kc": 4,
+     "p_meli": 13,
+     "p_andres": 5,
+     "p_carlos": 0,
+     "p_les": 0,
+     "p_miguel": 0,
+     "p_serrano": 7,
+     "p_pancho": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_meli",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s3t12",
+   "seasonId": "s3",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 10,
+     "p_guillermo": 5,
+     "p_nadia": 4,
+     "p_kc": 0,
+     "p_meli": 19,
+     "p_andres": 0,
+     "p_julio": 13,
+     "p_carlos": 0,
+     "p_les": 0,
+     "p_edgar": 0,
+     "p_miguel": 2,
+     "p_serrano": 7,
+     "p_andrea": 0,
+     "p_pancho": 3,
+     "p_joan": 0
+    },
+    "winnerId": "p_meli",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t1",
+   "seasonId": "s4",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 7,
+     "p_andres": 10,
+     "p_joan": 0,
+     "p_kc": 6,
+     "p_julio": 0,
+     "p_carlos": 0,
+     "p_les": 1,
+     "p_miguel": 0,
+     "p_rene_lander": 3,
+     "p_meli": 0
+    },
+    "winnerId": "p_andres",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t2",
+   "seasonId": "s4",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 5,
+     "p_guillermo": 9,
+     "p_xelo": 12,
+     "p_andres": 0,
+     "p_nadia": 0,
+     "p_kc": 3,
+     "p_julio": 16,
+     "p_pancho": 0,
+     "p_carlos": 0,
+     "p_les": 0,
+     "p_meli": 2,
+     "p_andrea": 0
+    },
+    "winnerId": "p_julio",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t3",
+   "seasonId": "s4",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 8,
+     "p_guillermo": 0,
+     "p_xelo": 0,
+     "p_andres": 11,
+     "p_edgar": 2,
+     "p_nadia": 6,
+     "p_joan": 3,
+     "p_kc": 0,
+     "p_julio": 15,
+     "p_carlos": 21,
+     "p_les": 0,
+     "p_miguel": 0,
+     "p_rene_lander": 0,
+     "p_meli": 1,
+     "p_andrea": 4,
+     "p_glenda": 0
+    },
+    "winnerId": "p_carlos",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t4",
+   "seasonId": "s4",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 18,
+     "p_guillermo": 5,
+     "p_xelo": 1,
+     "p_andres": 3,
+     "p_edgar": 0,
+     "p_nadia": 10,
+     "p_joan": 0,
+     "p_kc": 7,
+     "p_pancho": 2,
+     "p_carlos": 0,
+     "p_les": 13,
+     "p_miguel": 0,
+     "p_meli": 4,
+     "p_andrea": 0
+    },
+    "winnerId": "p_serrano",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t5",
+   "seasonId": "s4",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 17,
+     "p_guillermo": 0,
+     "p_xelo": 3,
+     "p_andres": 0,
+     "p_nadia": 6,
+     "p_joan": 9,
+     "p_kc": 12,
+     "p_julio": 0,
+     "p_carlos": 0,
+     "p_rene_lander": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_serrano",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t6",
+   "seasonId": "s4",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 8,
+     "p_guillermo": 0,
+     "p_xelo": 20,
+     "p_andres": 0,
+     "p_edgar": 6,
+     "p_nadia": 11,
+     "p_joan": 0,
+     "p_kc": 3,
+     "p_julio": 0,
+     "p_pancho": 2,
+     "p_carlos": 0,
+     "p_les": 4,
+     "p_miguel": 0,
+     "p_meli": 1,
+     "p_andrea": 0
+    },
+    "winnerId": "p_xelo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t7",
+   "seasonId": "s4",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 15,
+     "p_guillermo": 20,
+     "p_xelo": 0,
+     "p_andres": 2,
+     "p_edgar": 12,
+     "p_nadia": 3,
+     "p_joan": 0,
+     "p_kc": 0,
+     "p_julio": 1,
+     "p_les": 0,
+     "p_andrea": 0
+    },
+    "winnerId": "p_guillermo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t8",
+   "seasonId": "s4",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 0,
+     "p_guillermo": 1,
+     "p_xelo": 7,
+     "p_andres": 11,
+     "p_nadia": 0,
+     "p_kc": 4,
+     "p_pancho": 0,
+     "p_carlos": 5,
+     "p_les": 0,
+     "p_meli": 0
+    },
+    "winnerId": "p_andres",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t9",
+   "seasonId": "s4",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 0,
+     "p_guillermo": 6,
+     "p_xelo": 5,
+     "p_andres": 17,
+     "p_edgar": 12,
+     "p_nadia": 2,
+     "p_joan": 0,
+     "p_kc": 0,
+     "p_julio": 0,
+     "p_miguel": 0,
+     "p_andrea": 0
+    },
+    "winnerId": "p_andres",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t10",
+   "seasonId": "s4",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 0,
+     "p_guillermo": 7,
+     "p_xelo": 0,
+     "p_andres": 3,
+     "p_edgar": 14,
+     "p_nadia": 0,
+     "p_kc": 0,
+     "p_pancho": 18,
+     "p_carlos": 0,
+     "p_les": 4,
+     "p_meli": 0,
+     "p_andrea": 0
+    },
+    "winnerId": "p_pancho",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t11",
+   "seasonId": "s4",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 0,
+     "p_guillermo": 6,
+     "p_xelo": 20,
+     "p_andres": 2,
+     "p_edgar": 0,
+     "p_nadia": 0,
+     "p_joan": 4,
+     "p_kc": 1,
+     "p_julio": 0,
+     "p_carlos": 0,
+     "p_les": 0,
+     "p_rene_harb": 15,
+     "p_rene_lander": 9,
+     "p_meli": 0,
+     "p_billy": 3,
+     "p_andrea": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_xelo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s4t12",
+   "seasonId": "s4",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_serrano": 4,
+     "p_guillermo": 13,
+     "p_xelo": 0,
+     "p_andres": 0,
+     "p_edgar": 0,
+     "p_nadia": 3,
+     "p_joan": 23,
+     "p_kc": 0,
+     "p_julio": 0,
+     "p_pancho": 10,
+     "p_carlos": 0,
+     "p_les": 0,
+     "p_miguel": 17,
+     "p_rene_lander": 0,
+     "p_meli": 2,
+     "p_billy": 6,
+     "p_andrea": 1,
+     "p_glenda": 0
+    },
+    "winnerId": "p_joan",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t1",
+   "seasonId": "s5",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 13,
+     "p_andres": 20,
+     "p_edgar": 10,
+     "p_andrea": 6,
+     "p_kc": 25,
+     "p_billy": 0,
+     "p_rene_lander": 3,
+     "p_joan": 2,
+     "p_glenda": 16,
+     "p_carlos": 0,
+     "p_kari": 0,
+     "p_pancho": 0,
+     "p_meli": 4
+    },
+    "winnerId": "p_kc",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t2",
+   "seasonId": "s5",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 19,
+     "p_andres": 5,
+     "p_edgar": 4,
+     "p_andrea": 0,
+     "p_miguel": 3,
+     "p_nadia": 7,
+     "p_kc": 0,
+     "p_billy": 0,
+     "p_xelo": 0,
+     "p_serrano": 13,
+     "p_joan": 0,
+     "p_kari": 10,
+     "p_les": 0
+    },
+    "winnerId": "p_guillermo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t3",
+   "seasonId": "s5",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 19,
+     "p_andres": 4,
+     "p_nadia": 0,
+     "p_kc": 5,
+     "p_billy": 0,
+     "p_xelo": 0,
+     "p_serrano": 0,
+     "p_joan": 0,
+     "p_julio": 13,
+     "p_carlos": 0,
+     "p_kari": 7,
+     "p_pancho": 3,
+     "p_meli": 10
+    },
+    "winnerId": "p_guillermo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t4",
+   "seasonId": "s5",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 0,
+     "p_miguel": 11,
+     "p_nadia": 0,
+     "p_kc": 16,
+     "p_billy": 4,
+     "p_xelo": 25,
+     "p_serrano": 13,
+     "p_rene_lander": 0,
+     "p_joan": 20,
+     "p_glenda": 0,
+     "p_julio": 2,
+     "p_carlos": 8,
+     "p_kari": 0,
+     "p_pancho": 0,
+     "p_meli": 0,
+     "p_les": 0
+    },
+    "winnerId": "p_xelo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t5",
+   "seasonId": "s5",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_andres": 2,
+     "p_edgar": 0,
+     "p_andrea": 8,
+     "p_miguel": 6,
+     "p_nadia": 4,
+     "p_kc": 1,
+     "p_billy": 20,
+     "p_xelo": 0,
+     "p_serrano": 0,
+     "p_julio": 0,
+     "p_carlos": 15,
+     "p_kari": 0,
+     "p_pancho": 12,
+     "p_harry": 0,
+     "p_meli": 0,
+     "p_les": 3
+    },
+    "winnerId": "p_billy",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t6",
+   "seasonId": "s5",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 0,
+     "p_andres": 15,
+     "p_edgar": 8,
+     "p_andrea": 0,
+     "p_miguel": 0,
+     "p_nadia": 11,
+     "p_kc": 0,
+     "p_billy": 0,
+     "p_xelo": 2,
+     "p_serrano": 5,
+     "p_joan": 0,
+     "p_julio": 6,
+     "p_carlos": 0,
+     "p_kari": 0,
+     "p_harry": 0,
+     "p_meli": 1,
+     "p_les": 3
+    },
+    "winnerId": "p_andres",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t7",
+   "seasonId": "s5",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 0,
+     "p_andres": 0,
+     "p_edgar": 7,
+     "p_andrea": 0,
+     "p_miguel": 5,
+     "p_nadia": 13,
+     "p_kc": 0,
+     "p_billy": 18,
+     "p_xelo": 0,
+     "p_serrano": 11,
+     "p_rene_lander": 2,
+     "p_joan": 4,
+     "p_glenda": 0,
+     "p_kari": 0,
+     "p_les": 0
+    },
+    "winnerId": "p_billy",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t8",
+   "seasonId": "s5",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 0,
+     "p_andres": 8,
+     "p_edgar": 10,
+     "p_andrea": 16,
+     "p_miguel": 26,
+     "p_kc": 13,
+     "p_billy": 2,
+     "p_xelo": 0,
+     "p_serrano": 6,
+     "p_rene_lander": 20,
+     "p_joan": 3,
+     "p_glenda": 0,
+     "p_julio": 0,
+     "p_kari": 0,
+     "p_pancho": 0,
+     "p_harry": 4,
+     "p_les": 0
+    },
+    "winnerId": "p_miguel",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t9",
+   "seasonId": "s5",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 2,
+     "p_andres": 16,
+     "p_edgar": 6,
+     "p_andrea": 8,
+     "p_miguel": 11,
+     "p_nadia": 20,
+     "p_kc": 0,
+     "p_billy": 0,
+     "p_xelo": 0,
+     "p_serrano": 0,
+     "p_joan": 3,
+     "p_julio": 0,
+     "p_kari": 4,
+     "p_les": 0
+    },
+    "winnerId": "p_nadia",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t10",
+   "seasonId": "s5",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 0,
+     "p_edgar": 18,
+     "p_andrea": 3,
+     "p_miguel": 5,
+     "p_nadia": 0,
+     "p_billy": 5,
+     "p_xelo": 10,
+     "p_serrano": 0,
+     "p_rene_lander": 13,
+     "p_joan": 0,
+     "p_glenda": 0,
+     "p_carlos": 0,
+     "p_kari": 2,
+     "p_pancho": 7,
+     "p_meli": 0
+    },
+    "winnerId": "p_edgar",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t11",
+   "seasonId": "s5",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 21,
+     "p_andres": 4,
+     "p_edgar": 15,
+     "p_andrea": 2,
+     "p_nadia": 11,
+     "p_kc": 0,
+     "p_billy": 3,
+     "p_xelo": 0,
+     "p_serrano": 0,
+     "p_rene_lander": 0,
+     "p_joan": 0,
+     "p_glenda": 8,
+     "p_julio": 6,
+     "p_carlos": 0,
+     "p_kari": 0,
+     "p_meli": 0,
+     "p_les": 1
+    },
+    "winnerId": "p_guillermo",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s5t12",
+   "seasonId": "s5",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_guillermo": 16,
+     "p_andres": 10,
+     "p_edgar": 4,
+     "p_andrea": 25,
+     "p_miguel": 0,
+     "p_nadia": 0,
+     "p_kc": 3,
+     "p_billy": 8,
+     "p_xelo": 21,
+     "p_serrano": 2,
+     "p_rene_lander": 0,
+     "p_glenda": 6,
+     "p_julio": 0,
+     "p_carlos": 0,
+     "p_pancho": 0,
+     "p_harry": 13,
+     "p_meli": 0
+    },
+    "winnerId": "p_andrea",
+    "kills": {}
+   }
+  },
+  {
+   "id": "s6t1",
+   "seasonId": "s6",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [
+    "2025-03-01"
+   ],
+   "finalDate": "2025-03-01",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 16,
+     "p_rene_lander": 13,
+     "p_miguel": 25,
+     "p_billy": 0,
+     "p_andres": 6,
+     "p_joan": 0,
+     "p_pancho": 8,
+     "p_julio": 4,
+     "p_kc": 10,
+     "p_guillermo": 20,
+     "p_xelo": 0,
+     "p_andrea": 0,
+     "p_carlos": 0,
+     "p_edgar": 0,
+     "p_kari": 3,
+     "p_les": 2,
+     "p_harry": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_miguel",
+    "kills": {},
+    "prizes": {
+     "p_rene_lander": 41250,
+     "p_meli": 78375,
+     "p_miguel": 156750,
+     "p_kc": 24750,
+     "p_guillermo": 111375
+    },
+    "players": 19,
+    "guests": 2
+   }
+  },
+  {
+   "id": "s6t2",
+   "seasonId": "s6",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [
+    "2025-03-29"
+   ],
+   "finalDate": "2025-03-29",
+   "venue": "Santiago",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 18,
+     "p_miguel": 0,
+     "p_billy": 0,
+     "p_andres": 0,
+     "p_joan": 0,
+     "p_pancho": 0,
+     "p_nadia": 2,
+     "p_kc": 1,
+     "p_serrano": 7,
+     "p_guillermo": 5,
+     "p_xelo": 13,
+     "p_andrea": 4,
+     "p_carlos": 3,
+     "p_edgar": 0,
+     "p_kari": 10
+    },
+    "winnerId": "p_meli",
+    "kills": {},
+    "prizes": {
+     "p_meli": 79800,
+     "p_xelo": 53200,
+     "p_kari": 36100,
+     "p_serrano": 20900
+    },
+    "players": 16,
+    "guests": 2
+   }
+  },
+  {
+   "id": "s6t3",
+   "seasonId": "s6",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [
+    "2025-04-18",
+    "2025-04-19"
+   ],
+   "finalDate": null,
+   "venue": "Colina",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 0,
+     "p_billy": 15,
+     "p_andres": 9,
+     "p_joan": 4,
+     "p_nadia": 20,
+     "p_kc": 0,
+     "p_serrano": 6,
+     "p_guillermo": 0,
+     "p_xelo": 0,
+     "p_andrea": 11,
+     "p_carlos": 0,
+     "p_edgar": 1,
+     "p_kari": 0
+    },
+    "winnerId": "p_nadia",
+    "kills": {},
+    "prizes": {
+     "p_billy": 84500,
+     "p_andres": 32500,
+     "p_andrea": 61750,
+     "p_nadia": 123500,
+     "p_serrano": 22750
+    },
+    "players": 18,
+    "guests": 6
+   }
+  },
+  {
+   "id": "s6t4",
+   "seasonId": "s6",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [
+    "2025-05-16"
+   ],
+   "finalDate": "2025-05-16",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [
+    "p_kc",
+    "p_rene_lander"
+   ],
+   "trainee": "Pancho y Glenda",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 4,
+     "p_rene_lander": 20,
+     "p_miguel": 13,
+     "p_billy": 25,
+     "p_andres": 3,
+     "p_joan": 10,
+     "p_nadia": 2,
+     "p_julio": 0,
+     "p_kc": 0,
+     "p_serrano": 0,
+     "p_guillermo": 7,
+     "p_xelo": 16,
+     "p_andrea": 0,
+     "p_carlos": 0,
+     "p_edgar": 0,
+     "p_kari": 8,
+     "p_les": 0,
+     "p_harry": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_billy",
+    "kills": {},
+    "prizes": {
+     "p_joan": 28800,
+     "p_xelo": 91200,
+     "p_billy": 182400,
+     "p_miguel": 48000,
+     "p_rene_lander": 129600
+    },
+    "players": 20,
+    "guests": 2
+   }
+  },
+  {
+   "id": "s6t5",
+   "seasonId": "s6",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [
+    "2025-06-19"
+   ],
+   "finalDate": "2025-06-19",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [
+    "p_nadia",
+    "p_kari"
+   ],
+   "trainee": "Julio y Meli",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_rene_lander": 0,
+     "p_miguel": 0,
+     "p_billy": 6,
+     "p_andres": 16,
+     "p_joan": 3,
+     "p_pancho": 0,
+     "p_nadia": 0,
+     "p_kc": 13,
+     "p_serrano": 0,
+     "p_guillermo": 0,
+     "p_xelo": 5,
+     "p_kari": 2,
+     "p_les": 9
+    },
+    "winnerId": "p_andres",
+    "kills": {},
+    "prizes": {
+     "p_billy": 16500,
+     "p_les": 28500,
+     "p_andres": 63000,
+     "p_kc": 42000
+    },
+    "players": 13,
+    "guests": 0
+   }
+  },
+  {
+   "id": "s6t6",
+   "seasonId": "s6",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [
+    "2025-07-12"
+   ],
+   "finalDate": "2025-07-12",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [
+    "p_billy",
+    "p_guillermo"
+   ],
+   "trainee": "Joan y Serrano",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 13,
+     "p_miguel": 7,
+     "p_billy": 0,
+     "p_andres": 4,
+     "p_joan": 18,
+     "p_pancho": 2,
+     "p_nadia": 5,
+     "p_julio": 0,
+     "p_kc": 0,
+     "p_serrano": 0,
+     "p_guillermo": 3,
+     "p_andrea": 11,
+     "p_carlos": 0,
+     "p_les": 0
+    },
+    "winnerId": "p_joan",
+    "kills": {},
+    "prizes": {
+     "p_joan": 103350,
+     "p_kc": 8500,
+     "p_meli": 71550,
+     "p_miguel": 37100,
+     "p_julio": 3400,
+     "p_andrea": 53000
+    },
+    "players": 16,
+    "guests": 2
+   }
+  },
+  {
+   "id": "s6t7",
+   "seasonId": "s6",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [
+    "2025-08-02"
+   ],
+   "finalDate": "2025-08-02",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [
+    "p_andres",
+    "p_andrea"
+   ],
+   "trainee": "Edgar y Les",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 0,
+     "p_rene_lander": 4,
+     "p_miguel": 0,
+     "p_billy": 2,
+     "p_andres": 6,
+     "p_joan": 1,
+     "p_pancho": 17,
+     "p_nadia": 13,
+     "p_julio": 0,
+     "p_kc": 0,
+     "p_serrano": 10,
+     "p_guillermo": 0,
+     "p_xelo": 0,
+     "p_andrea": 0,
+     "p_carlos": 22,
+     "p_edgar": 8,
+     "p_kari": 0,
+     "p_les": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_carlos",
+    "kills": {},
+    "prizes": {
+     "p_carlos": 102600,
+     "p_nadia": 48600,
+     "p_serrano": 29700,
+     "p_pancho": 70200,
+     "p_edgar": 18900
+    },
+    "players": 20,
+    "guests": 1
+   }
+  },
+  {
+   "id": "s6t8",
+   "seasonId": "s6",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [
+    "2025-08-23"
+   ],
+   "finalDate": "2025-08-23",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "finished",
+   "dealerIds": [
+    "p_xelo",
+    "p_kc"
+   ],
+   "trainee": "Migue y Carlos",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 8,
+     "p_rene_lander": 21,
+     "p_miguel": 13,
+     "p_billy": 0,
+     "p_andres": 0,
+     "p_julio": 25,
+     "p_serrano": 6,
+     "p_guillermo": 3,
+     "p_xelo": 0,
+     "p_andrea": 2,
+     "p_carlos": 4,
+     "p_edgar": 16,
+     "p_harry": 10
+    },
+    "winnerId": "p_julio",
+    "kills": {},
+    "prizes": {
+     "p_miguel": 43875,
+     "p_rene_lander": 91125,
+     "p_edgar": 70875,
+     "p_julio": 131625
+    },
+    "players": 14,
+    "guests": 1
+   }
+  },
+  {
+   "id": "s6t9",
+   "seasonId": "s6",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [
+    "2025-09-05",
+    "2025-09-06"
+   ],
+   "finalDate": null,
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [
+    "p_rene_lander",
+    "p_nadia"
+   ],
+   "trainee": "Harry y Pancho",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 4,
+     "p_miguel": 0,
+     "p_billy": 0,
+     "p_andres": 7,
+     "p_joan": 0,
+     "p_pancho": 19,
+     "p_nadia": 0,
+     "p_julio": 13,
+     "p_kc": 0,
+     "p_serrano": 5,
+     "p_guillermo": 0,
+     "p_andrea": 3,
+     "p_carlos": 0,
+     "p_edgar": 2,
+     "p_les": 10,
+     "p_harry": 0
+    },
+    "winnerId": "p_pancho",
+    "kills": {},
+    "prizes": {
+     "p_andres": 24200,
+     "p_serrano": 15400,
+     "p_julio": 57200,
+     "p_les": 39600,
+     "p_pancho": 83600
+    },
+    "players": 16,
+    "guests": 0
+   }
+  },
+  {
+   "id": "s6t10",
+   "seasonId": "s6",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [
+    "2025-10-03"
+   ],
+   "finalDate": "2025-10-03",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "finished",
+   "dealerIds": [
+    "p_rene_lander",
+    "p_kari"
+   ],
+   "trainee": "Glenda y Carlos",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": [],
+   "imported": {
+    "points": {
+     "p_meli": 2,
+     "p_rene_lander": 5,
+     "p_billy": 10,
+     "p_andres": 3,
+     "p_joan": 14,
+     "p_nadia": 4,
+     "p_julio": 0,
+     "p_kc": 18,
+     "p_serrano": 7,
+     "p_guillermo": 0,
+     "p_xelo": 0,
+     "p_carlos": 0,
+     "p_kari": 0,
+     "p_glenda": 0
+    },
+    "winnerId": "p_kc",
+    "kills": {},
+    "prizes": {
+     "p_billy": 45000,
+     "p_serrano": 31500,
+     "p_joan": 60750,
+     "p_kc": 87750
+    },
+    "players": 15,
+    "guests": 1
+   }
+  },
+  {
+   "id": "s6t11",
+   "seasonId": "s6",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_andres",
+    "p_rene_lander"
+   ],
+   "trainee": "Meli y Serrano",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s6t12",
+   "seasonId": "s6",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [],
+   "finalDate": null,
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_xelo",
+    "p_kc"
+   ],
+   "trainee": "Edgar y Calico",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t1",
+   "seasonId": "s7",
+   "number": 1,
+   "label": "Fecha 1",
+   "dateOptions": [
+    "2026-04-17"
+   ],
+   "finalDate": "2026-04-17",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_guillermo",
+    "p_billy"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t2",
+   "seasonId": "s7",
+   "number": 2,
+   "label": "Fecha 2",
+   "dateOptions": [
+    "2026-05-21"
+   ],
+   "finalDate": "2026-05-21",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "gs",
+   "status": "planned",
+   "dealerIds": [
+    "p_xelo",
+    "p_carlos"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t3",
+   "seasonId": "s7",
+   "number": 3,
+   "label": "Fecha 3",
+   "dateOptions": [
+    "2026-06-13"
+   ],
+   "finalDate": "2026-06-13",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_kc",
+    "p_andres"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t4",
+   "seasonId": "s7",
+   "number": 4,
+   "label": "Fecha 4",
+   "dateOptions": [
+    "2026-06-27"
+   ],
+   "finalDate": "2026-06-27",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_kari",
+    "p_nadia"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t5",
+   "seasonId": "s7",
+   "number": 5,
+   "label": "Fecha 5",
+   "dateOptions": [
+    "2026-07-25"
+   ],
+   "finalDate": "2026-07-25",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "gs",
+   "status": "planned",
+   "dealerIds": [
+    "p_serrano",
+    "p_guillermo"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t6",
+   "seasonId": "s7",
+   "number": 6,
+   "label": "Fecha 6",
+   "dateOptions": [
+    "2026-08-22"
+   ],
+   "finalDate": "2026-08-22",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_julio",
+    "p_carlos"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t7",
+   "seasonId": "s7",
+   "number": 7,
+   "label": "Fecha 7",
+   "dateOptions": [
+    "2026-09-11"
+   ],
+   "finalDate": "2026-09-11",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_rene_lander",
+    "p_edgar"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t8",
+   "seasonId": "s7",
+   "number": 8,
+   "label": "Fecha 8",
+   "dateOptions": [
+    "2026-10-03"
+   ],
+   "finalDate": "2026-10-03",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "planned",
+   "dealerIds": [
+    "p_billy",
+    "p_xelo"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t9",
+   "seasonId": "s7",
+   "number": 9,
+   "label": "Fecha 9",
+   "dateOptions": [
+    "2026-10-23"
+   ],
+   "finalDate": "2026-10-23",
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [
+    "p_andrea",
+    "p_andres"
+   ],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t10",
+   "seasonId": "s7",
+   "number": 10,
+   "label": "Fecha 10",
+   "dateOptions": [
+    "2026-11-13",
+    "2026-11-14"
+   ],
+   "finalDate": null,
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t11",
+   "seasonId": "s7",
+   "number": 11,
+   "label": "Fecha 11",
+   "dateOptions": [
+    "2026-12-04",
+    "2026-12-05"
+   ],
+   "finalDate": null,
+   "venue": "Santiago",
+   "modality": "freezeout",
+   "type": "normal",
+   "status": "planned",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  },
+  {
+   "id": "s7t12",
+   "seasonId": "s7",
+   "number": 12,
+   "label": "Fecha 12",
+   "dateOptions": [
+    "2027-01-16"
+   ],
+   "finalDate": "2027-01-16",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "gs",
+   "status": "planned",
+   "dealerIds": [],
+   "trainee": "",
+   "entries": [],
+   "tables": [],
+   "events": [],
+   "jackpots": [],
+   "bonus": []
+  }
+ ]
+}

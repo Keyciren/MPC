@@ -15,6 +15,8 @@ import {
   outEvents,
   entryState,
   prizes,
+  attendedIds,
+  history,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -164,6 +166,7 @@ export function tournamentView(id) {
   const head = `<div class="row between wrap"><div><h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>
     <p>${t.finalDate ? fmtDate(t.finalDate) : 'Fecha por definir'} ${t.venue ? '· ' + esc(t.venue) : ''} ${badges(t)}</p></div>${adminLink}</div>`;
 
+  if (t.status === 'finished' && t.imported) return { html: head + importedTournament(t) };
   if (t.status === 'finished')
     return {
       html: head + finishedTournament(t),
@@ -302,6 +305,49 @@ export function bindTabs(root) {
   });
 }
 
+export function importedTournament(t) {
+  const im = t.imported;
+  const cur = (t.config && t.config.currency) || '$';
+  const res = results(t, S.db.settings);
+  return `<div class="panel"><p class="muted small">Fecha cargada desde la planilla histórica del club: se conocen los puntos${im.prizes ? ', los premios' : ''} y el ganador, pero no el detalle de las eliminaciones.</p>
+    ${im.players ? `<p>${im.players} jugadores${im.guests ? ` (${im.guests} invitado${im.guests > 1 ? 's' : ''})` : ''}</p>` : ''}
+    <div class="table-wrap"><table class="tbl"><thead><tr><th></th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
+    <tbody>${res
+      .map(
+        (r) => `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position === 1 ? '🏆' : ''}</td><td>${esc(pname(r.playerId))}</td><td><b>${r.points}</b></td>${im.prizes ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
+      )
+      .join('')}</tbody></table></div></div>`;
+}
+
+// ---------- Historial ----------
+export function historyView() {
+  const h = history(S.db);
+  const medal = ['🥇', '🥈', '🥉'];
+  return {
+    html: `<h2>Historial del club</h2>
+    <div class="champions">${[...h.seasons]
+      .reverse()
+      .map(
+        (x) => `<a class="panel champ ${x.done ? '' : 'live'}" href="#/ranking?s=${x.season.id}">
+          <div class="row between"><h3>${esc(x.season.name)}</h3><span class="muted small">${x.done ? `${x.played} fechas` : `En curso · ${x.played} de ${x.total}`}</span></div>
+          <ol class="podium">${x.podium.map((r, i) => `<li><span>${x.done ? medal[i] : i + 1 + '°'} ${esc(r.player.nickname || r.player.name)}</span><b>${r.total}</b></li>`).join('')}</ol>
+          ${x.hitman ? `<p class="small muted">Hitman: ${esc(pname(x.hitman.playerId))} (${x.hitman.kills})</p>` : ''}
+        </a>`
+      )
+      .join('')}</div>
+    <div class="panel"><h3>Salón de la fama</h3>
+      <div class="table-wrap"><table class="tbl">
+      <thead><tr><th>Jugador</th><th>Títulos</th><th>Podios</th><th>Fechas ganadas</th><th>Mejor lugar</th><th>Temporadas</th><th>Puntos históricos</th></tr></thead>
+      <tbody>${h.hall
+        .map(
+          (f) => `<tr class="${f.titles ? 'gold' : ''}"><td>${esc(f.player.nickname || f.player.name)}</td><td>${f.titles ? '🏆'.repeat(f.titles) : ''}<span class="muted small">${f.titleSeasons.map((n) => ' ' + esc(n.replace('Temporada ', 'T'))).join(',')}</span></td><td>${f.podiums || ''}</td><td>${f.fechas || ''}</td><td>${f.best ? f.best + '°' : ''}</td><td>${f.seasons}</td><td>${Math.round(f.points)}</td></tr>`
+        )
+        .join('')}</tbody></table></div>
+      <p class="small muted">Títulos, podios y mejor lugar cuentan solo temporadas terminadas. Fechas ganadas y puntos incluyen la temporada en curso. En las temporadas cargadas desde la planilla, la fecha se le asigna a quien sumó más puntos.</p>
+    </div>`,
+  };
+}
+
 // ---------- Ranking ----------
 export function rankingView(q) {
   const season = seasonFromQuery(q);
@@ -353,7 +399,7 @@ export function statsView(q) {
     .sort((a, b) => b.s.played - a.s.played || a.p.name.localeCompare(b.p.name));
   const hit = [...st.players].filter((p) => p.kills).sort((a, b) => b.kills - a.kills).slice(0, 10);
   const jackpots = ts.flatMap((t) => (t.jackpots || []).map((j) => ({ t, j })));
-  const attended = (pid) => ts.map((t) => ((t.entries || []).some((e) => e.playerId === pid) ? '<span class="att yes">●</span>' : '<span class="att no">○</span>')).join('');
+  const attended = (pid) => ts.map((t) => (attendedIds(t).includes(pid) ? '<span class="att yes">●</span>' : '<span class="att no">○</span>')).join('');
 
   return {
     html: `
