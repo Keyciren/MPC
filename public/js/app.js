@@ -1,4 +1,4 @@
-import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG, checkRemote, adoptRemote, confirmDlg } from './core.js';
+import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG, checkRemote, adoptRemote, confirmDlg, login } from './core.js';
 import { historyView, homeView, calendarView, tournamentView, rankingView, pointsView, statsView, bindTabs, clockState, fmtMs } from './views-public.js';
 import { loginView, playersView, seasonAdminView, pointsAdminView, tournamentAdminView, settingsView, cobrosView } from './views-admin.js';
 
@@ -164,7 +164,22 @@ window.addEventListener('beforeunload', (e) => {
   if (isAdmin() && S.dirty) e.preventDefault();
 });
 
-loadDb()
+// Vincular dispositivo: el QR abre #/vincular?k=<token>. Se valida, se guarda y se borra de la dirección.
+async function linkFromQr() {
+  const m = /^#\/vincular\?k=([^&]+)/.exec(location.hash);
+  if (!m) return;
+  history.replaceState(null, '', location.pathname + '#/');
+  try {
+    await login(decodeURIComponent(m[1]));
+    toast('📱 Dispositivo vinculado como administrador');
+    location.hash = '#/admin/temporada';
+  } catch (e) {
+    toast('No se pudo vincular: ' + e.message, 'error');
+  }
+}
+
+linkFromQr()
+  .then(() => (S.db ? null : loadDb()))
   .then(render)
   .catch((e) => {
     main.innerHTML = `<div class="panel warn">No se pudo conectar con el servidor: ${esc(e.message)}</div>`;

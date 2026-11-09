@@ -334,3 +334,6 @@ textarea { width: 100%; resize: vertical; }
 .cobro-player ul { margin: 4px 0 0; padding-left: 18px; font-size: .92em; }
 .cobro-player li { padding: 2px 0; }
 .tbl.cobros td { vertical-align: middle; }
+.qr-box { background: #fff; color: #111; border-radius: 12px; padding: 14px; margin-top: 12px; max-width: 340px; text-align: center; }
+.qr-box svg { width: 100%; height: auto; display: block; }
+.warn-text { color: var(--accent); }

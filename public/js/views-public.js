@@ -406,7 +406,7 @@ export function rankingView(q) {
     html: `
     <div class="row between wrap"><h2>Tabla de posiciones</h2>${seasonPicker(season.id, '#/ranking')}</div>
     <div class="panel"><div class="table-wrap"><table class="tbl ranking">
-      <thead><tr><th>Pos</th><th class="sticky">Jugador</th><th>Total</th>${tournaments.map((t) => `<th title="${esc(t.label)}"><a href="#/torneo/${t.id}">T${t.number}</a>${t.type === 'gs' ? '<sup>GS</sup>' : ''}</th>`).join('')}</tr></thead>
+      <thead><tr><th>Pos</th><th class="sticky">Jugador</th><th>Total</th>${tournaments.map((t) => `<th title="${esc(t.label)}"><a href="#/torneo/${t.id}">F${t.number}</a>${t.type === 'gs' ? '<sup>GS</sup>' : ''}</th>`).join('')}</tr></thead>
       <tbody>${rows
         .map(
           (r) => `<tr><td>${r.position}</td><td class="sticky">${esc(r.player.nickname || r.player.name)}</td><td><b>${r.total}</b></td>${r.cells

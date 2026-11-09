@@ -1507,6 +1507,17 @@ export function cobrosView() {
   };
 }
 
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    if (document.querySelector(`script[src="${src}"]`)) return res();
+    const sc = document.createElement('script');
+    sc.src = src;
+    sc.onload = res;
+    sc.onerror = () => rej(new Error('No se pudo cargar ' + src));
+    document.head.appendChild(sc);
+  });
+}
+
 // ---------- Ajustes ----------
 export function settingsView() {
   return {
@@ -1520,6 +1531,13 @@ export function settingsView() {
       <p class="small muted">Versión local: v${S.db.version || 0}${S.dirty ? ' + cambios sin publicar' : ' (publicada)'}. Los correos de los jugadores no se publican: quedan solo en este navegador y en el respaldo.</p>
       <button class="btn" data-pub ${S.publishing ? 'disabled' : ''}>⬆ Publicar ahora</button>
     </div>
+    <div class="panel"><h3>📱 Vincular otro dispositivo</h3>
+      <p class="small">Genera un código QR y escanéalo con la cámara del celular o tablet. Ese dispositivo queda conectado como administrador: puede registrar eliminaciones, recompras, etc., y publicar. Los dispositivos vinculados se mantienen al día solos (revisan cada minuto si hay cambios publicados).</p>
+      ${S.dirty ? '<p class="small warn-text">⚠ Este navegador tiene cambios sin publicar: publícalos antes para que el otro dispositivo parta con todo.</p>' : ''}
+      <div class="row wrap"><button class="btn" data-qr>Generar código QR</button><button class="btn ghost hidden" data-qrhide>Ocultar</button></div>
+      <div data-qrbox class="qr-box hidden"></div>
+      <p class="small muted">Importante: el QR contiene tu llave de administrador. No lo compartas ni le tomes captura para enviarla; muéstralo solo a tus dispositivos. Si se filtra, borra el token en GitHub (Settings → Developer settings → Personal access tokens) y crea otro. Los correos de los jugadores no viajan en el QR: para tenerlos en el otro dispositivo usa el respaldo.</p>
+    </div>
     <div class="panel"><h3>Respaldo</h3>
       <p class="small">Descarga un archivo con todos los datos (incluye correos). Sirve para guardar una copia o para administrar desde otro computador o celular.</p>
       <div class="row wrap"><button class="btn ghost" data-backup>⬇ Descargar respaldo</button><button class="btn ghost" data-restore>⬆ Cargar respaldo</button></div>
@@ -1527,6 +1545,25 @@ export function settingsView() {
     bind(root) {
       bindFields(root, (db) => db.settings);
       root.querySelector('[data-pub]').onclick = () => publish();
+      const box = root.querySelector('[data-qrbox]');
+      const hide = root.querySelector('[data-qrhide]');
+      root.querySelector('[data-qr]').onclick = async () => {
+        await loadScript('vendor/qrcode.js');
+        const link = `${location.origin}${location.pathname}#/vincular?k=${encodeURIComponent(S.token)}`;
+        const qr = window.qrcode(0, 'M');
+        qr.addData(link);
+        qr.make();
+        box.innerHTML = `${qr.createSvgTag({ cellSize: 6, margin: 4, scalable: true })}<p class="small">Escanéalo con la cámara del otro dispositivo y abre el link. El código se oculta solo en 2 minutos.</p>`;
+        box.classList.remove('hidden');
+        hide.classList.remove('hidden');
+        clearTimeout(box._t);
+        box._t = setTimeout(() => hide.click(), 120000);
+      };
+      hide.onclick = () => {
+        box.innerHTML = '';
+        box.classList.add('hidden');
+        hide.classList.add('hidden');
+      };
       root.querySelector('[data-backup]').onclick = () => {
         const blob = new Blob([JSON.stringify(S.db, null, 1)], { type: 'application/json' });
         const a = document.createElement('a');
