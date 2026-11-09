@@ -30,10 +30,20 @@ Variables de entorno:
 Todos los datos quedan en `data/db.json` y las fotos en `data/uploads/`. Respalda esa carpeta (o usa
 **Ajustes → Descargar respaldo**).
 
-### Publicarla para el club
+### Publicarla para el club (Render)
 
-Sirve cualquier hosting de Node con **disco persistente** (Render, Railway, Fly.io, un VPS o un PC de la casa).
-Monta el disco en una ruta y apunta `DATA_DIR` a ella; si no, las fotos y los datos se pierden al reiniciar.
+El repositorio trae `render.yaml`, así que Render la configura casi sola:
+
+1. Crea una cuenta en <https://render.com> e ingresa con tu cuenta de GitHub.
+2. Ve a **New → Blueprint**, autoriza el acceso al repositorio `MPC` y elige la rama `main`.
+3. Render te pedirá el valor de `ADMIN_PASSWORD`: escribe la contraseña de administrador que quieras.
+4. Presiona **Apply**. En unos minutos tendrás un link como `https://mpc-poker-club.onrender.com` para compartir con el club.
+
+Cada vez que se suba un cambio a `main`, Render vuelve a publicar la app solo.
+
+> El plan **Starter** de Render (aprox. US$7 al mes) es necesario porque incluye el **disco persistente** donde quedan
+> los datos y las fotos. En el plan gratuito el disco se borra en cada reinicio y se perderían los torneos.
+> Alternativas: Railway o Fly.io con un volumen, o un PC/VPS propio con `npm start` (los datos quedan en `data/`).
 
 ## Qué hace
 
