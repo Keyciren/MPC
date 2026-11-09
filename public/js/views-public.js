@@ -23,6 +23,8 @@ import {
   defaultPrizeTable,
   seasonMoney,
   moneyHistory,
+  bountyHunter,
+  bountyPoints,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -228,6 +230,7 @@ function liveTournament(t) {
     <div class="panel center clock-panel">${clockHtml(t)}</div>
     <div class="panel">
       ${prizeCards(pz, cfg.currency)}
+      ${publicBountyLine(t)}
       <div class="stats-row">
         <div><b>${tot.alive}/${tot.n}</b><span>jugadores</span></div>
         <div><b>${money(tot.pool, cfg.currency)}</b><span>pozo</span></div>
@@ -240,7 +243,7 @@ function liveTournament(t) {
   <div class="panel"><h3>Mesas</h3><div class="tables">${(t.tables || [])
     .map(
       (tb) => `<div class="felt ${tb.final ? 'final' : ''}"><h4>${tb.final ? 'Mesa final' : 'Mesa ' + tb.number}${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4>
-        <ul class="seats">${tb.seats.map((p, i) => (alive.has(p) ? `<li><span class="seat">${i + 1}</span>${esc(pname(p))}${tb.dealer && tb.dealer.playerId === p ? ' <span class="pill dealer">Dealer</span>' : ''}</li>` : '')).join('')}</ul></div>`
+        <ul class="seats">${tb.seats.map((p, i) => (alive.has(p) ? `<li><span class="seat">${i + 1}</span>${esc(pname(p))}${tb.dealer && tb.dealer.playerId === p ? ' <span class="pill dealer">Dealer</span>' : ''}${t.bountyPlayerId === p ? ' <span class="pill bounty">🎯 Bounty</span>' : ''}</li>` : '')).join('')}</ul></div>`
     )
     .join('')}</div></div>
   <div class="panel"><h3>Eliminaciones</h3>${
@@ -248,6 +251,13 @@ function liveTournament(t) {
       ? `<ol class="busts">${outs.map((e, i) => `<li><b>${n - i}°</b> ${esc(pname(e.playerId))} ${e.byPlayerId ? `<span class="muted">por</span> ${esc(pname(e.byPlayerId))}` : ''} ${cardsHtml(e.playerCards, true)} ${e.byCards && e.byCards.length ? 'vs ' + cardsHtml(e.byCards, true) : ''}</li>`).reverse().join('')}</ol>`
       : '<p class="muted">Aún no hay eliminados.</p>'
   }</div></div>`;
+}
+
+function publicBountyLine(t) {
+  if (!t.bountyPlayerId) return '';
+  const h = bountyHunter(t);
+  const pts = bountyPoints(t);
+  return `<div class="bounty-box"><b>🎯 Bounty: ${esc(pname(t.bountyPlayerId))}</b> ${h ? `— lo eliminó <b>${esc(pname(h))}</b> (+${pts})` : `<span class="muted small">quien lo elimine suma +${pts} ${pts === 1 ? 'punto' : 'puntos'}</span>`}</div>`;
 }
 
 // Premios en grande: un recuadro por puesto premiado

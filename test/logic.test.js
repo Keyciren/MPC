@@ -299,3 +299,29 @@ test('ganancias y pérdidas de una fecha jugada en la app', async () => {
   assert.equal(totalNet, 20000 - 8 * 1000, 'lo que pierden unos lo ganan otros, salvo fee y jackpot');
   assert.equal(m.seasonMoney(db, 's', { t: { a: { e: 10000, f: 1000, p: 0, j: 0 } } }).rows.length, 1, 'los datos históricos tienen prioridad');
 });
+
+test('bounty: quien elimina al jugador asignado suma un punto extra', async () => {
+  const m = await import('../public/js/logic.js');
+  const season = { id: 's', config: m.defaultSeasonConfig() };
+  const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const mk = (events, extra = {}) => ({
+    id: 't', seasonId: 's', number: 1, label: 'Fecha 1', status: 'finished', modality: 'rebuy', type: 'normal',
+    config: m.buildConfig(season, 'rebuy', 'normal'), entries: ids.map((id) => ({ playerId: id, rebuys: 0 })),
+    events, bountyPlayerId: 'f', ...extra,
+  });
+  const outs = (pairs) => pairs.map(([p, by], i) => ({ id: 'e' + i, type: 'bust', playerId: p, byPlayerId: by, outcome: 'out' }));
+  const order = [['h', 'a'], ['g', 'a'], ['f', 'c'], ['e', 'a'], ['d', 'b'], ['c', 'a'], ['b', 'a']];
+  const t = mk(outs(order));
+  const db = { settings: { pointTables: m.defaultPointTables() }, players: ids.map((id) => ({ id, name: id.toUpperCase(), type: 'club' })), seasons: [season], tournaments: [t] };
+  assert.equal(m.bountyHunter(t), 'c');
+  const res = Object.fromEntries(m.results(t, db.settings).map((r) => [r.playerId, r]));
+  assert.equal(res.c.bonus, 1);
+  assert.equal(res.c.points, m.pointsFor(db.settings.pointTables, 'normal', 8, 3) + 1);
+  assert.match(m.buildSummary(db, t).find((b) => b.event && b.event.playerId === 'f').text, /C se cobra el bounty/);
+  // una recompra del bounty no cuenta, solo la eliminación definitiva
+  const t2 = mk([{ id: 'r', type: 'bust', playerId: 'f', byPlayerId: 'd', outcome: 'rebuy' }, ...outs(order)]);
+  assert.equal(m.bountyHunter(t2), 'c');
+  // si el bounty gana la fecha, nadie se lleva el punto
+  const t3 = mk(outs(order), { bountyPlayerId: 'a' });
+  assert.equal(m.bountyHunter(t3), null);
+});

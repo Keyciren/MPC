@@ -51,6 +51,8 @@ import {
   needsFinalTable,
   drawFinalTable,
   tableName,
+  bountyHunter,
+  bountyPoints,
   prizePercentsOf,
   defaultPrizeTable,
 } from './logic.js';
@@ -676,9 +678,10 @@ function tablesTab(t) {
         ? `<div class="panel"><h3>Mesas sorteadas</h3><div class="tables">${t.tables
             .map(
               (tb) => `<div class="felt"><h4>Mesa ${tb.number}${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4>
-            <ol>${tb.seats.map((p) => `<li>${esc(pname(p))}${isTableDealer(tb, p) ? ' <span class="pill dealer">Dealer</span>' : ''} ${moveSelect(t, p, tb.id)}</li>`).join('')}</ol></div>`
+            <ol>${tb.seats.map((p) => `<li>${esc(pname(p))}${isTableDealer(tb, p) ? ' <span class="pill dealer">Dealer</span>' : ''}${t.bountyPlayerId === p ? ' <span class="pill bounty">🎯 Bounty</span>' : ''} ${moveSelect(t, p, tb.id)}</li>`).join('')}</ol></div>`
             )
             .join('')}</div>
+            ${bountyEditor(t)}
             <div class="row mt"><button class="btn big" data-start>Iniciar torneo ▶</button></div></div>`
         : ''
     }`,
@@ -707,6 +710,7 @@ function tablesTab(t) {
           x.tables = buildTables(ids, x.config.perTable, (x.tableDealers || []).slice(0, Math.ceil(ids.length / x.config.perTable)));
         }, false);
       bindMoveSelects(root, t);
+      bindBounty(root, t);
       const st = root.querySelector('[data-start]');
       if (st)
         st.onclick = async () => {
@@ -721,6 +725,40 @@ function tablesTab(t) {
         };
     },
   };
+}
+
+// --- Bounty: se elige al armar las mesas (o se sortea); se puede cambiar mientras no lo eliminen
+function bountyEditor(t, compact = false) {
+  if (bountyHunter(t) || (t.bountyPlayerId && outEvents(t).some((e) => e.playerId === t.bountyPlayerId))) return bountyLine(t);
+  const alive = alivePlayers(t).map((e) => e.playerId);
+  const pts = bountyPoints(t);
+  return `<div class="bounty-box ${compact ? 'compact' : ''}"><b>🎯 Bounty</b> <span class="muted small">quien lo elimine suma ${pts === 1 ? '1 punto extra' : pts + ' puntos extra'} para el ranking</span>
+    <div class="row wrap"><select data-bounty>${playerOptions(alive, t.bountyPlayerId || '', '— Sin bounty —')}</select>
+    <button type="button" class="btn sm ghost" data-bountydraw>🎲 Sortear</button>
+    <label class="fld inline small"><span>Puntos</span><input type="number" min="0" class="w-xs" data-bountypts value="${pts}"></label></div></div>`;
+}
+function bountyLine(t) {
+  if (!t.bountyPlayerId) return '';
+  const h = bountyHunter(t);
+  const pts = bountyPoints(t);
+  return `<div class="bounty-box"><b>🎯 Bounty: ${esc(pname(t.bountyPlayerId))}</b> ${
+    h ? `— lo eliminó <b>${esc(pname(h))}</b> (+${pts} ${pts === 1 ? 'punto' : 'puntos'})` : outEvents(t).some((e) => e.playerId === t.bountyPlayerId) ? '— eliminado sin registrar quién lo eliminó' : `<span class="muted small">(vale +${pts} ${pts === 1 ? 'punto' : 'puntos'})</span>`
+  }</div>`;
+}
+function bindBounty(root, t) {
+  const sel = root.querySelector('[data-bounty]');
+  if (sel) sel.onchange = () => upT(t.id, (x) => (x.bountyPlayerId = sel.value || null), false);
+  const dr = root.querySelector('[data-bountydraw]');
+  if (dr)
+    dr.onclick = () => {
+      const alive = alivePlayers(t).map((e) => e.playerId);
+      if (!alive.length) return;
+      const pick = alive[Math.floor(Math.random() * alive.length)];
+      upT(t.id, (x) => (x.bountyPlayerId = pick), false);
+      toast(`🎯 El bounty es ${pname(pick)}`);
+    };
+  const pts = root.querySelector('[data-bountypts]');
+  if (pts) pts.onchange = () => upT(t.id, (x) => (x.bountyPoints = Math.max(0, Number(pts.value) || 0)));
 }
 
 function moveSelect(t, pid, fromId) {
@@ -785,7 +823,7 @@ function liveTab(t) {
     const tb = t.tables.find((x) => x.id === tbId);
     const seat = tb.seats.indexOf(pid) + 1;
     return `<li class="prow">
-      <span class="pn"><span class="seat">${seat}</span>${esc(pname(pid))}${isTableDealer(tb, pid) ? ' <span class="pill dealer">Dealer</span>' : ''}${e.rebuys ? ` <span class="pill">R${e.rebuys}</span>` : ''}${e.addon ? ' <span class="pill add">A</span>' : ''}${e.luckyLoser ? ' <span class="pill ll">LL</span>' : ''}</span>
+      <span class="pn"><span class="seat">${seat}</span>${esc(pname(pid))}${isTableDealer(tb, pid) ? ' <span class="pill dealer">Dealer</span>' : ''}${t.bountyPlayerId === pid ? ' <span class="pill bounty" title="Bounty">🎯</span>' : ''}${e.rebuys ? ` <span class="pill">R${e.rebuys}</span>` : ''}${e.addon ? ' <span class="pill add">A</span>' : ''}${e.luckyLoser ? ' <span class="pill ll">LL</span>' : ''}</span>
       ${
         running
           ? `<span class="pa">
@@ -808,6 +846,7 @@ function liveTab(t) {
     </div>
     <div class="panel">
       ${prizeCards(pz, c.currency)}
+      ${running ? bountyEditor(t, true) : bountyLine(t)}
       <div class="stats-row">
         <div><b>${tot.alive}/${tot.n}</b><span>jugadores</span></div>
         <div><b>${money(tot.pool, c.currency)}</b><span>pozo</span></div>
@@ -936,6 +975,7 @@ function liveTab(t) {
       const balB = root.querySelector('[data-balance]');
       if (balB) balB.onclick = () => upT(t.id, (x) => (x.tables = applyMoves(x.tables, bal.moves, bal.breakTable)), false);
       bindMoveSelects(root, t);
+      bindBounty(root, t);
       const jp = root.querySelector('[data-jackpot]');
       if (jp) jp.onclick = () => jackpotDialog(t.id);
       on(root, '[data-editjp]', 'click', (b) => jackpotDialog(t.id, Number(b.dataset.editjp)));

@@ -474,6 +474,8 @@ export function results(t, settings) {
   (t.bonus || []).forEach((b) => {
     bonus[b.playerId] = (bonus[b.playerId] || 0) + (Number(b.points) || 0);
   });
+  const bh = bountyHunter(t);
+  if (bh) bonus[bh] = (bonus[bh] || 0) + bountyPoints(t);
   return st
     .map((e) => ({
       playerId: e.playerId,
@@ -612,6 +614,17 @@ export function history(db) {
   return { seasons: list, hall };
 }
 
+// ---------- Bounty: jugador asignado al inicio; quien lo elimina gana un punto extra ----------
+export function bountyPoints(t) {
+  return Number(t.bountyPoints ?? 1) || 0;
+}
+// Quien eliminó definitivamente al bounty (null si sigue en juego, si nadie lo eliminó o si ganó la fecha)
+export function bountyHunter(t) {
+  if (!t.bountyPlayerId) return null;
+  const ev = outEvents(t).find((e) => e.playerId === t.bountyPlayerId);
+  return ev && ev.byPlayerId ? ev.byPlayerId : null;
+}
+
 // ---------- Dinero: ganancias y pérdidas ----------
 // fin: datos históricos por fecha { tid: { playerId: { e: entradas, f: fee, p: premio, j: jackpot } } }
 export function moneyByTournament(t, settings, fin = {}) {
@@ -737,6 +750,10 @@ export function bustParagraph(db, t, ev, ctx) {
     body += ` y ${name} ${goodbye}.`;
   }
   let txt = opener + body;
+  if (t.bountyPlayerId === ev.playerId && ev.outcome === 'out' && killer) {
+    const pts = bountyPoints(t);
+    txt = txt.replace(/\.$/, '') + `, de pasada ${killer} se cobra el bounty y suma ${pts === 1 ? 'un punto extra' : pts + ' puntos extra'} para el ranking.`;
+  }
   if (ev.notes) txt += ' ' + ev.notes.trim();
   return txt.replace(/\s+,/g, ',').replace(/\s{2,}/g, ' ');
 }
