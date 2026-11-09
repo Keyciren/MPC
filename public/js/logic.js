@@ -85,22 +85,29 @@ export function pointsFor(tables, type, nPlayers, position) {
 export function defaultSeasonConfig() {
   return {
     currency: '$',
-    fee: 5000,
+    fee: 1000,
     perTable: 9,
     prizePercents: [50, 30, 20],
     roundTo: 1000,
-    luckyLoserCost: 20000,
-    freezeout: { buyIn: 20000, startChips: 20000 },
+    luckyLoserCost: 10000,
+    freezeout: { buyIn: 10000, startChips: 30000, luckyLoserUntilLevel: 6 },
     rebuy: {
-      buyIn: 10000,
-      startChips: 10000,
-      rebuyCost: 10000,
-      rebuyChips: 10000,
-      addonCost: 10000,
-      addonChips: 15000,
-      rebuyUntilLevel: 6,
+      buyIn: 5000,
+      startChips: 20000,
+      rebuyCost: 5000,
+      rebuyChips: 20000,
+      addonCost: 5000,
+      addonChips: 20000,
+      rebuyUntilLevel: 8,
+      rebuyMaxPerPlayer: 10,
+      rebuyMaxTotal: 50,
     },
     levels: defaultLevels(),
+    // Estructuras de ciegas por modalidad y tipo de fecha: 'rebuy-normal', 'rebuy-gs', 'freezeout-normal', 'freezeout-gs'
+    // Montos distintos para Grand Slam (vacío = igual que la fecha normal)
+    rebuyGs: { buyIn: 7500, rebuyCost: 7500 },
+    freezeoutGs: {},
+    structures: { 'rebuy-normal': clubRebuyLevels(), 'rebuy-gs': clubRebuyLevels(), 'freezeout-normal': clubFreezeoutLevels() },
   };
 }
 
@@ -109,15 +116,77 @@ export function defaultLevels() {
   return bb.map((b) => ({ sb: b / 2, bb: b, ante: 0, minutes: 20 }));
 }
 
+// Estructura del club para rebuy (fecha normal), según Tournament Director
+export function clubRebuyLevels() {
+  const L = (minutes, sb, ante = 0) => ({ sb, bb: sb * 2, ante, minutes });
+  return [
+    L(15, 100), L(15, 200), L(15, 300), L(15, 400), L(15, 500), L(15, 600, 1200), L(20, 800, 1600), L(20, 1000, 2000),
+    { break: true, minutes: 5 },
+    L(20, 1200, 2400), L(20, 1500, 3000), L(20, 2000, 4000), L(23, 3000, 6000), L(23, 4000, 8000), L(23, 5000, 10000),
+    L(23, 7000, 14000), L(23, 10000, 20000), L(23, 15000, 30000), L(20, 20000, 40000), L(20, 30000, 60000), L(20, 40000, 80000),
+  ];
+}
+
+// Estructura del club para freezeout (fecha normal), según Tournament Director
+export function clubFreezeoutLevels() {
+  const L = (minutes, sb, ante = 0) => ({ sb, bb: sb * 2, ante, minutes });
+  return [
+    L(20, 100), L(20, 200), L(20, 300), L(20, 400), L(20, 500), L(20, 600), L(20, 800, 1600), L(20, 1000, 2000), L(20, 1200, 2400),
+    L(20, 1500, 3000), L(20, 1800, 3600), L(25, 2000, 4000), L(25, 3000, 6000), L(25, 4000, 8000), L(25, 5000, 10000), L(25, 8000, 16000),
+    L(25, 10000, 20000), L(20, 15000, 30000), L(20, 20000, 40000), L(20, 30000, 60000), L(20, 40000, 80000),
+  ];
+}
+
+export const STRUCTURE_KEYS = [
+  { key: 'rebuy-normal', label: 'Rebuy — fecha normal' },
+  { key: 'rebuy-gs', label: 'Rebuy — Grand Slam' },
+  { key: 'freezeout-normal', label: 'Freezeout — fecha normal' },
+  { key: 'freezeout-gs', label: 'Freezeout — Grand Slam' },
+];
+
+// Estructura que corresponde a una fecha: la de su modalidad y tipo; si no existe, la normal de esa modalidad; si no, la general.
+export function levelsFor(sc, modality, type) {
+  const st = (sc && sc.structures) || {};
+  const pickL = (k) => (st[k] && st[k].length ? st[k] : null);
+  const lv = pickL(`${modality}-${type || 'normal'}`) || pickL(`${modality}-normal`) || (sc && sc.levels) || defaultLevels();
+  return JSON.parse(JSON.stringify(lv));
+}
+
+// Número de nivel (ronda) sin contar descansos; null si el índice es un descanso
+export function roundNumber(levels, idx) {
+  if (!levels[idx] || levels[idx].break) return null;
+  return levels.slice(0, idx + 1).filter((l) => !l.break).length;
+}
+
+// ¿Se puede recomprar en este punto del reloj? (hasta el final del nivel indicado, sin contar el descanso posterior)
+export function rebuyOpenAt(cfg, modality, levelIdx) {
+  if (modality !== 'rebuy') return false;
+  const r = roundNumber(cfg.levels || [], levelIdx);
+  return r != null && r <= (Number(cfg.rebuyUntilLevel) || 0);
+}
+
+// ¿Se puede entrar como lucky loser en este punto? (freezeout, hasta el nivel indicado; 0 = sin límite)
+export function luckyLoserOpenAt(cfg, modality, levelIdx) {
+  if (modality !== 'freezeout' || !cfg.luckyLoserAllowed) return false;
+  const until = Number(cfg.luckyLoserUntilLevel) || 0;
+  const r = roundNumber(cfg.levels || [], levelIdx);
+  return !until || (r != null && r <= until);
+}
+
 // Configuración efectiva de una fecha (snapshot si ya comenzó, si no la de la temporada)
 export function tournamentConfig(t, season) {
   if (t.config) return t.config;
-  return buildConfig(season, t.modality);
+  return buildConfig(season, t.modality, t.type);
 }
 
-export function buildConfig(season, modality) {
+export function buildConfig(season, modality, type = 'normal') {
   const sc = (season && season.config) || defaultSeasonConfig();
-  const m = modality === 'rebuy' ? sc.rebuy : sc.freezeout;
+  const base = (modality === 'rebuy' ? sc.rebuy : sc.freezeout) || {};
+  const gs = type === 'gs' ? sc[modality === 'rebuy' ? 'rebuyGs' : 'freezeoutGs'] || {} : {};
+  const m = { ...base };
+  Object.entries(gs).forEach(([k, v]) => {
+    if (v !== '' && v != null && Number(v) > 0) m[k] = v;
+  });
   return {
     currency: sc.currency,
     fee: Number(sc.fee) || 0,
@@ -132,7 +201,10 @@ export function buildConfig(season, modality) {
     addonCost: Number(m.addonCost) || 0,
     addonChips: Number(m.addonChips) || 0,
     rebuyUntilLevel: Number(m.rebuyUntilLevel) || 0,
-    levels: JSON.parse(JSON.stringify(sc.levels || defaultLevels())),
+    rebuyMaxPerPlayer: Number(m.rebuyMaxPerPlayer) || 0,
+    rebuyMaxTotal: Number(m.rebuyMaxTotal) || 0,
+    luckyLoserUntilLevel: Number(m.luckyLoserUntilLevel) || 0,
+    levels: levelsFor(sc, modality, type),
   };
 }
 
@@ -547,7 +619,7 @@ export function buildSummary(db, t) {
     const p = db.players.find((x) => x.id === e.playerId);
     return p && p.type === 'invitado';
   }).length;
-  const cfg = t.config || buildConfig(season, t.modality);
+  const cfg = t.config || buildConfig(season, t.modality, t.type);
   const outs = outEvents(t);
   const winner = st.find((e) => e.position === 1);
   const winnerName = winner ? playerName(db, winner.playerId) : null;

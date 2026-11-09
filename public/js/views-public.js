@@ -17,6 +17,8 @@ import {
   prizes,
   attendedIds,
   history,
+  roundNumber,
+  rebuyOpenAt,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -185,7 +187,9 @@ export function clockState(t) {
   const lv = cfg.levels[c.level] || cfg.levels[cfg.levels.length - 1];
   let remaining = c.remaining ?? lv.minutes * 60000;
   if (c.running && c.endsAt) remaining = Math.max(0, c.endsAt - Date.now());
-  return { level: c.level, lv, next: cfg.levels[c.level + 1], remaining, running: c.running };
+  const next = cfg.levels.slice(c.level + 1).find((l) => !l.break);
+  const nextIsBreak = !!(cfg.levels[c.level + 1] && cfg.levels[c.level + 1].break);
+  return { level: c.level, round: roundNumber(cfg.levels, c.level), lv, next, nextIsBreak, remaining, running: c.running };
 }
 
 export function fmtMs(ms) {
@@ -193,16 +197,18 @@ export function fmtMs(ms) {
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 
+const n = (v) => Number(v || 0).toLocaleString('es-CL');
+
 export function clockHtml(t) {
   const cfg = t.config;
   const cs = clockState(t);
-  const rebuyOpen = t.modality === 'rebuy' && cs.level + 1 <= cfg.rebuyUntilLevel;
-  return `<div class="clock" data-clock>
-    <div class="lvl">Nivel ${cs.level + 1}</div>
+  const rebuyOpen = rebuyOpenAt(cfg, t.modality, cs.level);
+  return `<div class="clock ${cs.lv.break ? 'on-break' : ''}" data-clock>
+    <div class="lvl">${cs.lv.break ? '☕ Descanso' : `Nivel ${cs.round}`}</div>
     <div class="time" data-time>${fmtMs(cs.remaining)}</div>
-    <div class="blinds">${cs.lv.sb.toLocaleString('es-CL')} / ${cs.lv.bb.toLocaleString('es-CL')}${cs.lv.ante ? ` <small>ante ${cs.lv.ante.toLocaleString('es-CL')}</small>` : ''}</div>
-    ${cs.next ? `<div class="nextlvl">Próximo: ${cs.next.sb.toLocaleString('es-CL')} / ${cs.next.bb.toLocaleString('es-CL')}</div>` : ''}
-    ${t.modality === 'rebuy' ? `<div class="rebuy-flag ${rebuyOpen ? 'open' : 'closed'}">${rebuyOpen ? `Recompra abierta hasta nivel ${cfg.rebuyUntilLevel}` : 'Periodo de recompra cerrado'}</div>` : ''}
+    ${cs.lv.break ? '<div class="blinds">Descanso</div>' : `<div class="blinds">${n(cs.lv.sb)} / ${n(cs.lv.bb)}${cs.lv.ante ? ` <small>ante ${n(cs.lv.ante)}</small>` : ''}</div>`}
+    ${cs.nextIsBreak ? `<div class="nextlvl">Luego: descanso de ${cfg.levels[cs.level + 1].minutes} min</div>` : cs.next ? `<div class="nextlvl">Próximo: ${n(cs.next.sb)} / ${n(cs.next.bb)}${cs.next.ante ? ` · ante ${n(cs.next.ante)}` : ''}</div>` : ''}
+    ${t.modality === 'rebuy' ? `<div class="rebuy-flag ${rebuyOpen ? 'open' : 'closed'}">${rebuyOpen ? `Recompra abierta hasta el nivel ${cfg.rebuyUntilLevel}` : 'Periodo de recompra cerrado'}</div>` : ''}
   </div>`;
 }
 

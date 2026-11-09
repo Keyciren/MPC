@@ -1,5 +1,5 @@
 {
- "version": 4,
+ "version": 5,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1105,19 +1105,22 @@
      20
     ],
     "roundTo": 1000,
-    "luckyLoserCost": 20000,
+    "luckyLoserCost": 10000,
     "freezeout": {
-     "buyIn": 20000,
-     "startChips": 20000
+     "buyIn": 10000,
+     "startChips": 30000,
+     "luckyLoserUntilLevel": 6
     },
     "rebuy": {
-     "buyIn": 10000,
-     "startChips": 10000,
-     "rebuyCost": 10000,
-     "rebuyChips": 10000,
-     "addonCost": 10000,
-     "addonChips": 15000,
-     "rebuyUntilLevel": 6
+     "buyIn": 5000,
+     "startChips": 20000,
+     "rebuyCost": 5000,
+     "rebuyChips": 20000,
+     "addonCost": 5000,
+     "addonChips": 20000,
+     "rebuyUntilLevel": 8,
+     "rebuyMaxPerPlayer": 10,
+     "rebuyMaxTotal": 50
     },
     "levels": [
      {
@@ -1222,7 +1225,394 @@
       "ante": 0,
       "minutes": 20
      }
-    ]
+    ],
+    "structures": {
+     "rebuy-normal": [
+      {
+       "sb": 100,
+       "bb": 200,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 200,
+       "bb": 400,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 300,
+       "bb": 600,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 400,
+       "bb": 800,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 500,
+       "bb": 1000,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 600,
+       "bb": 1200,
+       "ante": 1200,
+       "minutes": 15
+      },
+      {
+       "sb": 800,
+       "bb": 1600,
+       "ante": 1600,
+       "minutes": 20
+      },
+      {
+       "sb": 1000,
+       "bb": 2000,
+       "ante": 2000,
+       "minutes": 20
+      },
+      {
+       "break": true,
+       "minutes": 5
+      },
+      {
+       "sb": 1200,
+       "bb": 2400,
+       "ante": 2400,
+       "minutes": 20
+      },
+      {
+       "sb": 1500,
+       "bb": 3000,
+       "ante": 3000,
+       "minutes": 20
+      },
+      {
+       "sb": 2000,
+       "bb": 4000,
+       "ante": 4000,
+       "minutes": 20
+      },
+      {
+       "sb": 3000,
+       "bb": 6000,
+       "ante": 6000,
+       "minutes": 23
+      },
+      {
+       "sb": 4000,
+       "bb": 8000,
+       "ante": 8000,
+       "minutes": 23
+      },
+      {
+       "sb": 5000,
+       "bb": 10000,
+       "ante": 10000,
+       "minutes": 23
+      },
+      {
+       "sb": 7000,
+       "bb": 14000,
+       "ante": 14000,
+       "minutes": 23
+      },
+      {
+       "sb": 10000,
+       "bb": 20000,
+       "ante": 20000,
+       "minutes": 23
+      },
+      {
+       "sb": 15000,
+       "bb": 30000,
+       "ante": 30000,
+       "minutes": 23
+      },
+      {
+       "sb": 20000,
+       "bb": 40000,
+       "ante": 40000,
+       "minutes": 20
+      },
+      {
+       "sb": 30000,
+       "bb": 60000,
+       "ante": 60000,
+       "minutes": 20
+      },
+      {
+       "sb": 40000,
+       "bb": 80000,
+       "ante": 80000,
+       "minutes": 20
+      }
+     ],
+     "rebuy-gs": [
+      {
+       "sb": 100,
+       "bb": 200,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 200,
+       "bb": 400,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 300,
+       "bb": 600,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 400,
+       "bb": 800,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 500,
+       "bb": 1000,
+       "ante": 0,
+       "minutes": 15
+      },
+      {
+       "sb": 600,
+       "bb": 1200,
+       "ante": 1200,
+       "minutes": 15
+      },
+      {
+       "sb": 800,
+       "bb": 1600,
+       "ante": 1600,
+       "minutes": 20
+      },
+      {
+       "sb": 1000,
+       "bb": 2000,
+       "ante": 2000,
+       "minutes": 20
+      },
+      {
+       "break": true,
+       "minutes": 5
+      },
+      {
+       "sb": 1200,
+       "bb": 2400,
+       "ante": 2400,
+       "minutes": 20
+      },
+      {
+       "sb": 1500,
+       "bb": 3000,
+       "ante": 3000,
+       "minutes": 20
+      },
+      {
+       "sb": 2000,
+       "bb": 4000,
+       "ante": 4000,
+       "minutes": 20
+      },
+      {
+       "sb": 3000,
+       "bb": 6000,
+       "ante": 6000,
+       "minutes": 23
+      },
+      {
+       "sb": 4000,
+       "bb": 8000,
+       "ante": 8000,
+       "minutes": 23
+      },
+      {
+       "sb": 5000,
+       "bb": 10000,
+       "ante": 10000,
+       "minutes": 23
+      },
+      {
+       "sb": 7000,
+       "bb": 14000,
+       "ante": 14000,
+       "minutes": 23
+      },
+      {
+       "sb": 10000,
+       "bb": 20000,
+       "ante": 20000,
+       "minutes": 23
+      },
+      {
+       "sb": 15000,
+       "bb": 30000,
+       "ante": 30000,
+       "minutes": 23
+      },
+      {
+       "sb": 20000,
+       "bb": 40000,
+       "ante": 40000,
+       "minutes": 20
+      },
+      {
+       "sb": 30000,
+       "bb": 60000,
+       "ante": 60000,
+       "minutes": 20
+      },
+      {
+       "sb": 40000,
+       "bb": 80000,
+       "ante": 80000,
+       "minutes": 20
+      }
+     ],
+     "freezeout-normal": [
+      {
+       "sb": 100,
+       "bb": 200,
+       "ante": 0,
+       "minutes": 20
+      },
+      {
+       "sb": 200,
+       "bb": 400,
+       "ante": 0,
+       "minutes": 20
+      },
+      {
+       "sb": 300,
+       "bb": 600,
+       "ante": 0,
+       "minutes": 20
+      },
+      {
+       "sb": 400,
+       "bb": 800,
+       "ante": 0,
+       "minutes": 20
+      },
+      {
+       "sb": 500,
+       "bb": 1000,
+       "ante": 0,
+       "minutes": 20
+      },
+      {
+       "sb": 600,
+       "bb": 1200,
+       "ante": 0,
+       "minutes": 20
+      },
+      {
+       "sb": 800,
+       "bb": 1600,
+       "ante": 1600,
+       "minutes": 20
+      },
+      {
+       "sb": 1000,
+       "bb": 2000,
+       "ante": 2000,
+       "minutes": 20
+      },
+      {
+       "sb": 1200,
+       "bb": 2400,
+       "ante": 2400,
+       "minutes": 20
+      },
+      {
+       "sb": 1500,
+       "bb": 3000,
+       "ante": 3000,
+       "minutes": 20
+      },
+      {
+       "sb": 1800,
+       "bb": 3600,
+       "ante": 3600,
+       "minutes": 20
+      },
+      {
+       "sb": 2000,
+       "bb": 4000,
+       "ante": 4000,
+       "minutes": 25
+      },
+      {
+       "sb": 3000,
+       "bb": 6000,
+       "ante": 6000,
+       "minutes": 25
+      },
+      {
+       "sb": 4000,
+       "bb": 8000,
+       "ante": 8000,
+       "minutes": 25
+      },
+      {
+       "sb": 5000,
+       "bb": 10000,
+       "ante": 10000,
+       "minutes": 25
+      },
+      {
+       "sb": 8000,
+       "bb": 16000,
+       "ante": 16000,
+       "minutes": 25
+      },
+      {
+       "sb": 10000,
+       "bb": 20000,
+       "ante": 20000,
+       "minutes": 25
+      },
+      {
+       "sb": 15000,
+       "bb": 30000,
+       "ante": 30000,
+       "minutes": 20
+      },
+      {
+       "sb": 20000,
+       "bb": 40000,
+       "ante": 40000,
+       "minutes": 20
+      },
+      {
+       "sb": 30000,
+       "bb": 60000,
+       "ante": 60000,
+       "minutes": 20
+      },
+      {
+       "sb": 40000,
+       "bb": 80000,
+       "ante": 80000,
+       "minutes": 20
+      }
+     ]
+    },
+    "rebuyGs": {
+     "buyIn": 7500,
+     "rebuyCost": 7500
+    },
+    "freezeoutGs": {}
    }
   }
  ],

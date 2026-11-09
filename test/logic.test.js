@@ -103,7 +103,7 @@ test('orden de salida, puntos, premios y ranking', () => {
   assert.deepEqual(pos, { p0: 1, p1: 2, p2: 3, p3: 4, p4: 5 });
   const tot = totals(t, t.config);
   assert.equal(tot.rebuys, 2);
-  assert.equal(tot.pool, 5 * 10000 + 2 * 10000 + 5 * 10000);
+  assert.equal(tot.pool, 5 * 5000 + 2 * 5000 + 5 * 5000);
   const res = results(t, db.settings);
   assert.equal(res[0].playerId, 'p0');
   assert.equal(res[0].points, 9);
@@ -137,4 +137,40 @@ test('base inicial y copia pública sin correos', async () => {
   const pub = publicCopy(db);
   assert.equal(pub.players[0].email, undefined);
   assert.equal(db.players[0].email, 'ana@x.cl');
+});
+
+test('estructuras por modalidad y tipo, descansos y periodo de recompra', async () => {
+  const m = await import('../public/js/logic.js');
+  const sc = m.defaultSeasonConfig();
+  const rb = m.levelsFor(sc, 'rebuy', 'normal');
+  assert.equal(rb.length, 21);
+  assert.ok(rb[8].break, 'descanso después del nivel 8');
+  assert.equal(m.roundNumber(rb, 8), null);
+  assert.equal(m.roundNumber(rb, 9), 9);
+  assert.equal(rb[5].ante, 1200);
+  assert.equal(m.levelsFor(sc, 'rebuy', 'gs').length, 21, 'GS sin estructura propia usa la normal');
+  const fz = m.levelsFor(sc, 'freezeout', 'normal');
+  assert.equal(fz.length, 21);
+  assert.equal(fz[20].bb, 80000);
+  const cfg = m.buildConfig({ config: sc }, 'rebuy', 'normal');
+  assert.equal(cfg.rebuyUntilLevel, 8);
+  assert.equal(m.rebuyOpenAt(cfg, 'rebuy', 7), true, 'nivel 8 abierto');
+  assert.equal(m.rebuyOpenAt(cfg, 'rebuy', 8), false, 'en el descanso ya no');
+  const fcfg = { ...m.buildConfig({ config: sc }, 'freezeout', 'normal'), luckyLoserAllowed: true };
+  assert.equal(fcfg.buyIn, 10000);
+  assert.equal(m.luckyLoserOpenAt(fcfg, 'freezeout', 5), true);
+  assert.equal(m.luckyLoserOpenAt(fcfg, 'freezeout', 6), false);
+});
+
+test('Grand Slam rebuy: misma estructura, buy-in y recompra de $7.500', async () => {
+  const m = await import('../public/js/logic.js');
+  const sc = m.defaultSeasonConfig();
+  const gs = m.buildConfig({ config: sc }, 'rebuy', 'gs');
+  const nr = m.buildConfig({ config: sc }, 'rebuy', 'normal');
+  assert.equal(gs.buyIn, 7500);
+  assert.equal(gs.rebuyCost, 7500);
+  assert.equal(gs.startChips, 20000);
+  assert.equal(gs.rebuyUntilLevel, 8);
+  assert.equal(nr.buyIn, 5000);
+  assert.deepEqual(gs.levels, nr.levels);
 });

@@ -42,6 +42,10 @@ import {
   results,
   defaultLevels,
   newTournament,
+  STRUCTURE_KEYS,
+  levelsFor,
+  rebuyOpenAt,
+  luckyLoserOpenAt,
 } from './logic.js';
 import { importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
@@ -88,7 +92,7 @@ function bindFields(root, getTarget, after) {
 }
 
 function levelsToText(levels) {
-  return (levels || []).map((l) => `${l.sb}/${l.bb}/${l.ante || 0}/${l.minutes}`).join('\n');
+  return (levels || []).map((l) => (l.break ? `descanso/${l.minutes}` : `${l.sb}/${l.bb}/${l.ante || 0}/${l.minutes}`)).join('\n');
 }
 function textToLevels(txt) {
   return txt
@@ -96,10 +100,12 @@ function textToLevels(txt) {
     .map((l) => l.trim())
     .filter(Boolean)
     .map((l) => {
+      if (/^(d|descanso|break|pausa)/i.test(l)) return { break: true, minutes: Number((l.match(/\d+/) || [10])[0]) };
       const [sb, bb, ante, minutes] = l.split(/[\/\s,;]+/).map(Number);
       return { sb: sb || 0, bb: bb || sb * 2 || 0, ante: ante || 0, minutes: minutes || 20 };
     });
 }
+const LEVELS_HELP = 'Una línea por nivel: ciega chica / ciega grande / ante / minutos (ej: 600/1200/1200/15). Para un descanso escribe: descanso/5';
 
 // ---------- Login ----------
 export function loginView() {
@@ -250,6 +256,7 @@ export function seasonAdminView(q) {
         ${field('Buy-in', 'config.freezeout.buyIn', c.freezeout.buyIn)}
         ${field('Fichas iniciales', 'config.freezeout.startChips', c.freezeout.startChips)}
         ${field('Valor lucky loser', 'config.luckyLoserCost', c.luckyLoserCost)}
+        ${field('Lucky loser hasta el nivel', 'config.freezeout.luckyLoserUntilLevel', c.freezeout.luckyLoserUntilLevel, { hint: '0 = sin límite' })}
       </div>
       <h4>Rebuy</h4>
       <div class="form-grid">
@@ -260,17 +267,35 @@ export function seasonAdminView(q) {
         ${field('Valor add on', 'config.rebuy.addonCost', c.rebuy.addonCost)}
         ${field('Fichas add on', 'config.rebuy.addonChips', c.rebuy.addonChips)}
         ${field('Recompra hasta el nivel', 'config.rebuy.rebuyUntilLevel', c.rebuy.rebuyUntilLevel)}
+        ${field('Máx. recompras por jugador', 'config.rebuy.rebuyMaxPerPlayer', c.rebuy.rebuyMaxPerPlayer, { hint: '0 = sin límite' })}
+        ${field('Máx. recompras en total', 'config.rebuy.rebuyMaxTotal', c.rebuy.rebuyMaxTotal, { hint: '0 = sin límite' })}
       </div>
-      <h4>Estructura de ciegas</h4>
-      <p class="muted small">Una línea por nivel: ciega chica / ciega grande / ante / minutos.</p>
-      <textarea data-levels rows="8" class="mono">${esc(levelsToText(c.levels))}</textarea>
+      <h4>Grand Slam (rebuy)</h4>
+      <p class="muted small">Solo lo que cambia respecto a una fecha rebuy normal. En 0 = igual que la normal.</p>
+      <div class="form-grid">
+        ${field('Buy-in', 'config.rebuyGs.buyIn', (c.rebuyGs || {}).buyIn)}
+        ${field('Fichas iniciales', 'config.rebuyGs.startChips', (c.rebuyGs || {}).startChips)}
+        ${field('Valor recompra', 'config.rebuyGs.rebuyCost', (c.rebuyGs || {}).rebuyCost)}
+        ${field('Fichas por recompra', 'config.rebuyGs.rebuyChips', (c.rebuyGs || {}).rebuyChips)}
+        ${field('Valor add on', 'config.rebuyGs.addonCost', (c.rebuyGs || {}).addonCost)}
+        ${field('Fichas add on', 'config.rebuyGs.addonChips', (c.rebuyGs || {}).addonChips)}
+      </div>
+      <h4>Estructuras de ciegas</h4>
+      <p class="muted small">${LEVELS_HELP}. Si la estructura de Grand Slam está vacía, se usa la normal de esa modalidad.</p>
+      <div class="structs">${STRUCTURE_KEYS.map(
+        (k) => `<label class="fld"><span>${k.label}</span><textarea data-struct="${k.key}" rows="10" class="mono" placeholder="${k.key.endsWith('-gs') ? 'Vacío: usa la estructura normal' : ''}">${esc(levelsToText((c.structures || {})[k.key] || (k.key === 'rebuy-normal' || k.key === 'freezeout-normal' ? c.levels : [])))}</textarea></label>`
+      ).join('')}</div>
     </div>`,
     bind(root) {
       bindFields(root, (db) => db.seasons.find((s) => s.id === season.id));
-      root.querySelector('[data-levels]').onchange = (e) =>
+      on(root, '[data-struct]', 'change', (el) =>
         mutate((db) => {
-          db.seasons.find((s) => s.id === season.id).config.levels = textToLevels(e.target.value);
-        }).catch(() => {});
+          const cf = db.seasons.find((s) => s.id === season.id).config;
+          cf.structures = cf.structures || {};
+          const lv = textToLevels(el.value);
+          if (lv.length) cf.structures[el.dataset.struct] = lv;
+          else delete cf.structures[el.dataset.struct];
+        }).catch(() => {}));
       const cur = root.querySelector('[data-current]');
       if (cur) cur.onclick = () => mutate((db) => (db.settings.currentSeasonId = season.id)).catch(() => {});
       root.querySelector('[data-newseason]').onclick = () => newSeason();
@@ -296,7 +321,7 @@ export function seasonAdminView(q) {
           t[el.dataset.tf] = el.value;
           if (el.dataset.tf === 'modality' && t.config) {
             const s = S.db.seasons.find((x) => x.id === t.seasonId);
-            t.config = { ...buildConfig(s, el.value), perTable: t.config.perTable };
+            t.config = { ...buildConfig(s, el.value, t.type), perTable: t.config.perTable };
           }
         })));
         tr.querySelector('[data-adddate]').onchange = (e) => {
@@ -471,7 +496,7 @@ function setupTab(t, season) {
           upT(t.id, (x, db) => {
             x.modality = root.querySelector('[data-mod]').value;
             x.type = root.querySelector('[data-type]').value;
-            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality), luckyLoserAllowed: true };
+            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), luckyLoserAllowed: true };
             x.prizePercents = [...x.config.prizePercents];
             x.status = 'setup';
             tabState[x.id] = 'config';
@@ -506,13 +531,13 @@ function setupTab(t, season) {
         ${field('Fee por jugador', 'config.fee', c.fee)}
         ${
           t.modality === 'rebuy'
-            ? `${field('Valor recompra', 'config.rebuyCost', c.rebuyCost)}${field('Fichas por recompra', 'config.rebuyChips', c.rebuyChips)}${field('Valor add on', 'config.addonCost', c.addonCost)}${field('Fichas add on', 'config.addonChips', c.addonChips)}${field('Recompra hasta el nivel', 'config.rebuyUntilLevel', c.rebuyUntilLevel)}`
-            : `${field('Permitir lucky loser', 'config.luckyLoserAllowed', c.luckyLoserAllowed, { input: 'checkbox' })}${field('Valor lucky loser', 'config.luckyLoserCost', c.luckyLoserCost)}`
+            ? `${field('Valor recompra', 'config.rebuyCost', c.rebuyCost)}${field('Fichas por recompra', 'config.rebuyChips', c.rebuyChips)}${field('Valor add on', 'config.addonCost', c.addonCost)}${field('Fichas add on', 'config.addonChips', c.addonChips)}${field('Recompra hasta el nivel', 'config.rebuyUntilLevel', c.rebuyUntilLevel)}${field('Máx. recompras por jugador', 'config.rebuyMaxPerPlayer', c.rebuyMaxPerPlayer, { hint: '0 = sin límite' })}${field('Máx. recompras en total', 'config.rebuyMaxTotal', c.rebuyMaxTotal, { hint: '0 = sin límite' })}`
+            : `${field('Permitir lucky loser', 'config.luckyLoserAllowed', c.luckyLoserAllowed, { input: 'checkbox' })}${field('Valor lucky loser', 'config.luckyLoserCost', c.luckyLoserCost)}${field('Lucky loser hasta el nivel', 'config.luckyLoserUntilLevel', c.luckyLoserUntilLevel, { hint: '0 = sin límite' })}`
         }
         ${field('% premios por lugar', 'prizePercents', t.prizePercents || c.prizePercents, { type: 'list', input: 'text', hint: 'Ej: 50, 30, 20' })}
         ${field('Redondear premios a', 'config.roundTo', c.roundTo)}
       </div>
-      <h4>Estructura de ciegas</h4><p class="muted small">ciega chica / ciega grande / ante / minutos</p>
+      <h4>Estructura de ciegas de esta fecha</h4><p class="muted small">${LEVELS_HELP}</p>
       <textarea data-levels rows="6" class="mono">${esc(levelsToText(c.levels))}</textarea>
     </div>
     <div class="panel"><h3>Proyección</h3>
@@ -523,13 +548,18 @@ function setupTab(t, season) {
     bind(root) {
       bindFields(root, (db) => db.tournaments.find((x) => x.id === t.id));
       root.querySelector('[data-levels]').onchange = (e) => upT(t.id, (x) => (x.config.levels = textToLevels(e.target.value)));
-      root.querySelector('[data-ttype]').onchange = (e) => upT(t.id, (x) => (x.type = e.target.value));
+      root.querySelector('[data-ttype]').onchange = (e) =>
+        upT(t.id, (x, db) => {
+          x.type = e.target.value;
+          if (x.status === 'setup')
+            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), perTable: x.config.perTable, luckyLoserAllowed: x.config.luckyLoserAllowed, prizePercents: x.config.prizePercents };
+        });
       const mod = root.querySelector('[data-mod]');
       if (mod)
         mod.onchange = () =>
           upT(t.id, (x, db) => {
             x.modality = mod.value;
-            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality), perTable: x.config.perTable, luckyLoserAllowed: true };
+            x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), perTable: x.config.perTable, luckyLoserAllowed: true };
           });
       if (locked) return;
       on(root, '[data-entry]', 'change', (el) =>
@@ -665,7 +695,7 @@ function liveTab(t) {
   const tot = totals(t, c);
   const pz = prizes(tot.pool, t.prizePercents || c.prizePercents, c.roundTo);
   const cs = clockState(t);
-  const rebuyOpen = t.modality === 'rebuy' && cs.level + 1 <= c.rebuyUntilLevel;
+  const rebuyOpen = rebuyOpenAt(c, t.modality, cs.level);
   const running = t.status === 'running';
   const bal = running ? balanceSuggestions(t.tables, aliveIds, c.perTable) : { moves: [] };
   const n = st.length;
@@ -766,7 +796,7 @@ function liveTab(t) {
     bind(root) {
       on(root, '[data-clk]', 'click', (b) => clockAction(t.id, b.dataset.clk));
       on(root, '[data-rebuy]', 'click', async (b) => {
-        if (!rebuyOpen && !(await confirmDlg('El periodo de recompra terminó. ¿Registrar la recompra igual?'))) return;
+        if (!(await rebuyAllowed(t, b.dataset.rebuy, rebuyOpen))) return;
         upT(t.id, (x) => {
           const e = x.entries.find((y) => y.playerId === b.dataset.rebuy);
           e.rebuys = (e.rebuys || 0) + 1;
@@ -851,6 +881,19 @@ function clockAction(id, act) {
   });
 }
 
+// Revisa periodo y límites de recompra; pide confirmación si se pasa de alguno
+async function rebuyAllowed(t, pid, open) {
+  const c = t.config;
+  const e = t.entries.find((y) => y.playerId === pid);
+  const total = t.entries.reduce((s, y) => s + (y.rebuys || 0), 0);
+  const issues = [];
+  if (!open) issues.push('el periodo de recompra terminó');
+  if (c.rebuyMaxPerPlayer && (e.rebuys || 0) >= c.rebuyMaxPerPlayer) issues.push(`${pname(pid)} ya tiene ${e.rebuys} recompras (máximo ${c.rebuyMaxPerPlayer})`);
+  if (c.rebuyMaxTotal && total >= c.rebuyMaxTotal) issues.push(`ya van ${total} recompras en total (máximo ${c.rebuyMaxTotal})`);
+  if (!issues.length) return true;
+  return confirmDlg(`Ojo: ${issues.join(' y ')}. ¿Registrar la recompra igual?`, 'Registrar igual');
+}
+
 // Diálogo de eliminación (nuevo o edición)
 async function bustDialog(tid, playerId, editId = null) {
   const t = S.db.tournaments.find((x) => x.id === tid);
@@ -860,7 +903,8 @@ async function bustDialog(tid, playerId, editId = null) {
   const entry = st.find((e) => e.playerId === ev.playerId);
   const others = st.filter((e) => e.playerId !== ev.playerId && (!e.eliminated || e.playerId === ev.byPlayerId)).map((e) => e.playerId);
   const cs = clockState(t);
-  const rebuyOpen = t.modality === 'rebuy' && cs.level + 1 <= c.rebuyUntilLevel;
+  const rebuyOpen = rebuyOpenAt(c, t.modality, cs.level);
+  const llOpen = luckyLoserOpenAt(c, t.modality, cs.level);
   const canLL = t.modality === 'freezeout' && c.luckyLoserAllowed && !entry.luckyLoser;
   if (!editId) ev.outcome = rebuyOpen ? 'rebuy' : 'out';
   const lastBoard = [...busts(t)].reverse().find((e) => e.board && e.board.length);
@@ -869,7 +913,7 @@ async function bustDialog(tid, playerId, editId = null) {
     ? ''
     : `<div class="fld"><span>¿Qué pasa con ${esc(pname(ev.playerId))}?</span><div class="seg">
       ${t.modality === 'rebuy' ? `<label><input type="radio" name="outcome" value="rebuy" ${ev.outcome === 'rebuy' ? 'checked' : ''}> Recompra (sigue jugando)${rebuyOpen ? '' : ' <small class="muted">— periodo cerrado</small>'}</label>` : ''}
-      ${canLL ? `<label><input type="radio" name="outcome" value="luckyloser"> Entra como lucky loser (${money(c.luckyLoserCost, c.currency)})</label>` : ''}
+      ${canLL ? `<label><input type="radio" name="outcome" value="luckyloser"> Entra como lucky loser (${money(c.luckyLoserCost, c.currency)})${llOpen ? '' : ` <small class="muted">— solo se permite hasta el nivel ${c.luckyLoserUntilLevel}</small>`}</label>` : ''}
       <label><input type="radio" name="outcome" value="out" ${ev.outcome === 'out' ? 'checked' : ''}> Eliminado definitivo (lugar ${st.filter((e) => !e.eliminated).length})</label>
     </div></div>`;
 
@@ -943,7 +987,9 @@ async function bustDialog(tid, playerId, editId = null) {
           if (!editId) {
             const o = m.querySelector('[name=outcome]:checked');
             ev.outcome = o ? o.value : 'out';
-            ev.level = clockState(t).level + 1;
+            if (ev.outcome === 'rebuy' && !(await rebuyAllowed(t, ev.playerId, rebuyOpen))) return;
+            if (ev.outcome === 'luckyloser' && !llOpen && !(await confirmDlg(`El lucky loser se permite solo hasta el nivel ${c.luckyLoserUntilLevel}. ¿Registrarlo igual?`, 'Registrar igual'))) return;
+            ev.level = clockState(t).round;
             ev.ts = Date.now();
           }
           close(true);
