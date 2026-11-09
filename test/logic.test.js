@@ -215,3 +215,23 @@ test('al romper una mesa se prefiere la que no tiene dealer jugando', async () =
   assert.equal(bal.breakTable, 'b', 'se rompe la mesa sin dealer jugando aunque tenga más jugadores');
   assert.ok(bal.moves.every((mv) => mv.playerId !== 'd1' && mv.playerId !== 'd3'));
 });
+
+test('mesa final: con 9 jugadores se sortean todos los puestos y el dealer queda en el 1', async () => {
+  const m = await import('../public/js/logic.js');
+  const alive = Array.from({ length: 9 }, (_, i) => 'p' + i);
+  const t = { config: { perTable: 9 }, initialTables: 2, tables: [{}, {}] };
+  assert.equal(m.needsFinalTable(t, 10), false);
+  assert.equal(m.needsFinalTable(t, 9), true);
+  assert.equal(m.needsFinalTable({ ...t, finalTableDrawn: true }, 9), false);
+  assert.equal(m.needsFinalTable({ config: { perTable: 9 }, initialTables: 1, tables: [{}] }, 9), false, 'si siempre fue una mesa no hay sorteo');
+  const seen = new Set();
+  for (let k = 0; k < 30; k++) {
+    const [ft] = m.drawFinalTable(alive, { playerId: 'p4' });
+    assert.equal(ft.seats.length, 9);
+    assert.equal(ft.seats[0], 'p4');
+    seen.add(ft.seats[1]);
+  }
+  assert.ok(seen.size > 1, 'los demás puestos se sortean');
+  const [ext] = m.drawFinalTable(alive, { name: 'Externo' });
+  assert.equal(ext.seats.length, 9);
+});

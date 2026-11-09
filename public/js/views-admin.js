@@ -48,6 +48,9 @@ import {
   luckyLoserOpenAt,
   dealersToSeatOne,
   isTableDealer,
+  needsFinalTable,
+  drawFinalTable,
+  tableName,
 } from './logic.js';
 import { importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
@@ -737,7 +740,12 @@ function liveTab(t) {
   const cs = clockState(t);
   const rebuyOpen = rebuyOpenAt(c, t.modality, cs.level);
   const running = t.status === 'running';
-  const bal = running ? balanceSuggestions(t.tables, aliveIds, c.perTable) : { moves: [] };
+  const finalDue = running && needsFinalTable(t, aliveIds.length);
+  const bal = running && !finalDue ? balanceSuggestions(t.tables, aliveIds, c.perTable) : { moves: [] };
+  // crupier sugerido para la mesa final: el de la mesa 1 si sigue jugando, si no otro dealer en juego, si no el de la mesa 1
+  const dealersNow = (t.tables || []).map((tb) => tb.dealer).filter(Boolean);
+  const suggested = dealersNow.find((d) => d.playerId && aliveIds.includes(d.playerId)) || dealersNow[0] || null;
+  const finalDealerVal = suggested ? (suggested.playerId || '__ext:' + (suggested.name || '')) : '';
   const n = st.length;
   const evs = busts(t);
   let outIdx = 0;
@@ -793,6 +801,19 @@ function liveTab(t) {
     </div>
   </div>
   ${
+    finalDue
+      ? `<div class="panel warn final-panel"><h3>🏆 ¡Mesa final! Quedan ${aliveIds.length} jugadores</h3>
+      <p>Se sortean de nuevo todos los puestos entre los finalistas. Si el dealer de la mesa final está jugando, queda en el puesto 1.</p>
+      <div class="row wrap"><label class="fld inline"><span>Dealer de la mesa final</span><select data-finaldealer>
+        <option value="">Sin crupier (rotativo)</option>
+        ${aliveIds.map((id) => `<option value="${id}" ${finalDealerVal === id ? 'selected' : ''}>${esc(pname(id))}${dealersNow.some((d) => d.playerId === id) ? ' ★' : ''}</option>`).join('')}
+        ${dealersNow.filter((d) => !d.playerId || !aliveIds.includes(d.playerId)).map((d) => { const v = d.playerId || '__ext:' + (d.name || ''); return `<option value="${esc(v)}" ${finalDealerVal === v ? 'selected' : ''}>${esc(d.playerId ? pname(d.playerId) : d.name)} (no juega) ★</option>`; }).join('')}
+      </select></label>
+      <button class="btn gold" data-drawfinal>🎲 Sortear mesa final</button></div>
+      <p class="muted small">★ = dealer de alguna mesa actual.</p></div>`
+      : ''
+  }
+  ${
     bal.moves.length
       ? `<div class="panel warn"><h3>⚖️ Balancear mesas</h3>${bal.breakTable ? `<p>Se puede romper la <b>Mesa ${t.tables.find((x) => x.id === bal.breakTable).number}</b>:</p>` : ''}
       <ul>${bal.moves.map((m) => `<li>Mover a <b>${esc(pname(m.playerId))}</b> de Mesa ${t.tables.find((x) => x.id === m.from).number} → Mesa ${t.tables.find((x) => x.id === m.to).number}</li>`).join('')}</ul>
@@ -804,7 +825,7 @@ function liveTab(t) {
       ? `<div class="panel"><h3>Mesas</h3><div class="tables">${(t.tables || [])
           .map((tb) => {
             const ps = tb.seats.filter((p) => aliveIds.includes(p));
-            return `<div class="felt"><h4>Mesa ${tb.number} <span class="pill">${ps.length}</span>${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4><ul>${ps.map((p) => playerRow(p, tb.id)).join('')}</ul></div>`;
+            return `<div class="felt ${tb.final ? 'final' : ''}"><h4>${tableName(tb)} <span class="pill">${ps.length}</span>${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4><ul>${ps.map((p) => playerRow(p, tb.id)).join('')}</ul></div>`;
           })
           .join('')}</div></div>`
       : ''
@@ -871,6 +892,18 @@ function liveTab(t) {
           if (ev.outcome === 'luckyloser') en.luckyLoser = false;
         }, false);
       });
+      const fd = root.querySelector('[data-drawfinal]');
+      if (fd)
+        fd.onclick = async () => {
+          const v = root.querySelector('[data-finaldealer]').value;
+          const dealer = !v ? null : v.startsWith('__ext:') ? { name: v.slice(6) } : { playerId: v };
+          if (!(await confirmDlg(`¿Sortear la mesa final entre los ${aliveIds.length} jugadores?`, 'Sortear'))) return;
+          upT(t.id, (x) => {
+            const alive = alivePlayers(x).map((e) => e.playerId);
+            x.tables = drawFinalTable(alive, dealer);
+            x.finalTableDrawn = true;
+          }, false);
+        };
       const balB = root.querySelector('[data-balance]');
       if (balB) balB.onclick = () => upT(t.id, (x) => (x.tables = applyMoves(x.tables, bal.moves, bal.breakTable)), false);
       bindMoveSelects(root, t);
@@ -1055,8 +1088,8 @@ async function bustDialog(tid, playerId, editId = null) {
             const alive = alivePlayers(nt);
             if (alive.length === 1) toast(`¡Queda solo ${pname(alive[0].playerId)}! Ya puedes finalizar el torneo.`);
             else {
-              const bal = balanceSuggestions(nt.tables, alive.map((e) => e.playerId), nt.config.perTable);
-              if (bal.moves.length) toast('Hay que balancear mesas: revisa la sugerencia.', 'warn');
+              if (needsFinalTable(nt, alive.length)) toast(`¡Mesa final! Quedan ${alive.length}: sortea los puestos.`, 'warn');
+              else if (balanceSuggestions(nt.tables, alive.map((e) => e.playerId), nt.config.perTable).moves.length) toast('Hay que balancear mesas: revisa la sugerencia.', 'warn');
             }
           }
         };

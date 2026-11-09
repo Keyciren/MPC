@@ -324,6 +324,24 @@ export function dealersToSeatOne(tables) {
   return tables;
 }
 
+// Mesa final: cuando quedan tantos jugadores como caben en una mesa, se sortean de nuevo todos los puestos.
+// Si el crupier de la mesa final está jugando, queda en el puesto 1.
+export function needsFinalTable(t, aliveCount) {
+  const perTable = (t.config && t.config.perTable) || 9;
+  return !t.finalTableDrawn && (t.initialTables || (t.tables || []).length) > 1 && aliveCount <= perTable && aliveCount > 1;
+}
+
+export function drawFinalTable(aliveIds, dealer = null, rnd = Math.random) {
+  const pid = dealer && dealer.playerId;
+  const plays = pid && aliveIds.includes(pid);
+  const rest = shuffle(aliveIds.filter((p) => p !== pid || !plays), rnd);
+  return [{ id: 'final', number: 1, final: true, dealer: dealer || null, seats: plays ? [pid, ...rest] : rest }];
+}
+
+export function tableName(tb) {
+  return tb && tb.final ? 'Mesa final' : `Mesa ${tb ? tb.number : ''}`;
+}
+
 export function isTableDealer(tb, pid) {
   return !!(tb && tb.dealer && tb.dealer.playerId === pid);
 }

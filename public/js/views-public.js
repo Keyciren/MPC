@@ -235,7 +235,7 @@ function liveTournament(t) {
   </div>
   <div class="panel"><h3>Mesas</h3><div class="tables">${(t.tables || [])
     .map(
-      (tb) => `<div class="felt"><h4>Mesa ${tb.number}${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4>
+      (tb) => `<div class="felt ${tb.final ? 'final' : ''}"><h4>${tb.final ? 'Mesa final' : 'Mesa ' + tb.number}${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4>
         <ul class="seats">${tb.seats.map((p, i) => (alive.has(p) ? `<li><span class="seat">${i + 1}</span>${esc(pname(p))}${tb.dealer && tb.dealer.playerId === p ? ' <span class="pill dealer">Dealer</span>' : ''}</li>` : '')).join('')}</ul></div>`
     )
     .join('')}</div></div>
