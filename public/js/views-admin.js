@@ -1440,7 +1440,6 @@ export function keyName(key) {
 function cobrosTab(t) {
   const rows = settlement(t, S.db.settings, S.fin || {});
   const cur = (t.config && t.config.currency) || '$';
-  const hasFood = rows.some((r) => r.c);
   const pendIn = rows.filter((r) => !r.paid && r.balance < 0).reduce((a, r) => a - r.balance, 0);
   const pendOut = rows.filter((r) => !r.paid && r.balance > 0).reduce((a, r) => a + r.balance, 0);
   const st = (r) =>
@@ -1451,16 +1450,16 @@ function cobrosTab(t) {
     html: `<div class="panel"><div class="row between wrap"><h3>💰 Cobros de la fecha</h3>
       <div class="stats-row"><div><b>${money(pendIn, cur)}</b><span>por cobrar</span></div><div><b>${money(pendOut, cur)}</b><span>premios por entregar</span></div></div></div>
       <div class="table-wrap"><table class="tbl money cobros">
-      <thead><tr><th>Jugador</th><th>Entradas</th><th>Fee</th>${hasFood ? '<th>Comida (planilla)</th>' : ''}<th>Otros</th><th>Premio</th><th>Jackpot</th><th>Saldo</th><th>Estado</th></tr></thead>
+      <thead><tr><th>Jugador</th><th>Entradas</th><th>Fee</th><th>Otros (comida)</th><th>Premio</th><th>Jackpot</th><th>Saldo</th><th>Estado</th></tr></thead>
       <tbody>${rows
         .map(
           (r) => `<tr class="${r.paid ? 'dim' : ''}"><td>${esc(keyName(r.key))}</td><td>${money(r.e, cur)}</td><td>${money(r.f, cur)}</td>
-          ${hasFood ? `<td>${r.c ? money(r.c, cur) : ''}</td>` : ''}<td><input type="number" min="0" step="50" class="w-sm" data-charge="${esc(r.key)}" value="${r.o || ''}" placeholder="0" title="Comida u otros gastos de este jugador"></td>
+          <td><input type="number" min="0" step="50" class="w-sm" data-charge="${esc(r.key)}" value="${r.o || ''}" placeholder="0" title="Comida u otros gastos de este jugador"></td>
           <td>${r.p ? money(r.p, cur) : ''}</td><td>${r.j ? money(r.j, cur) : ''}</td>
           <td><b class="${r.balance < 0 ? 'neg' : r.balance > 0 ? 'pos' : ''}">${r.balance < 0 ? 'Debe ' + money(-r.balance, cur) : r.balance > 0 ? 'Recibe ' + money(r.balance, cur) : '—'}</b></td><td>${st(r)}</td></tr>`
         )
         .join('')}</tbody></table></div>
-      <p class="small muted">Saldo = premio + jackpot − entradas (buy-in, recompras, add on, lucky loser) − fee − comida − otros. En "Otros" anota la comida u otros gastos de cada jugador. "Debe" es lo que el jugador tiene que pagar; "Recibe" es lo que se le entrega descontando lo que debía. Esta sección solo la ve el administrador.</p></div>`,
+      <p class="small muted">Saldo = premio + jackpot − entradas (buy-in, recompras, add on, lucky loser) − fee − otros. En "Otros" va la comida u otros gastos de cada jugador. "Debe" es lo que el jugador tiene que pagar; "Recibe" es lo que se le entrega descontando lo que debía. Esta sección solo la ve el administrador.</p></div>`,
     bind(root) {
       on(root, '[data-paid]', 'click', (b) =>
         upT(t.id, (x) => {
@@ -1472,9 +1471,7 @@ function cobrosTab(t) {
       on(root, '[data-charge]', 'change', (el) =>
         upT(t.id, (x) => {
           x.charges = x.charges || {};
-          const v = Number(el.value) || 0;
-          if (v) x.charges[el.dataset.charge] = v;
-          else delete x.charges[el.dataset.charge];
+          x.charges[el.dataset.charge] = Number(el.value) || 0;
         }, false)
       );
     },

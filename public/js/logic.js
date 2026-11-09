@@ -769,10 +769,10 @@ export function settlement(t, settings, fin = {}) {
   const others = t.charges || {}; // "Otros": comida u otros gastos que anota el admin por jugador
   return Object.entries(m)
     .map(([key, v]) => {
-      const c = v.c || 0; // comida registrada en la planilla
-      const o = Number(others[key]) || 0;
-      const balance = (v.p || 0) + (v.j || 0) - (v.e || 0) - (v.f || 0) - c - o;
-      return { key, e: v.e || 0, f: v.f || 0, c, o, p: v.p || 0, j: v.j || 0, balance, paid: !!paid[key] };
+      // "Otros" (comida u otros gastos): lo que anotó el admin o, si no anotó nada, la comida de la planilla
+      const o = key in others ? Number(others[key]) || 0 : v.c || 0;
+      const balance = (v.p || 0) + (v.j || 0) - (v.e || 0) - (v.f || 0) - o;
+      return { key, e: v.e || 0, f: v.f || 0, o, p: v.p || 0, j: v.j || 0, balance, paid: !!paid[key] };
     })
     .sort((a, b) => a.balance - b.balance);
 }
