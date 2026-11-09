@@ -1,5 +1,5 @@
 {
- "version": 13,
+ "version": 14,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -4588,6 +4588,16 @@
     },
     "players": 15,
     "guests": 1
+   },
+   "payments": {
+    "p_andres": 1,
+    "p_guillermo": 1,
+    "p_meli": 1,
+    "p_kari": 1,
+    "p_serrano": 1,
+    "p_xelo": 1,
+    "g:Coke": 1,
+    "p_nadia": 1
    }
   },
   {
