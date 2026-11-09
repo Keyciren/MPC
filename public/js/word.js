@@ -37,7 +37,10 @@ export async function downloadWord(t) {
       new Paragraph({
         alignment: b.kind === 'title' ? AlignmentType.CENTER : AlignmentType.JUSTIFIED,
         spacing: { after: 160 },
-        children: [new TextRun({ text: b.text, bold: strong, italics: strong, size: b.kind === 'title' ? 32 : 24 })],
+        children: [
+          ...(b.kind === 'bust' || b.kind === 'winner' ? [new TextRun({ text: `${b.kind === 'winner' ? 1 : b.position}°  `, bold: true, size: 24 })] : []),
+          new TextRun({ text: b.text, bold: strong, italics: strong, size: b.kind === 'title' ? 32 : 24 }),
+        ],
       })
     );
     if (b.image && b.image.url) {

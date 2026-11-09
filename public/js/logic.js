@@ -618,6 +618,50 @@ export function history(db) {
 export function bountyPoints(t) {
   return Number(t.bountyPoints ?? 1) || 0;
 }
+// Lugar de cada jugador en una fecha de la planilla, deducido de sus puntos: cada lugar de la tabla tiene un
+// puntaje distinto. Se usa la columna según la cantidad de jugadores; si no se conoce, la columna en que calzan todos.
+export function importedPositions(db, t) {
+  const im = t.imported;
+  if (!im) return {};
+  const tables = db.settings.pointTables;
+  const type = t.type || 'normal';
+  const raw = Object.entries(im.points || {});
+  const valid = (col, v) => v <= 0 || col.points.includes(v);
+  // Cómo calza una columna: sin diferencias, o con un único +1 (el bounty)
+  const tryCol = (col) => {
+    if (!col) return null;
+    const odd = raw.filter(([, v]) => !valid(col, v));
+    if (!odd.length) return { col, hunter: null };
+    if (odd.length === 1 && valid(col, odd[0][1] - 1)) return { col, hunter: odd[0][0] };
+    return null;
+  };
+  let fit = im.players ? tryCol(pointColumn(tables, type, im.players)) : null;
+  if (!fit) {
+    const top = Number((im.points || {})[im.winnerId]) || 0;
+    const cols = [...(tables[type] ? tables[type].columns : []), ...Object.values(tables).flatMap((tb) => tb.columns)];
+    const fits = cols.map(tryCol).filter(Boolean);
+    fit = fits.find((f) => Number(f.col.points[0]) === top || (f.hunter === im.winnerId && Number(f.col.points[0]) === top - 1)) || fits[0] || null;
+  }
+  const out = {};
+  raw.forEach(([pid, v]) => {
+    const pv = v - (fit && fit.hunter === pid ? 1 : 0);
+    const i = fit && pv > 0 ? fit.col.points.indexOf(pv) : -1;
+    out[pid] = pid === im.winnerId ? 1 : i >= 0 ? i + 1 : null;
+  });
+  // Si la planilla deja dos jugadores en el mismo lugar, el de menos puntos pasa al siguiente lugar libre
+  const used = new Set();
+  raw
+    .filter(([pid]) => out[pid])
+    .sort((a, b) => out[a[0]] - out[b[0]] || b[1] - a[1])
+    .forEach(([pid]) => {
+      let p = out[pid];
+      while (used.has(p)) p++;
+      used.add(p);
+      out[pid] = p;
+    });
+  return out;
+}
+
 // Bounty de una fecha cargada de la planilla: { target, hunter }
 export function importedBounty(db, t) {
   const hunter = importedBountyHunter(db, t);

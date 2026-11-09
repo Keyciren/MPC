@@ -408,3 +408,15 @@ test('cobros: saldo por jugador y pendientes', async () => {
   assert.equal(m.tracksPayments({ status: 'finished', imported: {} }), false, 'fechas de la planilla sin control de cobros');
   assert.equal(m.seasonMoney({ ...db, seasons: [{ id: 's' }], tournaments: [{ ...t, seasonId: 's', number: 1 }] }, 's', fin).rows.length, 2, 'los invitados no entran en ganancias y pérdidas');
 });
+
+test('lugares de las fechas de la planilla a partir de los puntos', async () => {
+  const m = await import('../public/js/logic.js');
+  const db = { settings: { pointTables: m.defaultPointTables() }, players: [] };
+  const t10 = { type: 'normal', imported: { players: 15, winnerId: 'kc', points: { kc: 18, joan: 14, billy: 10, serrano: 7, julio: 0 } } };
+  assert.deepEqual(m.importedPositions(db, t10), { kc: 1, joan: 2, billy: 3, serrano: 4, julio: null });
+  const sinCantidad = { type: 'normal', imported: { winnerId: 'g', points: { g: 19, j: 13, m: 10, k: 7, x: 0 } } };
+  assert.deepEqual(m.importedPositions(db, sinCantidad), { g: 1, j: 2, m: 3, k: 4, x: null }, 'detecta el +1 del bounty sin saber la cantidad de jugadores');
+  const empate = { type: 'normal', imported: { players: 10, winnerId: 'a', points: { a: 11, b: 3, c: 3 } } };
+  const pe = m.importedPositions(db, empate);
+  assert.notEqual(pe.b, pe.c, 'no repite lugares');
+});

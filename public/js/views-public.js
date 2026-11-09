@@ -27,6 +27,7 @@ import {
   bountyPoints,
   tournamentJackpots,
   importedBounty,
+  importedPositions,
   bountyTargetFor,
 } from './logic.js';
 
@@ -309,7 +310,8 @@ function finishedTournament(t) {
         ev && (ev.playerCards?.length || ev.byCards?.length || ev.board?.length)
           ? `<div class="hand-line">${esc(pname(ev.playerId))} ${cardsHtml(ev.playerCards, true)} ${ev.byPlayerId ? `vs ${esc(pname(ev.byPlayerId))} ${cardsHtml(ev.byCards, true)}` : ''} ${ev.board && ev.board.length ? `· Mesa ${cardsHtml(ev.board, true)}` : ''}${ev.street ? ` · all in ${esc(STREETS.find((s) => s.id === ev.street)?.label || '')}` : ''}</div>`
           : '';
-      return `<div class="${cls}"><p>${esc(b.text)}</p>${cardsLine}${imgHtml(b.image)}</div>`;
+      const place = b.kind === 'bust' ? b.position : b.kind === 'winner' ? 1 : null;
+      return `<div class="${cls}">${place ? `<span class="place-badge ${place === 1 ? 'first' : ''}">${place}°</span>` : ''}<p>${esc(b.text)}</p>${cardsLine}${imgHtml(b.image)}</div>`;
     })
     .join('');
   return `
@@ -348,7 +350,8 @@ export function bindTabs(root) {
 export function importedTournament(t) {
   const im = t.imported;
   const cur = (t.config && t.config.currency) || '$';
-  const res = results(t, S.db.settings);
+  const pos = importedPositions(S.db, t);
+  const res = results(t, S.db.settings).sort((a, b) => (pos[a.playerId] || 99) - (pos[b.playerId] || 99) || b.points - a.points);
   const ib = importedBounty(S.db, t);
   const target = ib ? ib.target : (bountyTargetFor(S.db, t) || {}).playerId;
   const reason = ib ? ib.reason : (bountyTargetFor(S.db, t) || {}).reason;
@@ -361,10 +364,10 @@ export function importedTournament(t) {
     ${im.players ? `<p>${im.players} jugadores${im.guests ? ` (${im.guests} invitado${im.guests > 1 ? 's' : ''})` : ''}</p>` : ''}
     ${bountyBox}
     ${tournamentJackpots(t, S.fin || {}).map((j) => `<div class="jackpot">🎰 Jackpot: <b>${esc(pname(j.playerId))}</b> · ${money(j.amount, cur)}</div>`).join('')}
-    <div class="table-wrap"><table class="tbl"><thead><tr><th></th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Lugar</th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
     <tbody>${res
       .map(
-        (r) => `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position === 1 ? '🏆' : ''}</td><td>${esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td><b>${r.points}</b>${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${im.prizes ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
+        (r) => `<tr class="${r.position === 1 ? 'gold' : ''}"><td class="nowrap"><b>${pos[r.playerId] ? pos[r.playerId] + '°' : '<span class="muted">—</span>'}</b>${r.position === 1 ? ' 🏆' : ''}</td><td>${esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td><b>${r.points}</b>${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${im.prizes ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
       )
       .join('')}</tbody></table></div></div>`;
 }
