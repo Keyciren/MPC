@@ -88,6 +88,7 @@ export function defaultSeasonConfig() {
     fee: 1000,
     perTable: 9,
     prizePercents: [50, 30, 20],
+    prizeTable: defaultPrizeTable(),
     roundTo: 1000,
     luckyLoserCost: 10000,
     freezeout: { buyIn: 10000, startChips: 30000, luckyLoserUntilLevel: 8 },
@@ -109,6 +110,38 @@ export function defaultSeasonConfig() {
     freezeoutGs: {},
     structures: { 'rebuy-normal': clubRebuyLevels(), 'rebuy-gs': clubRebuyLevels(), 'freezeout-normal': clubFreezeoutLevels() },
   };
+}
+
+// Tabla de premios del club: puestos premiados y porcentajes según la cantidad de jugadores
+export function defaultPrizeTable() {
+  return [
+    { label: '19 o 20', min: 19, max: 20, percents: [38, 26, 18, 11, 7] },
+    { label: '17 o 18', min: 17, max: 18, percents: [38, 26, 18, 11, 7] },
+    { label: '15 o 16', min: 15, max: 16, percents: [39, 27, 20, 14] },
+    { label: '13 o 14', min: 13, max: 14, percents: [39, 27, 20, 14] },
+    { label: '11 o 12', min: 11, max: 12, percents: [50, 30, 20] },
+    { label: '9 o 10', min: 9, max: 10, percents: [50, 30, 20] },
+    { label: '8 o menos', min: 0, max: 8, percents: [65, 35] },
+  ];
+}
+
+export function prizePercentsFor(table, nPlayers) {
+  const rows = table || [];
+  if (!rows.length) return null;
+  const hit = rows.find((r) => nPlayers >= Number(r.min) && nPlayers <= Number(r.max));
+  if (hit) return [...hit.percents];
+  const sorted = [...rows].sort((a, b) => Number(b.max) - Number(a.max));
+  return [...(nPlayers > Number(sorted[0].max) ? sorted[0] : sorted[sorted.length - 1]).percents];
+}
+
+// Porcentajes que aplican a una fecha: los ingresados a mano para esa fecha, o los de la tabla según inscritos
+export function prizePercentsOf(t, cfg = t.config || {}) {
+  // Una fecha finalizada conserva los porcentajes con que se pagó: los cambios de tabla no afectan hacia atrás
+  if (t.prizePercentsFinal && t.prizePercentsFinal.length) return t.prizePercentsFinal;
+  if (t.status === 'finished' && t.prizePercents && t.prizePercents.length) return t.prizePercents;
+  if (t.prizePercentsOverride && t.prizePercentsOverride.length) return t.prizePercentsOverride;
+  const n = (t.entries || []).length;
+  return prizePercentsFor(cfg.prizeTable, n) || t.prizePercents || cfg.prizePercents || [];
 }
 
 export function defaultLevels() {
@@ -192,6 +225,7 @@ export function buildConfig(season, modality, type = 'normal') {
     fee: Number(sc.fee) || 0,
     perTable: Number(sc.perTable) || 9,
     prizePercents: [...(sc.prizePercents || [])],
+    prizeTable: JSON.parse(JSON.stringify(sc.prizeTable || defaultPrizeTable())),
     roundTo: Number(sc.roundTo) || 0,
     luckyLoserCost: Number(sc.luckyLoserCost ?? m.buyIn) || 0,
     buyIn: Number(m.buyIn) || 0,
@@ -432,7 +466,7 @@ export function results(t, settings) {
   const n = st.length;
   const cfg = t.config || {};
   const tot = cfg.buyIn != null ? totals(t, cfg) : { pool: 0 };
-  const pz = prizes(t.prizePool ?? tot.pool, t.prizePercents || cfg.prizePercents, cfg.roundTo);
+  const pz = prizes(t.prizePool ?? tot.pool, prizePercentsOf(t, cfg), cfg.roundTo);
   const kills = killCounts(t);
   const bonus = {};
   (t.bonus || []).forEach((b) => {
@@ -662,7 +696,7 @@ export function buildSummary(db, t) {
   const winner = st.find((e) => e.position === 1);
   const winnerName = winner ? playerName(db, winner.playerId) : null;
   const ov = (t.summary && t.summary.overrides) || {};
-  const paid = (t.prizePercents || cfg.prizePercents || []).filter((p) => Number(p) > 0).length;
+  const paid = prizePercentsOf(t, cfg).filter((p) => Number(p) > 0).length;
   const multiTable = (t.initialTables || (t.tables || []).length) > 1;
   const blocks = [];
 

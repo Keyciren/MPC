@@ -235,3 +235,34 @@ test('mesa final: con 9 jugadores se sortean todos los puestos y el dealer queda
   const [ext] = m.drawFinalTable(alive, { name: 'Externo' });
   assert.equal(ext.seats.length, 9);
 });
+
+test('tabla de premios según cantidad de jugadores', async () => {
+  const m = await import('../public/js/logic.js');
+  const tb = m.defaultPrizeTable();
+  assert.deepEqual(m.prizePercentsFor(tb, 20), [38, 26, 18, 11, 7]);
+  assert.deepEqual(m.prizePercentsFor(tb, 17), [38, 26, 18, 11, 7]);
+  assert.deepEqual(m.prizePercentsFor(tb, 15), [39, 27, 20, 14]);
+  assert.deepEqual(m.prizePercentsFor(tb, 12), [50, 30, 20]);
+  assert.deepEqual(m.prizePercentsFor(tb, 9), [50, 30, 20]);
+  assert.deepEqual(m.prizePercentsFor(tb, 6), [65, 35]);
+  assert.deepEqual(m.prizePercentsFor(tb, 23), [38, 26, 18, 11, 7], 'más de 20 usa el tramo más alto');
+  tb.forEach((r) => assert.equal(r.percents.reduce((a, b) => a + b, 0), 100));
+  const cfg = m.buildConfig({ config: m.defaultSeasonConfig() }, 'rebuy', 'normal');
+  const t = { config: cfg, entries: Array.from({ length: 15 }, (_, i) => ({ playerId: 'p' + i })) };
+  assert.deepEqual(m.prizePercentsOf(t), [39, 27, 20, 14]);
+  t.entries.push({ playerId: 'tarde' }, { playerId: 'tarde2' });
+  assert.deepEqual(m.prizePercentsOf(t), [38, 26, 18, 11, 7], 'se recalcula al inscribir tarde');
+  assert.deepEqual(m.prizePercentsOf({ ...t, prizePercentsOverride: [60, 40] }), [60, 40]);
+  const pz = m.prizes(170000, m.prizePercentsOf(t), cfg.roundTo);
+  assert.equal(pz.length, 5);
+  assert.equal(pz.reduce((a, b) => a + b, 0), 170000);
+});
+
+test('los premios de fechas finalizadas no cambian con una tabla nueva', async () => {
+  const m = await import('../public/js/logic.js');
+  const cfg = m.buildConfig({ config: m.defaultSeasonConfig() }, 'rebuy', 'normal');
+  const t = { config: cfg, status: 'finished', prizePercentsFinal: [50, 30, 20], entries: Array.from({ length: 15 }, (_, i) => ({ playerId: 'p' + i })) };
+  assert.deepEqual(m.prizePercentsOf(t), [50, 30, 20]);
+  const legacy = { config: cfg, status: 'finished', prizePercents: [50, 30, 20], entries: t.entries };
+  assert.deepEqual(m.prizePercentsOf(legacy), [50, 30, 20]);
+});

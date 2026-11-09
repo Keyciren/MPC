@@ -19,6 +19,8 @@ import {
   history,
   roundNumber,
   rebuyOpenAt,
+  prizePercentsOf,
+  defaultPrizeTable,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -215,7 +217,7 @@ export function clockHtml(t) {
 function liveTournament(t) {
   const cfg = t.config;
   const tot = totals(t, cfg);
-  const pz = prizes(tot.pool, t.prizePercents || cfg.prizePercents, cfg.roundTo);
+  const pz = prizes(tot.pool, prizePercentsOf(t, cfg), cfg.roundTo);
   const alive = new Set(alivePlayers(t).map((e) => e.playerId));
   const outs = outEvents(t);
   const n = (t.entries || []).length;
@@ -379,8 +381,17 @@ export function rankingView(q) {
 export function pointsView() {
   const pt = S.db.settings.pointTables;
   return {
-    html: `<h2>Tablas de puntaje</h2>${['normal', 'gs'].map((k) => `<div class="panel"><h3>${esc(pt[k].name)}</h3>${pointsTableHtml(pt[k])}</div>`).join('')}`,
+    html: `<h2>Tablas de puntaje</h2>${['normal', 'gs'].map((k) => `<div class="panel"><h3>${esc(pt[k].name)}</h3>${pointsTableHtml(pt[k])}</div>`).join('')}
+      <div class="panel"><h3>Tabla de premios</h3>${prizeTableHtml((currentSeason() && currentSeason().config.prizeTable) || defaultPrizeTable())}</div>`,
   };
+}
+
+export function prizeTableHtml(rows) {
+  const max = Math.max(0, ...rows.map((r) => r.percents.length));
+  const ord = ['1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°'];
+  let body = `<tr><th>Puestos premiados</th>${rows.map((r) => `<td><b>${r.percents.length}</b></td>`).join('')}</tr>`;
+  for (let i = 0; i < max; i++) body += `<tr><th>${ord[i] || i + 1 + '°'}</th>${rows.map((r) => `<td>${r.percents[i] != null ? r.percents[i] + '%' : ''}</td>`).join('')}</tr>`;
+  return `<div class="table-wrap"><table class="tbl points"><thead><tr><th>Lugar \\ Jugadores</th>${rows.map((r) => `<th>${esc(r.label)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
 export function pointsTableHtml(tb) {

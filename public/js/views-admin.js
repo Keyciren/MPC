@@ -51,8 +51,10 @@ import {
   needsFinalTable,
   drawFinalTable,
   tableName,
+  prizePercentsOf,
+  defaultPrizeTable,
 } from './logic.js';
-import { importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
+import { prizeTableHtml, importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
 // ---------- utilidades de formularios ----------
 function getPath(obj, path) {
@@ -109,6 +111,24 @@ function textToLevels(txt) {
       const [sb, bb, ante, minutes] = l.split(/[\/\s,;]+/).map(Number);
       return { sb: sb || 0, bb: bb || sb * 2 || 0, ante: ante || 0, minutes: minutes || 20 };
     });
+}
+function prizeTableToText(rows) {
+  return (rows || []).map((r) => `${r.min}-${r.max}: ${r.percents.join(', ')}`).join('\n');
+}
+function textToPrizeTable(txt) {
+  return txt
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => {
+      const m = l.match(/^(\d+)\s*(?:-|a|o)\s*(\d+)\s*:\s*(.+)$/i);
+      if (!m) return null;
+      const min = Number(m[1]);
+      const max = Number(m[2]);
+      const percents = m[3].split(/[,;\/\s]+/).map((x) => Number(String(x).replace('%', '').replace(',', '.'))).filter((x) => x > 0);
+      return { label: min === 0 ? `${max} o menos` : `${min} o ${max}`, min, max, percents };
+    })
+    .filter(Boolean);
 }
 const LEVELS_HELP = 'Una línea por nivel: ciega chica / ciega grande / ante / minutos (ej: 600/1200/1200/15). Para un descanso escribe: descanso/5';
 
@@ -295,9 +315,12 @@ export function seasonAdminView(q) {
         ${field('Moneda', 'config.currency', c.currency, { type: 'str', input: 'text' })}
         ${field('Fee por torneo (por jugador)', 'config.fee', c.fee)}
         ${field('Jugadores por mesa', 'config.perTable', c.perTable)}
-        ${field('% premios por lugar', 'config.prizePercents', c.prizePercents, { type: 'list', input: 'text', hint: 'Ej: 50, 30, 20' })}
         ${field('Redondear premios a', 'config.roundTo', c.roundTo, { hint: '0 = sin redondeo' })}
       </div>
+      <h4>Tabla de premios</h4>
+      <p class="muted small">Una línea por tramo: jugadores desde-hasta: porcentajes de cada puesto premiado (ej: <code>15-16: 39, 27, 20, 14</code>). Los porcentajes de cada línea deben sumar 100.</p>
+      <div class="grid2"><textarea data-prizetable rows="8" class="mono">${esc(prizeTableToText(c.prizeTable || defaultPrizeTable()))}</textarea>
+      <div>${prizeTableHtml(c.prizeTable || defaultPrizeTable())}</div></div>
       <h4>Freezeout</h4>
       <div class="form-grid">
         ${field('Buy-in', 'config.freezeout.buyIn', c.freezeout.buyIn)}
@@ -335,6 +358,13 @@ export function seasonAdminView(q) {
     </div>`,
     bind(root) {
       bindFields(root, (db) => db.seasons.find((s) => s.id === season.id));
+      root.querySelector('[data-prizetable]').onchange = (e) => {
+        const rows = textToPrizeTable(e.target.value);
+        const bad = rows.filter((r) => Math.round(r.percents.reduce((a, b) => a + b, 0)) !== 100);
+        if (!rows.length) return toast('No se pudo leer la tabla de premios', 'error');
+        if (bad.length) toast(`Ojo: los porcentajes de ${bad.map((r) => r.label).join(', ')} no suman 100`, 'warn');
+        mutate((db) => (db.seasons.find((s) => s.id === season.id).config.prizeTable = rows)).catch(() => {});
+      };
       on(root, '[data-struct]', 'change', (el) =>
         mutate((db) => {
           const cf = db.seasons.find((s) => s.id === season.id).config;
@@ -537,7 +567,6 @@ function setupTab(t, season) {
           upT(t.id, (x, db) => {
             applyFormat(x, db, root.querySelector('[data-format]').value);
             x.config = { ...buildConfig(db.seasons.find((s) => s.id === x.seasonId), x.modality, x.type), luckyLoserAllowed: true };
-            x.prizePercents = [...x.config.prizePercents];
             x.status = 'setup';
             tabState[x.id] = 'config';
           }, false);
@@ -549,7 +578,7 @@ function setupTab(t, season) {
   const entryIds = new Set((t.entries || []).map((e) => e.playerId));
   const ps = S.db.players.filter((p) => p.active !== false || entryIds.has(p.id)).sort((a, b) => (a.type === b.type ? a.name.localeCompare(b.name) : a.type === 'club' ? -1 : 1));
   const tot = totals(t, c);
-  const pz = prizes(tot.pool, t.prizePercents || c.prizePercents, c.roundTo);
+  const pz = prizes(tot.pool, prizePercentsOf(t, c), c.roundTo);
   return {
     html: `
     ${
@@ -574,7 +603,7 @@ function setupTab(t, season) {
             ? `${field('Valor recompra', 'config.rebuyCost', c.rebuyCost)}${field('Fichas por recompra', 'config.rebuyChips', c.rebuyChips)}${field('Valor add on', 'config.addonCost', c.addonCost)}${field('Fichas add on', 'config.addonChips', c.addonChips)}${field('Recompra hasta el nivel', 'config.rebuyUntilLevel', c.rebuyUntilLevel)}${field('Máx. recompras por jugador', 'config.rebuyMaxPerPlayer', c.rebuyMaxPerPlayer, { hint: '0 = sin límite' })}${field('Máx. recompras en total', 'config.rebuyMaxTotal', c.rebuyMaxTotal, { hint: '0 = sin límite' })}`
             : `${field('Permitir lucky loser', 'config.luckyLoserAllowed', c.luckyLoserAllowed, { input: 'checkbox' })}${field('Valor lucky loser', 'config.luckyLoserCost', c.luckyLoserCost)}${field('Lucky loser hasta el nivel', 'config.luckyLoserUntilLevel', c.luckyLoserUntilLevel, { hint: '0 = sin límite' })}`
         }
-        ${field('% premios por lugar', 'prizePercents', t.prizePercents || c.prizePercents, { type: 'list', input: 'text', hint: 'Ej: 50, 30, 20' })}
+        ${field('% premios (solo esta fecha)', 'prizePercentsOverride', t.prizePercentsOverride || [], { type: 'list', input: 'text', hint: 'Vacío = según la tabla de premios' })}
         ${field('Redondear premios a', 'config.roundTo', c.roundTo)}
       </div>
       <h4>Estructura de ciegas de esta fecha</h4><p class="muted small">${LEVELS_HELP}</p>
@@ -582,7 +611,7 @@ function setupTab(t, season) {
     </div>
     <div class="panel"><h3>Proyección</h3>
       <div class="stats-row"><div><b>${tot.n}</b><span>jugadores</span></div><div><b>${money(tot.pool, c.currency)}</b><span>pozo de premios</span></div><div><b>${money(tot.fees, c.currency)}</b><span>fees</span></div><div><b>${tot.chips.toLocaleString('es-CL')}</b><span>fichas</span></div><div><b>${Math.ceil(tot.n / (c.perTable || 9)) || 0}</b><span>mesas</span></div></div>
-      <ol class="prizes">${pz.map((p, i) => `<li>${money(p, c.currency)} <small class="muted">(${(t.prizePercents || c.prizePercents)[i]}%)</small></li>`).join('')}</ol>
+      <ol class="prizes">${pz.map((p, i) => `<li>${money(p, c.currency)} <small class="muted">(${prizePercentsOf(t, c)[i]}%)</small></li>`).join('')}</ol>
       ${locked ? '' : `<button class="btn" data-totables ${tot.n < 2 ? 'disabled' : ''}>Siguiente: armar mesas →</button>`}
     </div>`,
     bind(root) {
@@ -736,7 +765,7 @@ function liveTab(t) {
   const aliveIds = alive.map((e) => e.playerId);
   const byId = Object.fromEntries(st.map((e) => [e.playerId, e]));
   const tot = totals(t, c);
-  const pz = prizes(tot.pool, t.prizePercents || c.prizePercents, c.roundTo);
+  const pz = prizes(tot.pool, prizePercentsOf(t, c), c.roundTo);
   const cs = clockState(t);
   const rebuyOpen = rebuyOpenAt(c, t.modality, cs.level);
   const running = t.status === 'running';
@@ -1225,6 +1254,7 @@ async function finishDialog(tid) {
         m.querySelector('[data-ok]').onclick = () => {
           close(true);
           upT(tid, (x) => {
+            x.prizePercentsFinal = prizePercentsOf(x);
             x.status = 'finished';
             x.finishedAt = Date.now();
             x.winnerImage = data.image;
@@ -1260,6 +1290,7 @@ function resultsTab(t) {
         if (!(await confirmDlg('¿Reabrir el torneo? Volverá a estado "En juego" para corregir eliminaciones.', 'Reabrir'))) return;
         upT(t.id, (x) => {
           x.status = 'running';
+          delete x.prizePercentsFinal;
           tabState[x.id] = 'vivo';
         }, false);
       };
