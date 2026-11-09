@@ -522,7 +522,7 @@ export function statsView(q) {
           : '<p class="muted">Sin jackpots esta temporada.</p>'
       }</div>
     </div>
-    ${moneySection(season)}`,
+    ${isAdmin() ? moneySection(season) : ""}`,
     bind: bindSeasonPicker,
   };
 }
