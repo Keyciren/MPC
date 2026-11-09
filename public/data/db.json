@@ -158,7 +158,7 @@
   },
   {
    "id": "p_carlos",
-   "name": "Calico",
+   "name": "Carlos",
    "nickname": "",
    "type": "club",
    "active": true
@@ -4910,10 +4910,10 @@
    "startedAt": 1794251030916,
    "initialTables": 2,
    "clock": {
-    "level": 0,
+    "level": 6,
     "running": true,
     "remaining": 1200000,
-    "endsAt": 1794252248046
+    "endsAt": 1794253238476
    }
   },
   {
