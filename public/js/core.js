@@ -1,6 +1,6 @@
 import { RANKS, SUITS, cardLabel, isRed } from './logic.js';
 
-import { local, checkToken, commitFiles, remoteVersion } from './store.js';
+import { local, checkToken, commitFiles, remoteVersion, remoteDb } from './store.js';
 import { CONFIG } from './config.js';
 import { emptyDb, publicCopy, uid } from './logic.js';
 
@@ -13,6 +13,7 @@ export const S = {
   lastPublish: 0,
   noData: false, // aún no hay nada publicado
   fin: null, // dinero histórico por fecha
+  remoteNewer: 0, // versión publicada más nueva que la local (si hay cambios locales sin publicar)
 };
 
 export const isAdmin = () => !!S.token;
@@ -110,6 +111,52 @@ export async function mutate(fn, { silent = true } = {}) {
   }
 }
 
+// Hay una versión publicada más nueva que la de este navegador
+function conflictDlg(remote) {
+  return modal(
+    `<h3>Hay cambios publicados más nuevos</h3>
+    <p>Se publicó la versión <b>v${remote}</b> desde otro dispositivo o con un ajuste hecho por Claude, y este navegador tiene la v${S.db.version || 0}${S.dirty ? ' con cambios sin publicar' : ''}.</p>
+    <p><b>Recomendado:</b> cargar la versión publicada. ${S.dirty ? 'Los cambios sin publicar de este navegador se descartan.' : ''}</p>
+    <p class="small muted">"Publicar igual" reemplaza la versión publicada con la de este navegador y se pierden esos otros cambios.</p>
+    <div class="row end mt"><button class="btn ghost danger" data-over>Publicar igual</button><button class="btn" data-reload>Cargar la versión publicada</button></div>`,
+    {
+      onMount: (m, close) => {
+        m.querySelector('[data-reload]').onclick = () => close('reload');
+        m.querySelector('[data-over]').onclick = () => close('overwrite');
+      },
+    }
+  );
+}
+
+// Toma la versión publicada (conservando los correos que solo existen en este navegador)
+export async function adoptRemote() {
+  const pub = await remoteDb(S.token);
+  if (!pub) return;
+  const emails = Object.fromEntries((S.db.players || []).filter((p) => p.email).map((p) => [p.id, p.email]));
+  S.db = { ...pub, players: pub.players.map((p) => (emails[p.id] ? { ...p, email: emails[p.id] } : p)) };
+  S.dirty = false;
+  S.remoteNewer = 0;
+  await local.set('db', S.db);
+  await local.set('dirty', false);
+  toast(`Cargada la versión publicada v${pub.version}`);
+  rerender();
+}
+
+// Revisa si hay una versión publicada más nueva: si no hay cambios locales la carga; si los hay, avisa
+export async function checkRemote() {
+  if (!isAdmin() || S.publishing || S.saving) return;
+  try {
+    const remote = await remoteVersion(S.token);
+    if (remote > (S.db.version || 0)) {
+      if (!S.dirty) await adoptRemote();
+      else if (S.remoteNewer !== remote) {
+        S.remoteNewer = remote;
+        rerender();
+      }
+    }
+  } catch {}
+}
+
 // Publica la base (sin correos) y las fotos nuevas en el repositorio de GitHub.
 export async function publish({ auto = false } = {}) {
   if (!isAdmin() || S.publishing) return;
@@ -118,8 +165,16 @@ export async function publish({ auto = false } = {}) {
   try {
     const remote = await remoteVersion(S.token);
     if (remote > (S.db.version || 0)) {
-      const ok = auto ? false : await confirmDlg(`Hay una versión publicada más nueva (v${remote}) hecha desde otro dispositivo. Si publicas, la reemplazarás. ¿Continuar?`, 'Publicar igual');
-      if (!ok) return;
+      if (auto) {
+        S.remoteNewer = remote;
+        return;
+      }
+      const choice = await conflictDlg(remote);
+      if (choice === 'reload') {
+        await adoptRemote();
+        return;
+      }
+      if (choice !== 'overwrite') return;
     }
     const version = Math.max(remote, S.db.version || 0) + 1;
     const pending = (await local.keys()).filter((k) => String(k).startsWith('img:'));

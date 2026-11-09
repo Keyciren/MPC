@@ -26,6 +26,8 @@ import {
   bountyHunter,
   bountyPoints,
   tournamentJackpots,
+  importedBounty,
+  bountyTargetFor,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -347,13 +349,22 @@ export function importedTournament(t) {
   const im = t.imported;
   const cur = (t.config && t.config.currency) || '$';
   const res = results(t, S.db.settings);
+  const ib = importedBounty(S.db, t);
+  const target = ib ? ib.target : (bountyTargetFor(S.db, t) || {}).playerId;
+  const reason = ib ? ib.reason : (bountyTargetFor(S.db, t) || {}).reason;
+  const bountyBox = target
+    ? `<div class="bounty-box">🎯 <b>Bounty:</b> ${esc(pname(target))} <span class="muted small">(${esc(reason)})</span><br>${
+        ib ? `<b>Punto extra:</b> <b>${esc(pname(ib.hunter))}</b> eliminó al bounty y sumó +1 punto al ranking.` : '<span class="muted small">La planilla no registra punto extra en esta fecha.</span>'
+      }</div>`
+    : '';
   return `<div class="panel"><p class="muted small">Fecha cargada desde la planilla histórica del club: se conocen los puntos${im.prizes ? ', los premios' : ''} y el ganador, pero no el detalle de las eliminaciones.</p>
     ${im.players ? `<p>${im.players} jugadores${im.guests ? ` (${im.guests} invitado${im.guests > 1 ? 's' : ''})` : ''}</p>` : ''}
+    ${bountyBox}
     ${tournamentJackpots(t, S.fin || {}).map((j) => `<div class="jackpot">🎰 Jackpot: <b>${esc(pname(j.playerId))}</b> · ${money(j.amount, cur)}</div>`).join('')}
     <div class="table-wrap"><table class="tbl"><thead><tr><th></th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
     <tbody>${res
       .map(
-        (r) => `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position === 1 ? '🏆' : ''}</td><td>${esc(pname(r.playerId))}</td><td><b>${r.points}</b></td>${im.prizes ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
+        (r) => `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position === 1 ? '🏆' : ''}</td><td>${esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td><b>${r.points}</b>${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${im.prizes ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
       )
       .join('')}</tbody></table></div></div>`;
 }

@@ -1,5 +1,5 @@
 {
- "version": 11,
+ "version": 12,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -158,7 +158,7 @@
   },
   {
    "id": "p_carlos",
-   "name": "Carlos",
+   "name": "Calico",
    "nickname": "",
    "type": "club",
    "active": true

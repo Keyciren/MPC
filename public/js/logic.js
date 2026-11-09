@@ -618,6 +618,14 @@ export function history(db) {
 export function bountyPoints(t) {
   return Number(t.bountyPoints ?? 1) || 0;
 }
+// Bounty de una fecha cargada de la planilla: { target, hunter }
+export function importedBounty(db, t) {
+  const hunter = importedBountyHunter(db, t);
+  if (!hunter) return null;
+  const target = bountyTargetFor(db, t);
+  return { hunter, target: target ? target.playerId : null, reason: target ? target.reason : '' };
+}
+
 // Quien eliminó definitivamente al bounty (null si sigue en juego, si nadie lo eliminó o si ganó la fecha)
 export function bountyHunter(t) {
   if (!t.bountyPlayerId) return null;
@@ -626,32 +634,61 @@ export function bountyHunter(t) {
 }
 
 // Regla del club: el bounty es quien ganó la fecha anterior de la temporada; en la primera fecha, el campeón
-// de la temporada anterior. Si el ganador de la fecha anterior fue invitado, el jugador del club mejor ubicado.
+// de la temporada anterior. Si ese jugador es invitado o no juega esta fecha, pasa al siguiente mejor ubicado
+// (2°, 3°, ...) del club que sí juegue.
 export function bountyTargetFor(db, t) {
   const isClub = (id) => {
     const p = (db.players || []).find((x) => x.id === id);
     return !!p && p.type !== 'invitado';
+  };
+  const playing = attendedIds(t);
+  const plays = (id) => !playing.length || playing.includes(id);
+  const pick = (ordered, source) => {
+    // ordered: [{ playerId, place }] del mejor al peor
+    const skipped = [];
+    for (const o of ordered) {
+      if (!isClub(o.playerId)) {
+        skipped.push(`${playerName(db, o.playerId)} es invitado`);
+        continue;
+      }
+      if (!plays(o.playerId)) {
+        skipped.push(`${playerName(db, o.playerId)} no juega esta fecha`);
+        continue;
+      }
+      const lead = o.place === 1 ? (source.season ? 'campeón de la ' : 'ganó la ') : `${o.place}° en la `;
+      return { playerId: o.playerId, reason: `${lead}${source.label}${skipped.length ? ` (${skipped.join('; ')})` : ''}` };
+    }
+    return null;
   };
   const prev = seasonTournaments(db, t.seasonId)
     .filter((x) => x.status === 'finished' && x.number < t.number)
     .pop();
   if (prev) {
     const res = results(prev, db.settings);
-    const winner = res.find((r) => r.position === 1);
-    if (winner && isClub(winner.playerId)) return { playerId: winner.playerId, reason: `ganó la ${prev.label}` };
-    const best = res
-      .filter((r) => isClub(r.playerId) && r.position !== 1)
-      .sort((a, b) => (a.position || 999) - (b.position || 999) || b.points - a.points)[0];
-    return best ? { playerId: best.playerId, reason: `mejor jugador del club en la ${prev.label} (ganó un invitado)` } : null;
+    const ordered = prev.imported
+      ? res.slice().sort((a, b) => (a.position === 1 ? -1 : b.position === 1 ? 1 : b.points - a.points))
+      : res.slice().sort((a, b) => (a.position || 999) - (b.position || 999));
+    return pick(ordered.map((r, i) => ({ playerId: r.playerId, place: prev.imported ? i + 1 : r.position })), { label: prev.label });
   }
   const seasons = db.seasons || [];
   const i = seasons.findIndex((s) => s.id === t.seasonId);
   const prevSeason = i > 0 ? seasons[i - 1] : null;
   if (prevSeason && seasonFinished(db, prevSeason.id)) {
-    const champ = ranking(db, prevSeason.id).rows[0];
-    if (champ) return { playerId: champ.player.id, reason: `campeón de la ${prevSeason.name}` };
+    return pick(ranking(db, prevSeason.id).rows.map((r) => ({ playerId: r.player.id, place: r.position })), { label: prevSeason.name, season: true });
   }
   return null;
+}
+
+// Fechas cargadas desde la planilla: el punto del bounty ya viene sumado en los puntos. Se detecta porque
+// quien lo ganó tiene un puntaje que no existe en la tabla, pero sí existe ese puntaje menos 1.
+export function importedBountyHunter(db, t) {
+  const im = t.imported;
+  if (!im || !im.players) return null;
+  const col = pointColumn(db.settings.pointTables, t.type || 'normal', im.players);
+  if (!col) return null;
+  const valid = (v) => v === 0 || col.points.includes(v);
+  const odd = Object.entries(im.points || {}).filter(([, v]) => !valid(v) && valid(v - 1));
+  return odd.length === 1 ? odd[0][0] : null;
 }
 
 // ---------- Dinero: ganancias y pérdidas ----------

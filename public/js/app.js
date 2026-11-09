@@ -1,4 +1,4 @@
-import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG } from './core.js';
+import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG, checkRemote, adoptRemote, confirmDlg } from './core.js';
 import { historyView, homeView, calendarView, tournamentView, rankingView, pointsView, statsView, bindTabs, clockState, fmtMs } from './views-public.js';
 import { loginView, playersView, seasonAdminView, pointsAdminView, tournamentAdminView, settingsView } from './views-admin.js';
 
@@ -55,10 +55,15 @@ function renderNav() {
       ${link('#/historial', 'Historial')}
       ${
         isAdmin()
-          ? `<span class="sep"></span><button class="btn sm ${S.dirty ? '' : 'ghost'} pub-btn" data-publish ${S.publishing ? 'disabled' : ''} title="${S.dirty ? 'Hay cambios guardados solo en este navegador' : 'Todo publicado'}">${S.publishing ? 'Publicando…' : S.dirty ? '⬆ Publicar cambios' : '✓ Publicado'}</button>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`
+          ? `<span class="sep"></span>${S.remoteNewer ? `<button class="btn sm danger" data-remotenewer title="Se publicó una versión más nueva desde otro lugar">⚠ Hay una versión nueva</button>` : ''}<button class="btn sm ${S.dirty ? '' : 'ghost'} pub-btn" data-publish ${S.publishing ? 'disabled' : ''} title="${S.dirty ? 'Hay cambios guardados solo en este navegador' : 'Todo publicado'}">${S.publishing ? 'Publicando…' : S.dirty ? '⬆ Publicar cambios' : '✓ Publicado'}</button>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`
           : `<a href="#/login" class="admin-link">Admin</a>`
       }
     </div>`;
+  const rn = nav.querySelector('[data-remotenewer]');
+  if (rn)
+    rn.onclick = async () => {
+      if (await confirmDlg(`Hay una versión publicada más nueva (v${S.remoteNewer}). ¿Cargarla? Los cambios sin publicar de este navegador se descartan.`, 'Cargar')) adoptRemote();
+    };
   const pb = nav.querySelector('[data-publish]');
   if (pb) pb.onclick = () => publish();
   const lo = nav.querySelector('[data-logout]');
@@ -121,6 +126,12 @@ setInterval(async () => {
     }
   } catch {}
 }, 30000);
+
+// Administrador: revisa cada minuto si se publicó algo más nuevo desde otro lugar
+setInterval(() => {
+  if (document.hidden || document.querySelector('.modal-back')) return;
+  checkRemote().then(() => {});
+}, 60000);
 
 // Administrador: con un torneo en juego, publica solo cada pocos minutos
 setInterval(() => {

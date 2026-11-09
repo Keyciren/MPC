@@ -353,7 +353,7 @@ test('bounty según la regla del club', async () => {
   });
   const r2 = m.bountyTargetFor(db, db.tournaments[2]);
   assert.equal(r2.playerId, 'b', 'b quedó 2°, el mejor del club');
-  assert.match(r2.reason, /ganó un invitado/);
+  assert.match(r2.reason, /es invitado/);
   // si el ganador es del club, es él
   t1.events = [['c', 'a'], ['g', 'a'], ['b', 'a']].map(([p, by], i) => ({ id: 'e' + i, type: 'bust', playerId: p, byPlayerId: by, outcome: 'out' }));
   assert.deepEqual(m.bountyTargetFor(db, db.tournaments[2]), { playerId: 'a', reason: 'ganó la Fecha 1' });
@@ -372,4 +372,23 @@ test('reiniciar una fecha la deja programada y conserva el calendario', async ()
   assert.equal(t.venue, 'Santiago');
   assert.equal(t.modality, 'freezeout');
   assert.deepEqual(t.dateOptions, ['2026-12-04']);
+});
+
+test('bounty: si el ganador anterior no juega, pasa al 2°; en la planilla se detecta el +1', async () => {
+  const m = await import('../public/js/logic.js');
+  const pt = m.defaultPointTables();
+  const db = {
+    settings: { pointTables: pt },
+    players: ['pancho', 'julio', 'joan', 'kc', 'x'].map((id) => ({ id, name: id, type: 'club' })),
+    seasons: [{ id: 's' }],
+    tournaments: [
+      { ...m.newTournament('s', 9), id: 't9', status: 'finished', imported: { points: { pancho: 19, julio: 13, joan: 0, kc: 0 }, winnerId: 'pancho', players: 16 } },
+      { ...m.newTournament('s', 10), id: 't10', status: 'finished', imported: { points: { kc: 18, joan: 14, julio: 0, x: 10 }, winnerId: 'kc', players: 15 } },
+    ],
+  };
+  const t10 = db.tournaments[1];
+  const tg = m.bountyTargetFor(db, t10);
+  assert.equal(tg.playerId, 'julio');
+  assert.match(tg.reason, /2° en la Fecha 9 \(pancho no juega esta fecha\)/);
+  assert.deepEqual(m.importedBounty(db, t10).hunter, 'joan');
 });

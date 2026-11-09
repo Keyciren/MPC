@@ -58,15 +58,20 @@ export async function checkToken(token) {
 }
 
 // Lee la versión publicada directamente del repositorio (sin esperar a GitHub Pages)
-export async function remoteVersion(token) {
+// Lee los datos publicados directamente del último commit de la rama (sin esperar a GitHub Pages ni usar copias en caché)
+export async function remoteDb(token) {
   try {
-    const r = await gh(token, 'GET', `${repoPath()}/contents/${CONFIG.siteDir}/data/db.json?ref=${CONFIG.branch}`);
-    const json = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(r.content.replace(/\n/g, '')), (c) => c.charCodeAt(0))));
-    return json.version || 0;
+    const ref = await gh(token, 'GET', `${repoPath()}/git/ref/heads/${CONFIG.branch}?t=${Date.now()}`);
+    const r = await gh(token, 'GET', `${repoPath()}/contents/${CONFIG.siteDir}/data/db.json?ref=${ref.object.sha}`);
+    return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(r.content.replace(/\n/g, '')), (c) => c.charCodeAt(0))));
   } catch (e) {
-    if (e.status === 404) return 0;
+    if (e.status === 404) return null;
     throw e;
   }
+}
+export async function remoteVersion(token) {
+  const db = await remoteDb(token);
+  return (db && db.version) || 0;
 }
 
 // Sube db.json y las fotos nuevas en un solo commit.
