@@ -565,6 +565,11 @@ export function tournamentAdminView(id) {
         refresh();
       });
       body.bind && body.bind(root);
+      // Fechas preparadas o en juego sin bounty asignado (p. ej. iniciadas antes de existir la regla): asignarlo por regla
+      if ((t.status === 'setup' || t.status === 'running') && t.bountyPlayerId === undefined && !t.bountyManual && (t.entries || []).length) {
+        const pid = ruleBounty(t, S.db);
+        if (pid) upT(t.id, (x, db) => (x.bountyPlayerId = ruleBounty(x, db)));
+      }
     },
   };
 }
@@ -606,6 +611,7 @@ function setupTab(t, season) {
         .map((p) => `<label class="${entryIds.has(p.id) ? 'on' : ''}"><input type="checkbox" data-entry="${p.id}" ${entryIds.has(p.id) ? 'checked' : ''}> ${esc(p.nickname || p.name)}${p.type === 'invitado' ? ' <span class="tag guest">inv</span>' : ''}</label>`)
         .join('')}</div></div>`
     }
+    <div class="panel">${bountyEditor(t)}</div>
     <div class="panel"><h3>Formato y valores de esta fecha</h3>
       ${formatSummary(t)}
       <div class="form-grid">
@@ -632,6 +638,7 @@ function setupTab(t, season) {
     </div>`,
     bind(root) {
       bindFields(root, (db) => db.tournaments.find((x) => x.id === t.id));
+      bindBounty(root, t);
       root.querySelector('[data-levels]').onchange = (e) => upT(t.id, (x) => (x.config.levels = textToLevels(e.target.value)));
       const fmt = root.querySelector('[data-format]');
       if (fmt && !locked)
@@ -759,10 +766,12 @@ function bountyEditor(t, compact = false) {
     : plays
       ? `Por regla: <b>${esc(pname(target.playerId))}</b> (${esc(target.reason)}).`
       : `Por regla sería ${esc(pname(target.playerId))} (${esc(target.reason)}), pero no juega esta fecha: no hay bounty.`;
-  const current = t.bountyPlayerId ? `<b>${esc(pname(t.bountyPlayerId))}</b>${t.bountyManual ? ' <span class="muted small">(cambiado a mano)</span>' : ''}` : '<span class="muted">sin bounty</span>';
+  // Antes de iniciar, si no se cambió a mano, se muestra lo que dice la regla con los inscritos actuales
+  const shown = t.status === 'setup' && !t.bountyManual ? ruleBounty(t, S.db) : t.bountyPlayerId;
+  const current = shown ? `<b>${esc(pname(shown))}</b>${t.bountyManual ? ' <span class="muted small">(cambiado a mano)</span>' : ''}` : '<span class="muted">sin bounty</span>';
   return `<div class="bounty-box ${compact ? 'compact' : ''}"><b>🎯 Bounty:</b> ${current} <span class="muted small">— quien lo elimine suma ${pts === 1 ? '1 punto extra' : pts + ' puntos extra'}</span>
-    <div class="small">${ruleText}${plays && t.bountyPlayerId !== target.playerId ? ' <button type="button" class="link" data-bountyrule>Aplicar regla</button>' : ''}</div>
-    <details class="small"><summary>Cambiar a mano</summary><div class="row wrap"><select data-bounty>${playerOptions(alive, t.bountyPlayerId || '', '— Sin bounty —')}</select>
+    <div class="small">${ruleText}${plays && shown !== target.playerId ? ' <button type="button" class="link" data-bountyrule>Aplicar regla</button>' : ''}</div>
+    <details class="small"><summary>Cambiar a mano</summary><div class="row wrap"><select data-bounty>${playerOptions(alive, shown || '', '— Sin bounty —')}</select>
     <label class="fld inline"><span>Puntos</span><input type="number" min="0" class="w-xs" data-bountypts value="${pts}"></label></div></details></div>`;
 }
 function bountyLine(t) {
