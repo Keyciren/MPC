@@ -4,46 +4,48 @@ Web para administrar las temporadas del club: calendario, inscripción, mesas, r
 eliminaciones con cartas y fotos, premios, puntajes, ranking, estadísticas y un **resumen lúdico** de cada fecha
 (descargable en Word).
 
-## Cómo correrla
+## Dónde vive y dónde se guardan los datos
 
-Requisitos: Node.js 18 o superior.
+Todo funciona con tu cuenta de GitHub, sin servidores ni cuentas extra:
+
+- **La web** se publica gratis en **GitHub Pages**: `https://keyciren.github.io/MPC/`.
+- **Los datos** son un archivo `public/data/db.json` dentro de este mismo repositorio, y las fotos van en
+  `public/data/uploads/`. Los jugadores leen desde ahí.
+- **El administrador** trabaja sobre una **base de datos local** en su navegador (IndexedDB): todo se guarda al instante,
+  aunque se corte internet. Con el botón **⬆ Publicar cambios** se suben los datos y las fotos al repositorio en un
+  solo commit. Durante un torneo en juego se publica solo cada 3 minutos. Los jugadores ven lo nuevo en 1–2 minutos
+  (y la página se refresca sola).
+- Los **correos** de los jugadores no se publican (el repositorio es público): quedan solo en el navegador del
+  administrador y en el respaldo.
+
+### Activar GitHub Pages (una sola vez)
+
+1. En GitHub, abre el repositorio → **Settings → Pages**.
+2. En **Build and deployment → Source**, elige **GitHub Actions**.
+3. Ve a **Actions → Publicar web en GitHub Pages → Run workflow** (o espera al próximo cambio en `main`).
+   En 1–2 minutos la web queda en `https://keyciren.github.io/MPC/`.
+
+### Ingresar como administrador
+
+El administrador entra con **Admin** usando un **token de GitHub** (se guarda solo en ese navegador):
+
+1. Abre <https://github.com/settings/personal-access-tokens/new>.
+2. En **Repository access** elige *Only select repositories* → **MPC**.
+3. En **Repository permissions → Contents**, elige **Read and write**.
+4. Presiona **Generate token**, cópialo y pégalo en la pantalla de ingreso.
+
+Para administrar desde otro computador o celular, ingresa con el token allí. Para tener también los correos, usa
+**Ajustes → Descargar respaldo** en el primero y **Cargar respaldo** en el segundo.
+
+### Probarla en tu computador
+
+Con Node.js 18 o superior:
 
 ```bash
-npm install
+npm start
 ```
 
-```bash
-ADMIN_PASSWORD=tu-clave npm start
-```
-
-Abre <http://localhost:3000>. Los jugadores entran sin clave (solo lectura). El administrador entra con **Admin** y la
-contraseña de `ADMIN_PASSWORD` (si no la defines, es `admin`).
-
-Variables de entorno:
-
-| Variable         | Uso                                                        | Por defecto |
-|------------------|------------------------------------------------------------|-------------|
-| `ADMIN_PASSWORD` | Contraseña del administrador                               | `admin`     |
-| `PORT`           | Puerto HTTP                                                | `3000`      |
-| `DATA_DIR`       | Carpeta donde se guardan `db.json` y las fotos (`uploads/`) | `./data`    |
-
-Todos los datos quedan en `data/db.json` y las fotos en `data/uploads/`. Respalda esa carpeta (o usa
-**Ajustes → Descargar respaldo**).
-
-### Publicarla para el club (Render)
-
-El repositorio trae `render.yaml`, así que Render la configura casi sola:
-
-1. Crea una cuenta en <https://render.com> e ingresa con tu cuenta de GitHub.
-2. Ve a **New → Blueprint**, autoriza el acceso al repositorio `MPC` y elige la rama `main`.
-3. Render te pedirá el valor de `ADMIN_PASSWORD`: escribe la contraseña de administrador que quieras.
-4. Presiona **Apply**. En unos minutos tendrás un link como `https://mpc-poker-club.onrender.com` para compartir con el club.
-
-Cada vez que se suba un cambio a `main`, Render vuelve a publicar la app solo.
-
-> El plan **Starter** de Render (aprox. US$7 al mes) es necesario porque incluye el **disco persistente** donde quedan
-> los datos y las fotos. En el plan gratuito el disco se borra en cada reinicio y se perderían los torneos.
-> Alternativas: Railway o Fly.io con un volumen, o un PC/VPS propio con `npm start` (los datos quedan en `data/`).
+Se abre en <http://localhost:3000>. Ojo: **Publicar** sube los datos a GitHub igual que la versión en línea.
 
 ## Qué hace
 
@@ -70,7 +72,7 @@ Cada vez que se suba un cambio a `main`, Render vuelve a publicar la app solo.
   4. *Finalizar*: se habilita cuando queda un solo jugador. Se puede subir la foto del ganador con la mano final.
   5. *Resultados y Resumen*: posiciones, puntos, premios, eliminaciones y recompras. El resumen lúdico se escribe solo
      a partir de las eliminaciones (primer eliminado, mesa final, bubble, heads up, ganador, jackpot y cómo queda el
-     ranking). Cada párrafo se puede editar y se descarga en **Word**.
+     ranking). Cada párrafo se puede editar y se descarga en **Word** (se genera en el navegador).
 - **Reabrir** una fecha finalizada para corregirla, y **Deshacer/Editar** cualquier registro.
 
 ### Perfil jugador (público)
@@ -92,8 +94,9 @@ Cada vez que se suba un cambio a `main`, Render vuelve a publicar la app solo.
 npm test
 ```
 
-- `server.js`: API Express (datos en JSON, subida de imágenes, login de administrador, Word).
-- `public/js/logic.js`: reglas puras (puntajes, premios, mesas, balanceo, ranking, resumen). La usan el navegador y
-  el servidor.
-- `public/js/views-*.js`: pantallas de jugador y de administrador (JavaScript sin compilación).
-- `lib/docx.js`: genera el resumen en Word.
+- `public/`: la web completa (HTML, CSS y JavaScript sin compilación). Es lo que publica GitHub Pages.
+- `public/js/logic.js`: reglas puras (puntajes, premios, mesas, balanceo, ranking, resumen).
+- `public/js/store.js`: base local (IndexedDB) y publicación en GitHub (un commit por publicación).
+- `public/js/config.js`: repositorio y rama donde se publica, y cada cuántos minutos se publica sola durante un torneo.
+- `public/js/word.js` + `public/vendor/docx.iife.js`: resumen en Word.
+- `.github/workflows/pages.yml`: publica `public/` en GitHub Pages en cada cambio de `main`.

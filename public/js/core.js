@@ -1,9 +1,17 @@
 import { RANKS, SUITS, cardLabel, isRed } from './logic.js';
 
+import { local, checkToken, commitFiles, remoteVersion } from './store.js';
+import { CONFIG } from './config.js';
+import { emptyDb, publicCopy, uid } from './logic.js';
+
 export const S = {
   db: null,
-  token: localStorage.getItem('mpc_token') || null,
+  token: localStorage.getItem('mpc_gh_token') || null,
   saving: false,
+  dirty: false, // hay cambios locales sin publicar
+  publishing: false,
+  lastPublish: 0,
+  noData: false, // aún no hay nada publicado
 };
 
 export const isAdmin = () => !!S.token;
@@ -12,38 +20,54 @@ export function esc(v) {
   return String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
 
-async function api(method, url, body) {
-  const headers = { 'Content-Type': 'application/json' };
-  if (S.token) headers.Authorization = 'Bearer ' + S.token;
-  const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined });
-  const data = await res.json().catch(() => ({}));
-  if (res.status === 401 && S.token && url !== '/api/login') {
-    logout();
-    throw new Error('La sesión expiró, vuelve a ingresar.');
-  }
-  if (!res.ok) {
-    const err = new Error(data.error || 'Error ' + res.status);
-    err.status = res.status;
-    err.data = data;
-    throw err;
-  }
-  return data;
+// Datos publicados en GitHub Pages (lo que ven los jugadores)
+export async function fetchPublished() {
+  const r = await fetch('data/db.json?t=' + Date.now(), { cache: 'no-store' });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('No se pudieron leer los datos publicados (' + r.status + ')');
+  return r.json();
 }
 
 export async function loadDb() {
-  S.db = await api('GET', '/api/db');
+  const pub = await fetchPublished().catch(() => null);
+  if (!isAdmin()) {
+    S.noData = !pub;
+    S.db = pub || emptyDb();
+    return S.db;
+  }
+  // Administrador: la base local manda si es igual o más nueva que la publicada.
+  const loc = await local.get('db');
+  S.dirty = !!(await local.get('dirty'));
+  if (loc && (!pub || (loc.version || 0) >= (pub.version || 0))) {
+    S.db = loc;
+  } else if (pub) {
+    // Se publicó desde otro dispositivo: tomar esa versión y conservar los correos locales
+    const emails = Object.fromEntries(((loc && loc.players) || []).filter((p) => p.email).map((p) => [p.id, p.email]));
+    S.db = { ...pub, players: pub.players.map((p) => (emails[p.id] ? { ...p, email: emails[p.id] } : p)) };
+    S.dirty = false;
+    await local.set('db', S.db);
+    await local.set('dirty', false);
+  } else {
+    S.db = emptyDb();
+    S.dirty = true;
+    await local.set('db', S.db);
+    await local.set('dirty', true);
+  }
+  S.noData = false;
+  await loadPendingImages();
   return S.db;
 }
 
-export async function login(password) {
-  const { token } = await api('POST', '/api/login', { password });
+export async function login(token) {
+  token = token.trim();
+  await checkToken(token);
   S.token = token;
-  localStorage.setItem('mpc_token', token);
+  localStorage.setItem('mpc_gh_token', token);
   await loadDb();
 }
 export function logout() {
   S.token = null;
-  localStorage.removeItem('mpc_token');
+  localStorage.removeItem('mpc_gh_token');
 }
 
 let rerender = () => {};
@@ -54,30 +78,60 @@ export function refresh() {
   rerender();
 }
 
-// Aplica un cambio a la base de datos y lo guarda en el servidor.
-export async function mutate(fn, { silent = false } = {}) {
+// Aplica un cambio y lo guarda en la base local. Publicar lo sube a GitHub.
+export async function mutate(fn, { silent = true } = {}) {
   const draft = structuredClone(S.db);
   fn(draft);
-  const prev = S.db;
   S.db = draft;
+  S.dirty = true;
   rerender();
   try {
     S.saving = true;
-    const { version } = await api('PUT', '/api/db', { version: prev.version, data: draft });
-    S.db.version = version;
+    await local.set('db', draft);
+    await local.set('dirty', true);
     if (!silent) toast('Guardado');
   } catch (e) {
-    if (e.status === 409 && e.data && e.data.db) {
-      S.db = e.data.db;
-      toast('Otro dispositivo modificó los datos. Se recargó la información; repite la acción.', 'error');
-    } else {
-      S.db = prev;
-      toast(e.message, 'error');
-    }
-    rerender();
+    toast('No se pudo guardar en este navegador: ' + e.message, 'error');
     throw e;
   } finally {
     S.saving = false;
+  }
+}
+
+// Publica la base (sin correos) y las fotos nuevas en el repositorio de GitHub.
+export async function publish({ auto = false } = {}) {
+  if (!isAdmin() || S.publishing) return;
+  S.publishing = true;
+  rerender();
+  try {
+    const remote = await remoteVersion(S.token);
+    if (remote > (S.db.version || 0)) {
+      const ok = auto ? false : await confirmDlg(`Hay una versión publicada más nueva (v${remote}) hecha desde otro dispositivo. Si publicas, la reemplazarás. ¿Continuar?`, 'Publicar igual');
+      if (!ok) return;
+    }
+    const version = Math.max(remote, S.db.version || 0) + 1;
+    const pending = (await local.keys()).filter((k) => String(k).startsWith('img:'));
+    const files = [];
+    for (const k of pending) {
+      const dataUrl = await local.get(k);
+      files.push({ path: k.slice(4), base64: dataUrl.split(',')[1] });
+    }
+    const snapshot = { ...S.db, version };
+    files.push({ path: 'data/db.json', content: JSON.stringify(publicCopy(snapshot), null, 1) });
+    await commitFiles(S.token, files, `Datos del club v${version}${pending.length ? ` (+${pending.length} foto${pending.length > 1 ? 's' : ''})` : ''}`);
+    S.db.version = version;
+    await local.set('db', S.db);
+    for (const k of pending) await local.del(k);
+    S.dirty = false;
+    await local.set('dirty', false);
+    S.lastPublish = Date.now();
+    toast(auto ? 'Publicado automáticamente' : 'Publicado. Los jugadores lo verán en 1–2 minutos.');
+  } catch (e) {
+    if (e.status === 401) toast('El token de GitHub no es válido o expiró. Vuelve a ingresar.', 'error');
+    else toast('No se pudo publicar: ' + e.message, 'error');
+  } finally {
+    S.publishing = false;
+    rerender();
   }
 }
 
@@ -199,36 +253,41 @@ export function pickImage() {
   });
 }
 
-export async function uploadImage(file) {
-  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => null);
-  let dataUrl;
-  let w;
-  let h;
-  if (bmp) {
-    const max = 1600;
-    const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
-    w = Math.round(bmp.width * scale);
-    h = Math.round(bmp.height * scale);
-    const cv = document.createElement('canvas');
-    cv.width = w;
-    cv.height = h;
-    cv.getContext('2d').drawImage(bmp, 0, 0, w, h);
-    dataUrl = cv.toDataURL('image/jpeg', 0.85);
-  } else {
-    dataUrl = await new Promise((r) => {
-      const fr = new FileReader();
-      fr.onload = () => r(fr.result);
-      fr.readAsDataURL(file);
-    });
+// Fotos guardadas localmente que aún no se publican: ruta -> URL local
+const localImages = {};
+async function loadPendingImages() {
+  for (const k of await local.keys()) {
+    if (String(k).startsWith('img:')) localImages[k.slice(4)] = await local.get(k);
   }
-  toast('Subiendo imagen…');
-  const { url } = await api('POST', '/api/upload', { dataUrl });
+}
+export function imgSrc(img) {
+  if (!img || !img.url) return '';
+  return localImages[img.url] || img.url;
+}
+
+export async function uploadImage(file) {
+  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const max = 1400;
+  const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * scale);
+  const h = Math.round(bmp.height * scale);
+  const cv = document.createElement('canvas');
+  cv.width = w;
+  cv.height = h;
+  cv.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  const dataUrl = cv.toDataURL('image/jpeg', 0.82);
+  const url = `data/uploads/${new Date().toISOString().slice(0, 10)}-${uid('')}.jpg`;
+  await local.set('img:' + url, dataUrl);
+  localImages[url] = dataUrl;
+  S.dirty = true;
+  await local.set('dirty', true);
   return { url, w, h };
 }
 
 export function imgHtml(img, cls = '') {
   if (!img || !img.url) return '';
-  return `<a href="${esc(img.url)}" target="_blank" rel="noopener"><img class="photo ${cls}" src="${esc(img.url)}" alt="" loading="lazy"></a>`;
+  const src = esc(imgSrc(img));
+  return `<a href="${src}" target="_blank" rel="noopener"><img class="photo ${cls}" src="${src}" alt="" loading="lazy"></a>`;
 }
 
 // ---------- Helpers ----------
@@ -258,3 +317,5 @@ export function currentSeason() {
 export function playerOptions(ids, selected, empty = '— Ninguno —') {
   return `<option value="">${esc(empty)}</option>` + ids.map((id) => `<option value="${id}" ${id === selected ? 'selected' : ''}>${esc(pname(id))}</option>`).join('');
 }
+
+export { CONFIG };

@@ -127,3 +127,14 @@ test('resumen lúdico con orden de salida', () => {
   assert.equal(boardText(['8c', '7c', 'Jc', 'Js', '2c']), '87J J 2');
   assert.equal(handShort(['Td', '6d']), 'T6');
 });
+
+test('base inicial y copia pública sin correos', async () => {
+  const { emptyDb, publicCopy } = await import('../public/js/logic.js');
+  const db = emptyDb();
+  assert.equal(db.tournaments.length, 12);
+  assert.equal(db.seasons[0].id, db.settings.currentSeasonId);
+  db.players.push({ id: 'a', name: 'Ana', email: 'ana@x.cl', type: 'club' });
+  const pub = publicCopy(db);
+  assert.equal(pub.players[0].email, undefined);
+  assert.equal(db.players[0].email, 'ana@x.cl');
+});

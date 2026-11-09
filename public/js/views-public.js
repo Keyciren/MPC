@@ -40,6 +40,10 @@ export function badges(t) {
 
 // ---------- Inicio ----------
 export function homeView() {
+  if (S.noData)
+    return {
+      html: `<section class="hero"><h1>♠ Club de Poker</h1><p class="muted">Todavía no hay información publicada. El administrador debe ingresar y presionar <b>Publicar</b>.</p></section>`,
+    };
   const season = currentSeason();
   if (!season) return { html: '<p>No hay temporadas.</p>' };
   const ts = seasonTournaments(S.db, season.id);
@@ -160,7 +164,14 @@ export function tournamentView(id) {
   const head = `<div class="row between wrap"><div><h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>
     <p>${t.finalDate ? fmtDate(t.finalDate) : 'Fecha por definir'} ${t.venue ? '· ' + esc(t.venue) : ''} ${badges(t)}</p></div>${adminLink}</div>`;
 
-  if (t.status === 'finished') return { html: head + finishedTournament(t) };
+  if (t.status === 'finished')
+    return {
+      html: head + finishedTournament(t),
+      bind(root) {
+        const b = root.querySelector('[data-word]');
+        if (b) b.onclick = () => import('./word.js').then((m) => m.downloadWord(t)).catch((e) => alert(e.message));
+      },
+    };
   if (t.status === 'running') return { html: head + liveTournament(t), poll: true };
   return { html: head + '<div class="panel"><p class="muted">Esta fecha aún no se juega.</p></div>' };
 }
@@ -263,7 +274,7 @@ function finishedTournament(t) {
     <button class="on" data-tab="resumen">Resumen</button><button data-tab="resultados">Resultados</button><button data-tab="estad">Estadísticas</button>
   </div>
   <div data-pane="resumen" class="panel summary">${summary}
-    <div class="row mt"><a class="btn ghost sm" href="/api/tournaments/${t.id}/resumen.docx">Descargar Word</a><button class="btn ghost sm" onclick="window.print()">Imprimir</button></div>
+    <div class="row mt"><button class="btn ghost sm" data-word="${t.id}">Descargar Word</button><button class="btn ghost sm" onclick="window.print()">Imprimir</button></div>
   </div>
   <div data-pane="resultados" class="panel hidden">${resultsTable(t)}</div>
   <div data-pane="estad" class="panel hidden">

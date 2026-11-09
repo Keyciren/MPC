@@ -551,3 +551,42 @@ export function buildSummary(db, t) {
   }
   return blocks;
 }
+
+// ---------- Base de datos inicial ----------
+export function newTournament(seasonId, number) {
+  return {
+    id: uid('t'),
+    seasonId,
+    number,
+    label: `Fecha ${number}`,
+    dateOptions: [],
+    finalDate: null,
+    venue: '',
+    modality: 'rebuy',
+    type: 'normal',
+    status: 'planned',
+    dealerIds: [],
+    trainee: '',
+    entries: [],
+    tables: [],
+    events: [],
+    jackpots: [],
+    bonus: [],
+  };
+}
+
+export function emptyDb() {
+  const seasonId = uid('s');
+  return {
+    version: 0,
+    settings: { clubName: 'Club de Poker', pointTables: defaultPointTables(), currentSeasonId: seasonId },
+    players: [],
+    seasons: [{ id: seasonId, name: 'Temporada 1', tournamentsCount: 12, config: defaultSeasonConfig() }],
+    tournaments: Array.from({ length: 12 }, (_, i) => newTournament(seasonId, i + 1)),
+  };
+}
+
+// Copia que se publica en GitHub (repositorio público): sin correos.
+export function publicCopy(db) {
+  return { ...db, players: (db.players || []).map(({ email, ...p }) => p) };
+}

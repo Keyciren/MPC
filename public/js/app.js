@@ -1,4 +1,4 @@
-import { S, loadDb, isAdmin, logout, setRerender, esc, toast } from './core.js';
+import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG } from './core.js';
 import { homeView, calendarView, tournamentView, rankingView, pointsView, statsView, bindTabs, clockState, fmtMs } from './views-public.js';
 import { loginView, playersView, seasonAdminView, pointsAdminView, tournamentAdminView, settingsView } from './views-admin.js';
 
@@ -48,10 +48,12 @@ function renderNav() {
       ${link('#/estadisticas', 'Estadísticas')}
       ${
         isAdmin()
-          ? `<span class="sep"></span>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`
+          ? `<span class="sep"></span><button class="btn sm ${S.dirty ? '' : 'ghost'} pub-btn" data-publish ${S.publishing ? 'disabled' : ''} title="${S.dirty ? 'Hay cambios guardados solo en este navegador' : 'Todo publicado'}">${S.publishing ? 'Publicando…' : S.dirty ? '⬆ Publicar cambios' : '✓ Publicado'}</button>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`
           : `<a href="#/login" class="admin-link">Admin</a>`
       }
     </div>`;
+  const pb = nav.querySelector('[data-publish]');
+  if (pb) pb.onclick = () => publish();
   const lo = nav.querySelector('[data-logout]');
   if (lo)
     lo.onclick = async (e) => {
@@ -99,21 +101,32 @@ setInterval(() => {
   }
 }, 500);
 
-// Sincroniza cambios hechos desde otro dispositivo (p. ej. jugadores mirando el torneo en vivo)
+// Jugadores: revisan cada 30 s si el administrador publicó algo nuevo
 setInterval(async () => {
-  if (!S.db || S.saving || document.hidden) return;
+  if (isAdmin() || !S.db || document.hidden) return;
   if (document.querySelector('.modal-back')) return;
-  const ae = document.activeElement;
-  if (ae && ['INPUT', 'TEXTAREA', 'SELECT'].includes(ae.tagName)) return;
   try {
-    const r = await fetch('/api/version', { cache: 'no-store' });
-    const { version } = await r.json();
-    if (version !== S.db.version) {
-      await loadDb();
+    const pub = await fetchPublished();
+    if (pub && pub.version !== S.db.version) {
+      S.db = pub;
+      S.noData = false;
       render();
     }
   } catch {}
-}, 5000);
+}, 30000);
+
+// Administrador: con un torneo en juego, publica solo cada pocos minutos
+setInterval(() => {
+  if (!isAdmin() || !S.db || !S.dirty || S.publishing || !CONFIG.autoPublishMinutes) return;
+  if (!S.db.tournaments.some((t) => t.status === 'running')) return;
+  if (Date.now() - S.lastPublish < CONFIG.autoPublishMinutes * 60000) return;
+  if (!S.lastPublish) S.lastPublish = Date.now(); // primera vez: espera un intervalo
+  else publish({ auto: true });
+}, 20000);
+
+window.addEventListener('beforeunload', (e) => {
+  if (isAdmin() && S.dirty) e.preventDefault();
+});
 
 loadDb()
   .then(render)

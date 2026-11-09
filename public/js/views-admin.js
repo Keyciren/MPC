@@ -17,7 +17,10 @@ import {
   login,
   fmtDate,
   refresh,
+  publish,
 } from './core.js';
+import { CONFIG } from './config.js';
+import { downloadWord } from './word.js';
 import {
   uid,
   defaultSeasonConfig,
@@ -38,6 +41,7 @@ import {
   buildSummary,
   results,
   defaultLevels,
+  newTournament,
 } from './logic.js';
 import { badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
@@ -99,10 +103,19 @@ function textToLevels(txt) {
 
 // ---------- Login ----------
 export function loginView() {
+  const newTokenUrl = 'https://github.com/settings/personal-access-tokens/new';
   return {
     html: `<div class="panel narrow"><h2>Ingreso administrador</h2>
-      <form data-login><label class="fld"><span>Contraseña</span><input type="password" name="pw" autocomplete="current-password" required autofocus></label>
-      <button class="btn">Ingresar</button></form></div>`,
+      <p class="small">El administrador ingresa con un <b>token de GitHub</b> con permiso para escribir en el repositorio <b>${esc(CONFIG.owner)}/${esc(CONFIG.repo)}</b>. Se guarda solo en este navegador.</p>
+      <form data-login><label class="fld"><span>Token de GitHub</span><input type="password" name="pw" autocomplete="off" required autofocus placeholder="github_pat_…"></label>
+      <button class="btn">Ingresar</button></form>
+      <details class="mt small"><summary>¿Cómo creo el token?</summary><ol>
+        <li>Abre <a href="${newTokenUrl}" target="_blank" rel="noopener">GitHub → Settings → Fine-grained tokens → Generate new token</a>.</li>
+        <li>Nombre: <i>Club de poker</i>. Expiración: la que prefieras (por ejemplo, 1 año).</li>
+        <li>En <b>Repository access</b> elige <i>Only select repositories</i> → <b>${esc(CONFIG.repo)}</b>.</li>
+        <li>En <b>Permissions → Repository permissions</b> busca <b>Contents</b> y elige <i>Read and write</i>.</li>
+        <li>Presiona <b>Generate token</b>, cópialo y pégalo aquí.</li>
+      </ol></details></div>`,
     bind(root) {
       root.querySelector('[data-login]').onsubmit = async (e) => {
         e.preventDefault();
@@ -111,7 +124,7 @@ export function loginView() {
           toast('Bienvenido');
           location.hash = '#/admin/temporada';
         } catch (err) {
-          toast(err.message, 'error');
+          toast(err.status === 401 ? 'Token inválido' : err.message, 'error');
         }
       };
     },
@@ -305,28 +318,6 @@ export function seasonAdminView(q) {
         tr.querySelector('[data-dealers]').onclick = () => editDealers(tid);
       });
     },
-  };
-}
-
-function newTournament(seasonId, number) {
-  return {
-    id: uid('t'),
-    seasonId,
-    number,
-    label: `Fecha ${number}`,
-    dateOptions: [],
-    finalDate: null,
-    venue: '',
-    modality: 'rebuy',
-    type: 'normal',
-    status: 'planned',
-    dealerIds: [],
-    trainee: '',
-    entries: [],
-    tables: [],
-    events: [],
-    jackpots: [],
-    bonus: [],
   };
 }
 
@@ -1158,7 +1149,7 @@ function summaryTab(t) {
   const blocks = buildSummary(S.db, t);
   const ov = (t.summary && t.summary.overrides) || {};
   return {
-    html: `<div class="panel"><div class="row between wrap"><h3>Resumen lúdico</h3><div class="row"><a class="btn sm" href="/api/tournaments/${t.id}/resumen.docx">⬇ Descargar Word</a><a class="btn sm ghost" href="#/torneo/${t.id}">Ver como jugador</a></div></div>
+    html: `<div class="panel"><div class="row between wrap"><h3>Resumen lúdico</h3><div class="row"><button class="btn sm" data-word>⬇ Descargar Word</button><a class="btn sm ghost" href="#/torneo/${t.id}">Ver como jugador</a></div></div>
     <p class="muted small">El texto se genera automáticamente con las eliminaciones registradas. Puedes editar cada párrafo; usa "Texto automático" para volver a la versión generada.</p></div>
     ${blocks
       .map((b) => {
@@ -1172,6 +1163,7 @@ function summaryTab(t) {
       })
       .join('')}`,
     bind(root) {
+      root.querySelector('[data-word]').onclick = () => downloadWord(S.db.tournaments.find((x) => x.id === t.id)).catch((e) => toast(e.message, 'error'));
       on(root, '[data-ov]', 'change', (el) =>
         upT(t.id, (x) => {
           x.summary = x.summary || { overrides: {} };
@@ -1196,20 +1188,48 @@ function summaryTab(t) {
 // ---------- Ajustes ----------
 export function settingsView() {
   return {
-    html: `<h2>Ajustes del club</h2><div class="panel"><div class="form-grid">
-      <label class="fld"><span>Nombre del club</span><input data-f="clubName" data-type="str" value="${esc(S.db.settings.clubName)}"></label></div>
-      <div class="row mt"><a class="btn ghost" data-backup href="#">⬇ Descargar respaldo (JSON)</a></div>
-      <p class="muted small">El respaldo incluye todos los datos (no las fotos, que quedan en la carpeta data/uploads del servidor).</p></div>`,
+    html: `<h2>Ajustes del club</h2>
+    <div class="panel"><div class="form-grid">
+      <label class="fld"><span>Nombre del club</span><input data-f="clubName" data-type="str" value="${esc(S.db.settings.clubName)}"></label></div></div>
+    <div class="panel"><h3>Publicación</h3>
+      <p class="small">Los cambios se guardan primero en <b>este navegador</b> (base de datos local). Con <b>Publicar</b> se suben al repositorio
+      <a href="https://github.com/${esc(CONFIG.owner)}/${esc(CONFIG.repo)}" target="_blank" rel="noopener">${esc(CONFIG.owner)}/${esc(CONFIG.repo)}</a> y los jugadores los ven en 1–2 minutos.
+      Mientras hay un torneo en juego se publica solo cada ${CONFIG.autoPublishMinutes} minutos.</p>
+      <p class="small muted">Versión local: v${S.db.version || 0}${S.dirty ? ' + cambios sin publicar' : ' (publicada)'}. Los correos de los jugadores no se publican: quedan solo en este navegador y en el respaldo.</p>
+      <button class="btn" data-pub ${S.publishing ? 'disabled' : ''}>⬆ Publicar ahora</button>
+    </div>
+    <div class="panel"><h3>Respaldo</h3>
+      <p class="small">Descarga un archivo con todos los datos (incluye correos). Sirve para guardar una copia o para administrar desde otro computador o celular.</p>
+      <div class="row wrap"><button class="btn ghost" data-backup>⬇ Descargar respaldo</button><button class="btn ghost" data-restore>⬆ Cargar respaldo</button></div>
+    </div>`,
     bind(root) {
       bindFields(root, (db) => db.settings);
-      root.querySelector('[data-backup]').onclick = async (e) => {
-        e.preventDefault();
-        const res = await fetch('/api/backup', { headers: { Authorization: 'Bearer ' + S.token } });
-        const blob = await res.blob();
+      root.querySelector('[data-pub]').onclick = () => publish();
+      root.querySelector('[data-backup]').onclick = () => {
+        const blob = new Blob([JSON.stringify(S.db, null, 1)], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `mpc-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
+      };
+      root.querySelector('[data-restore]').onclick = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json,.json';
+        input.onchange = async () => {
+          try {
+            const data = JSON.parse(await input.files[0].text());
+            if (!Array.isArray(data.players) || !Array.isArray(data.tournaments)) throw new Error('El archivo no es un respaldo válido');
+            if (!(await confirmDlg('¿Reemplazar los datos de este navegador con el respaldo? Luego presiona Publicar para subirlos.', 'Reemplazar'))) return;
+            await mutate((db) => {
+              Object.keys(db).forEach((k) => delete db[k]);
+              Object.assign(db, data, { version: Math.max(data.version || 0, S.db.version || 0) });
+            }, { silent: false });
+          } catch (e) {
+            toast(e.message, 'error');
+          }
+        };
+        input.click();
       };
     },
   };
