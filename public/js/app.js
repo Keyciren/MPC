@@ -126,7 +126,24 @@ setInterval(() => {
   else publish({ auto: true });
 }, 20000);
 
+// Si se publicó una versión nueva de la web, las pantallas abiertas se recargan solas (los datos locales no se pierden)
+setInterval(async () => {
+  if (!window.APP_VERSION || document.querySelector('.modal-back') || S.publishing || S.saving) return;
+  const ae = document.activeElement;
+  if (ae && ['INPUT', 'TEXTAREA', 'SELECT'].includes(ae.tagName)) return;
+  try {
+    const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+    const { version } = await r.json();
+    if (version && version !== window.APP_VERSION) {
+      reloading = true;
+      location.reload();
+    }
+  } catch {}
+}, 60000);
+let reloading = false;
+
 window.addEventListener('beforeunload', (e) => {
+  if (reloading) return;
   if (isAdmin() && S.dirty) e.preventDefault();
 });
 

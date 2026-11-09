@@ -96,6 +96,7 @@ npm test
 - `public/`: la web completa (HTML, CSS y JavaScript sin compilación). Es lo que publica GitHub Pages.
 - `public/js/logic.js`: reglas puras (puntajes, premios, mesas, balanceo, ranking, resumen).
 - `public/js/store.js`: base local (IndexedDB) y publicación en GitHub (un commit por publicación).
+- `public/version.json`: versión de la web; ejecuta `npm run version` antes de publicar cambios de código para que los navegadores descarguen lo nuevo (las pantallas abiertas se recargan solas).
 - `public/js/config.js`: repositorio y rama donde se publica, y cada cuántos minutos se publica sola durante un torneo.
 - `public/js/word.js` + `public/vendor/docx.iife.js`: resumen en Word.
 - `index.html` (raíz): redirige a `public/` para GitHub Pages.
