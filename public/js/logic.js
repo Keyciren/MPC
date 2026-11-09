@@ -787,7 +787,7 @@ export function bustParagraph(db, t, ev, ctx) {
   const boardAtAllIn = boardText(visible ? (ev.board || []).slice(0, visible) : []);
   const seed = ev.id;
   const goodbye = pick(
-    ['se despide del torneo', 'queda eliminado del torneo', 'dice adiós a la fecha', 'deja la mesa', 'se va para la casa'],
+    ['se despide del torneo', 'queda fuera del torneo', 'dice adiós a la fecha', 'deja la mesa', 'se va para la casa'],
     seed
   );
 
