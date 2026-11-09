@@ -1,5 +1,5 @@
 {
- "version": 9,
+ "version": 10,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -4910,10 +4910,10 @@
    "startedAt": 1794251030916,
    "initialTables": 2,
    "clock": {
-    "level": 6,
+    "level": 7,
     "running": true,
     "remaining": 1200000,
-    "endsAt": 1794253238476
+    "endsAt": 1794254575316
    }
   },
   {
