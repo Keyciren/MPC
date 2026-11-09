@@ -187,7 +187,8 @@ export function loginView() {
   return {
     html: `<div class="panel narrow"><h2>Ingreso administrador</h2>
       <p class="small">El administrador ingresa con un <b>token de GitHub</b> con permiso para escribir en el repositorio <b>${esc(CONFIG.owner)}/${esc(CONFIG.repo)}</b>. Se guarda solo en este navegador.</p>
-      <form data-login><label class="fld"><span>Token de GitHub</span><input type="password" name="pw" autocomplete="off" required autofocus placeholder="github_pat_…"></label>
+      <form data-login><label class="fld"><span>Token de GitHub o enlace de vinculación</span><input type="password" name="pw" autocomplete="off" required autofocus placeholder="github_pat_… o https://…#/vincular?k=…"></label>
+      <p class="small muted">¿Ya administras desde otro PC o celular? Ahí ve a Ajustes → Vincular otro dispositivo, copia el enlace y pégalo aquí.</p>
       <button class="btn">Ingresar</button></form>
       <details class="mt small"><summary>¿Cómo creo el token?</summary><ol>
         <li>Abre <a href="${newTokenUrl}" target="_blank" rel="noopener">GitHub → Settings → Fine-grained tokens → Generate new token</a>.</li>
@@ -200,7 +201,9 @@ export function loginView() {
       root.querySelector('[data-login]').onsubmit = async (e) => {
         e.preventDefault();
         try {
-          await login(e.target.pw.value);
+          const v = e.target.pw.value.trim();
+          const m = /[#&?]k=([^&\s]+)/.exec(v);
+          await login(m ? decodeURIComponent(m[1]) : v);
           toast('Bienvenido');
           location.hash = '#/admin/temporada';
         } catch (err) {
@@ -1532,9 +1535,10 @@ export function settingsView() {
       <button class="btn" data-pub ${S.publishing ? 'disabled' : ''}>⬆ Publicar ahora</button>
     </div>
     <div class="panel"><h3>📱 Vincular otro dispositivo</h3>
-      <p class="small">Genera un código QR y escanéalo con la cámara del celular o tablet. Ese dispositivo queda conectado como administrador: puede registrar eliminaciones, recompras, etc., y publicar. Los dispositivos vinculados se mantienen al día solos (revisan cada minuto si hay cambios publicados).</p>
+      <p class="small"><b>Celular o tablet:</b> genera el código QR y escanéalo con la cámara. <b>Otro PC:</b> copia el enlace de vinculación y ábrelo en el navegador de ese PC (o pégalo en Admin → ingreso). Ese dispositivo queda conectado como administrador: puede registrar eliminaciones, recompras, etc., y publicar. Los dispositivos vinculados se mantienen al día solos (revisan cada minuto si hay cambios publicados).</p>
       ${S.dirty ? '<p class="small warn-text">⚠ Este navegador tiene cambios sin publicar: publícalos antes para que el otro dispositivo parta con todo.</p>' : ''}
-      <div class="row wrap"><button class="btn" data-qr>Generar código QR</button><button class="btn ghost hidden" data-qrhide>Ocultar</button></div>
+      <div class="row wrap"><button class="btn" data-qr>Generar código QR</button><button class="btn" data-copylink>🔗 Copiar enlace de vinculación</button><button class="btn ghost hidden" data-qrhide>Ocultar</button></div>
+      <div data-linkbox class="hidden mt"><input class="link-input" readonly data-linktext><p class="small muted">Si no se copió solo, selecciona el texto y cópialo. Envíalo solo por un medio privado (por ejemplo, a tu propio correo) y bórralo después.</p></div>
       <div data-qrbox class="qr-box hidden"></div>
       <p class="small muted">Importante: el QR contiene tu llave de administrador. No lo compartas ni le tomes captura para enviarla; muéstralo solo a tus dispositivos. Si se filtra, borra el token en GitHub (Settings → Developer settings → Personal access tokens) y crea otro. Los correos de los jugadores no viajan en el QR: para tenerlos en el otro dispositivo usa el respaldo.</p>
     </div>
@@ -1559,7 +1563,26 @@ export function settingsView() {
         clearTimeout(box._t);
         box._t = setTimeout(() => hide.click(), 120000);
       };
+      const linkBox = root.querySelector('[data-linkbox]');
+      root.querySelector('[data-copylink]').onclick = async () => {
+        const link = `${location.origin}${location.pathname}#/vincular?k=${encodeURIComponent(S.token)}`;
+        const input = root.querySelector('[data-linktext]');
+        input.value = link;
+        linkBox.classList.remove('hidden');
+        hide.classList.remove('hidden');
+        input.select();
+        try {
+          await navigator.clipboard.writeText(link);
+          toast('Enlace copiado. Ábrelo en el navegador del otro PC.');
+        } catch {
+          document.execCommand && document.execCommand('copy');
+        }
+        clearTimeout(linkBox._t);
+        linkBox._t = setTimeout(() => hide.click(), 120000);
+      };
       hide.onclick = () => {
+        linkBox.classList.add('hidden');
+        root.querySelector('[data-linktext]').value = '';
         box.innerHTML = '';
         box.classList.add('hidden');
         hide.classList.add('hidden');
