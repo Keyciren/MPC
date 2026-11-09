@@ -176,3 +176,30 @@ test('Grand Slam rebuy: misma estructura, buy-in y recompra de $7.500', async ()
   assert.equal(nr.buyIn, 5000);
   assert.deepEqual(gs.levels, nr.levels);
 });
+
+test('el crupier que juega siempre va en el puesto 1', async () => {
+  const m = await import('../public/js/logic.js');
+  const ids = Array.from({ length: 16 }, (_, i) => 'p' + i);
+  for (let k = 0; k < 20; k++) {
+    const tables = m.buildTables(ids, 9, [{ playerId: 'p5' }, { playerId: 'p11' }]);
+    assert.equal(tables[0].seats[0], 'p5');
+    assert.equal(tables[1].seats[0], 'p11');
+  }
+  // balancear nunca mueve al crupier de su mesa
+  const tb = [
+    { id: 'a', number: 1, dealer: { playerId: 'd1' }, seats: ['d1', 'x1', 'x2', 'x3', 'x4', 'x5'] },
+    { id: 'b', number: 2, dealer: { playerId: 'd2' }, seats: ['d2', 'y1', 'y2'] },
+  ];
+  const bal = m.balanceSuggestions(tb, ['d1', 'x1', 'x2', 'x3', 'x4', 'x5', 'd2', 'y1', 'y2'], 6);
+  assert.equal(bal.breakTable, null);
+  assert.ok(bal.moves.length >= 1);
+  assert.ok(bal.moves.every((mv) => mv.playerId !== 'd1' && mv.playerId !== 'd2'));
+  const after = m.applyMoves(structuredClone(tb), bal.moves);
+  assert.equal(after[0].seats[0], 'd1');
+  assert.equal(after[1].seats[0], 'd2');
+  // si se rompe la mesa, su crupier pasa a jugar en otra; el crupier de la mesa que queda sigue en el 1
+  const brk = m.balanceSuggestions(tb, ['d1', 'x1', 'x2', 'd2', 'y1'], 9);
+  const merged = m.applyMoves(structuredClone(tb), brk.moves, brk.breakTable);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].seats[0], merged[0].dealer.playerId);
+});

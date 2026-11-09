@@ -310,7 +310,22 @@ export function buildTables(playerIds, perTable, dealers = [], rnd = Math.random
   tables.forEach((tb) => {
     tb.seats = shuffle(tb.seats, rnd);
   });
+  return dealersToSeatOne(tables);
+}
+
+// Regla del club: el crupier que también juega se sienta siempre en el puesto 1 de la mesa que reparte.
+export function dealersToSeatOne(tables) {
+  (tables || []).forEach((tb) => {
+    const pid = tb.dealer && tb.dealer.playerId;
+    if (!pid || !tables.some((x) => x.seats.includes(pid))) return; // el crupier no juega
+    tables.forEach((x) => (x.seats = x.seats.filter((p) => p !== pid)));
+    tb.seats.unshift(pid);
+  });
   return tables;
+}
+
+export function isTableDealer(tb, pid) {
+  return !!(tb && tb.dealer && tb.dealer.playerId === pid);
 }
 
 // Sugerencias para balancear mesas tras una eliminación.
@@ -334,13 +349,16 @@ export function balanceSuggestions(tables, aliveIds, perTable) {
     });
     return { moves, breakTable: victim.id };
   }
-  const counts = active.map((tb) => ({ id: tb.id, number: tb.number, players: [...tb.players] }));
+  const counts = active.map((tb) => ({ id: tb.id, number: tb.number, dealer: tb.dealer, players: [...tb.players] }));
   for (let guard = 0; guard < 20; guard++) {
     counts.sort((a, b) => b.players.length - a.players.length || a.number - b.number);
     const big = counts[0];
     const small = counts[counts.length - 1];
     if (big.players.length - small.players.length < 2) break;
-    const pid = big.players.pop();
+    const movable = big.players.filter((p) => !isTableDealer(big, p));
+    if (!movable.length) break;
+    const pid = movable[movable.length - 1];
+    big.players = big.players.filter((p) => p !== pid);
     small.players.push(pid);
     moves.push({ playerId: pid, from: big.id, to: small.id });
   }
@@ -356,8 +374,8 @@ export function applyMoves(tables, moves, removeBroken = null) {
     from.seats = from.seats.filter((p) => p !== m.playerId);
     if (!to.seats.includes(m.playerId)) to.seats.push(m.playerId);
   });
-  if (removeBroken) return tables.filter((tb) => tb.id !== removeBroken);
-  return tables;
+  const out = removeBroken ? tables.filter((tb) => tb.id !== removeBroken) : tables;
+  return dealersToSeatOne(out);
 }
 
 export function tableOf(t, playerId) {

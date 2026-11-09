@@ -46,6 +46,8 @@ import {
   levelsFor,
   rebuyOpenAt,
   luckyLoserOpenAt,
+  dealersToSeatOne,
+  isTableDealer,
 } from './logic.js';
 import { importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
@@ -642,7 +644,7 @@ function tablesTab(t) {
         ? `<div class="panel"><h3>Mesas sorteadas</h3><div class="tables">${t.tables
             .map(
               (tb) => `<div class="felt"><h4>Mesa ${tb.number}${tb.dealer ? ` <small>Dealer: ${esc(tb.dealer.playerId ? pname(tb.dealer.playerId) : tb.dealer.name)}</small>` : ''}</h4>
-            <ol>${tb.seats.map((p) => `<li>${esc(pname(p))} ${moveSelect(t, p, tb.id)}</li>`).join('')}</ol></div>`
+            <ol>${tb.seats.map((p) => `<li>${esc(pname(p))}${isTableDealer(tb, p) ? ' <span class="pill dealer">Dealer</span>' : ''} ${moveSelect(t, p, tb.id)}</li>`).join('')}</ol></div>`
             )
             .join('')}</div>
             <div class="row mt"><button class="btn big" data-start>Iniciar torneo ▶</button></div></div>`
@@ -654,9 +656,19 @@ function tablesTab(t) {
           x.tableDealers = x.tableDealers || [];
           const i = Number(el.dataset.dealer);
           x.tableDealers[i] = el.value === '' ? null : el.value === '__ext' ? { name: '' } : { playerId: el.value };
+          if (x.tables && x.tables[i]) {
+            x.tables[i].dealer = x.tableDealers[i];
+            x.tables = dealersToSeatOne(x.tables);
+          }
         })
       );
-      on(root, '[data-dealername]', 'change', (el) => upT(t.id, (x) => (x.tableDealers[Number(el.dataset.dealername)] = { name: el.value })));
+      on(root, '[data-dealername]', 'change', (el) =>
+        upT(t.id, (x) => {
+          const i = Number(el.dataset.dealername);
+          x.tableDealers[i] = { name: el.value };
+          if (x.tables && x.tables[i]) x.tables[i].dealer = x.tableDealers[i];
+        })
+      );
       root.querySelector('[data-build]').onclick = () =>
         upT(t.id, (x) => {
           const ids = x.entries.map((e) => e.playerId);
@@ -732,8 +744,10 @@ function liveTab(t) {
   const playerRow = (pid, tbId) => {
     const e = byId[pid];
     if (!e || e.eliminated) return '';
+    const tb = t.tables.find((x) => x.id === tbId);
+    const seat = tb.seats.indexOf(pid) + 1;
     return `<li class="prow">
-      <span class="pn">${esc(pname(pid))}${e.rebuys ? ` <span class="pill">R${e.rebuys}</span>` : ''}${e.addon ? ' <span class="pill add">A</span>' : ''}${e.luckyLoser ? ' <span class="pill ll">LL</span>' : ''}</span>
+      <span class="pn"><span class="seat">${seat}</span>${esc(pname(pid))}${isTableDealer(tb, pid) ? ' <span class="pill dealer">Dealer</span>' : ''}${e.rebuys ? ` <span class="pill">R${e.rebuys}</span>` : ''}${e.addon ? ' <span class="pill add">A</span>' : ''}${e.luckyLoser ? ' <span class="pill ll">LL</span>' : ''}</span>
       ${
         running
           ? `<span class="pa">

@@ -288,3 +288,6 @@ textarea { width: 100%; resize: vertical; }
 .structs { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .format-box { background: var(--bg2); border-left: 4px solid var(--accent); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
 .format-box ul { margin: 6px 0 0; padding-left: 18px; }
+.seat { display: inline-block; min-width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; background: rgba(0,0,0,.35); color: #fff; font-size: .75em; margin-right: 6px; }
+.felt ul.seats { list-style: none; padding-left: 0; }
+.pill.dealer { background: #fff; color: #111; }
