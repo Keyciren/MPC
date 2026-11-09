@@ -54,7 +54,7 @@ import {
   prizePercentsOf,
   defaultPrizeTable,
 } from './logic.js';
-import { prizeTableHtml, importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
+import { prizeCards, prizeTableHtml, importedTournament, badges, clockHtml, clockState, resultsTable, seasonPicker, seasonFromQuery, pointsTableHtml, STATUS } from './views-public.js';
 
 // ---------- utilidades de formularios ----------
 function getPath(obj, path) {
@@ -807,6 +807,7 @@ function liveTab(t) {
       }
     </div>
     <div class="panel">
+      ${prizeCards(pz, c.currency)}
       <div class="stats-row">
         <div><b>${tot.alive}</b><span>de ${tot.n} vivos</span></div>
         <div><b>${money(tot.pool, c.currency)}</b><span>pozo</span></div>
@@ -814,7 +815,7 @@ function liveTab(t) {
         <div><b>${tot.avgStack.toLocaleString('es-CL')}</b><span>stack prom.</span></div>
         ${t.modality === 'rebuy' ? `<div><b>${tot.rebuys}</b><span>recompras</span></div><div><b>${tot.addons}</b><span>add on</span></div>` : `<div><b>${tot.lucky}</b><span>lucky loser</span></div>`}
       </div>
-      <ol class="prizes">${pz.map((p) => `<li>${money(p, c.currency)}</li>`).join('')}</ol>
+
       ${
         running
           ? `<div class="row wrap"><button class="btn sm ghost" data-jackpot>🎰 Registrar jackpot</button><button class="btn sm ghost" data-late>+ Inscribir jugador</button><button class="btn sm ghost" data-bonus>+ Punto extra</button>

@@ -225,14 +225,14 @@ function liveTournament(t) {
   <div class="live-layout">
     <div class="panel center clock-panel">${clockHtml(t)}</div>
     <div class="panel">
+      ${prizeCards(pz, cfg.currency)}
       <div class="stats-row">
         <div><b>${tot.alive}</b><span>de ${tot.n} en juego</span></div>
         <div><b>${money(tot.pool, cfg.currency)}</b><span>pozo</span></div>
         <div><b>${tot.avgStack.toLocaleString('es-CL')}</b><span>stack promedio</span></div>
         ${t.modality === 'rebuy' ? `<div><b>${tot.rebuys}</b><span>recompras</span></div><div><b>${tot.addons}</b><span>add on</span></div>` : `<div><b>${tot.lucky}</b><span>lucky loser</span></div>`}
       </div>
-      <h4>Premios</h4>
-      <ol class="prizes">${pz.map((p) => `<li>${money(p, cfg.currency)}</li>`).join('')}</ol>
+
     </div>
   </div>
   <div class="panel"><h3>Mesas</h3><div class="tables">${(t.tables || [])
@@ -246,6 +246,12 @@ function liveTournament(t) {
       ? `<ol class="busts">${outs.map((e, i) => `<li><b>${n - i}°</b> ${esc(pname(e.playerId))} ${e.byPlayerId ? `<span class="muted">por</span> ${esc(pname(e.byPlayerId))}` : ''} ${cardsHtml(e.playerCards, true)} ${e.byCards && e.byCards.length ? 'vs ' + cardsHtml(e.byCards, true) : ''}</li>`).reverse().join('')}</ol>`
       : '<p class="muted">Aún no hay eliminados.</p>'
   }</div></div>`;
+}
+
+// Premios en grande: un recuadro por puesto premiado
+export function prizeCards(pz, currency) {
+  if (!pz.length) return '';
+  return `<div class="prize-cards">${pz.map((p, i) => `<div class="prize-card ${i === 0 ? 'first' : ''}"><span>${i + 1}° lugar</span><b>${money(p, currency)}</b></div>`).join('')}</div>`;
 }
 
 export function resultsTable(t) {
