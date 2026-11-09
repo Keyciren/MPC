@@ -1,5 +1,5 @@
 {
- "version": 3,
+ "version": 4,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -3847,7 +3847,7 @@
    "finalDate": "2026-06-27",
    "venue": "Colina",
    "modality": "rebuy",
-   "type": "normal",
+   "type": "gs",
    "status": "finished",
    "dealerIds": [
     "p_kari",
@@ -3905,7 +3905,7 @@
    "finalDate": "2026-07-25",
    "venue": "Santiago",
    "modality": "freezeout",
-   "type": "gs",
+   "type": "normal",
    "status": "finished",
    "dealerIds": [
     "p_serrano",
