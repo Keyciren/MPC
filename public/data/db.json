@@ -1224,140 +1224,6 @@
      }
     ]
    }
-  },
-  {
-   "id": "s7",
-   "name": "Temporada 7",
-   "tournamentsCount": 12,
-   "config": {
-    "currency": "$",
-    "fee": 1000,
-    "perTable": 9,
-    "prizePercents": [
-     50,
-     30,
-     20
-    ],
-    "roundTo": 1000,
-    "luckyLoserCost": 20000,
-    "freezeout": {
-     "buyIn": 20000,
-     "startChips": 20000
-    },
-    "rebuy": {
-     "buyIn": 10000,
-     "startChips": 10000,
-     "rebuyCost": 10000,
-     "rebuyChips": 10000,
-     "addonCost": 10000,
-     "addonChips": 15000,
-     "rebuyUntilLevel": 6
-    },
-    "levels": [
-     {
-      "sb": 50,
-      "bb": 100,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 100,
-      "bb": 200,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 150,
-      "bb": 300,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 200,
-      "bb": 400,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 300,
-      "bb": 600,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 400,
-      "bb": 800,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 500,
-      "bb": 1000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 750,
-      "bb": 1500,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 1000,
-      "bb": 2000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 1500,
-      "bb": 3000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 2000,
-      "bb": 4000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 3000,
-      "bb": 6000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 4000,
-      "bb": 8000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 5000,
-      "bb": 10000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 7500,
-      "bb": 15000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 10000,
-      "bb": 20000,
-      "ante": 0,
-      "minutes": 20
-     },
-     {
-      "sb": 15000,
-      "bb": 30000,
-      "ante": 0,
-      "minutes": 20
-     }
-    ]
-   }
   }
  ],
  "tournaments": [
@@ -3273,10 +3139,12 @@
    "seasonId": "s5",
    "number": 1,
    "label": "Fecha 1",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
-   "modality": "rebuy",
+   "dateOptions": [
+    "2025-03-01"
+   ],
+   "finalDate": "2025-03-01",
+   "venue": "Santiago",
+   "modality": "freezeout",
    "type": "gs",
    "status": "finished",
    "dealerIds": [],
@@ -3311,9 +3179,11 @@
    "seasonId": "s5",
    "number": 2,
    "label": "Fecha 2",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
+   "dateOptions": [
+    "2025-03-29"
+   ],
+   "finalDate": "2025-03-29",
+   "venue": "Santiago",
    "modality": "rebuy",
    "type": "normal",
    "status": "finished",
@@ -3349,10 +3219,13 @@
    "seasonId": "s5",
    "number": 3,
    "label": "Fecha 3",
-   "dateOptions": [],
+   "dateOptions": [
+    "2025-04-18",
+    "2025-04-19"
+   ],
    "finalDate": null,
-   "venue": "",
-   "modality": "rebuy",
+   "venue": "Colina",
+   "modality": "freezeout",
    "type": "normal",
    "status": "finished",
    "dealerIds": [],
@@ -3387,13 +3260,20 @@
    "seasonId": "s5",
    "number": 4,
    "label": "Fecha 4",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
+   "dateOptions": [
+    "2025-05-16"
+   ],
+   "finalDate": "2025-05-16",
+   "venue": "Colina",
    "modality": "rebuy",
    "type": "gs",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_kc",
+    "p_rene_lander",
+    "p_pancho",
+    "p_glenda"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3428,13 +3308,20 @@
    "seasonId": "s5",
    "number": 5,
    "label": "Fecha 5",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
-   "modality": "rebuy",
+   "dateOptions": [
+    "2025-06-19"
+   ],
+   "finalDate": "2025-06-19",
+   "venue": "Santiago",
+   "modality": "freezeout",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_nadia",
+    "p_kari",
+    "p_julio",
+    "p_meli"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3469,13 +3356,20 @@
    "seasonId": "s5",
    "number": 6,
    "label": "Fecha 6",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
+   "dateOptions": [
+    "2025-07-12"
+   ],
+   "finalDate": "2025-07-12",
+   "venue": "Colina",
    "modality": "rebuy",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_billy",
+    "p_guillermo",
+    "p_serrano",
+    "p_edgar"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3511,13 +3405,20 @@
    "seasonId": "s5",
    "number": 7,
    "label": "Fecha 7",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
-   "modality": "rebuy",
+   "dateOptions": [
+    "2025-08-02"
+   ],
+   "finalDate": "2025-08-02",
+   "venue": "Santiago",
+   "modality": "freezeout",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_andres",
+    "p_andrea",
+    "p_les",
+    "p_miguel"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3551,13 +3452,20 @@
    "seasonId": "s5",
    "number": 8,
    "label": "Fecha 8",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
+   "dateOptions": [
+    "2025-08-23"
+   ],
+   "finalDate": "2025-08-23",
+   "venue": "Colina",
    "modality": "rebuy",
    "type": "gs",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_xelo",
+    "p_kc",
+    "p_harry",
+    "p_pancho"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3593,13 +3501,21 @@
    "seasonId": "s5",
    "number": 9,
    "label": "Fecha 9",
-   "dateOptions": [],
+   "dateOptions": [
+    "2025-09-05",
+    "2025-09-06"
+   ],
    "finalDate": null,
-   "venue": "",
-   "modality": "rebuy",
+   "venue": "Santiago",
+   "modality": "freezeout",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_billy",
+    "p_guillermo",
+    "p_joan",
+    "p_julio"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3632,13 +3548,20 @@
    "seasonId": "s5",
    "number": 10,
    "label": "Fecha 10",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "",
+   "dateOptions": [
+    "2025-10-03"
+   ],
+   "finalDate": "2025-10-03",
+   "venue": "Colina",
    "modality": "rebuy",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_glenda",
+    "p_carlos",
+    "p_kari",
+    "p_andrea"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3674,8 +3597,8 @@
    "label": "Fecha 11",
    "dateOptions": [],
    "finalDate": null,
-   "venue": "",
-   "modality": "rebuy",
+   "venue": "Santiago",
+   "modality": "freezeout",
    "type": "normal",
    "status": "finished",
    "dealerIds": [],
@@ -3716,7 +3639,7 @@
    "label": "Fecha 12",
    "dateOptions": [],
    "finalDate": null,
-   "venue": "",
+   "venue": "Colina",
    "modality": "rebuy",
    "type": "gs",
    "status": "finished",
@@ -3757,14 +3680,17 @@
    "number": 1,
    "label": "Fecha 1",
    "dateOptions": [
-    "2025-03-01"
+    "2026-04-17"
    ],
-   "finalDate": "2025-03-01",
-   "venue": "Santiago",
-   "modality": "freezeout",
-   "type": "gs",
+   "finalDate": "2026-04-17",
+   "venue": "Colina",
+   "modality": "rebuy",
+   "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_guillermo",
+    "p_billy"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3811,14 +3737,17 @@
    "number": 2,
    "label": "Fecha 2",
    "dateOptions": [
-    "2025-03-29"
+    "2026-05-21"
    ],
-   "finalDate": "2025-03-29",
+   "finalDate": "2026-05-21",
    "venue": "Santiago",
-   "modality": "rebuy",
-   "type": "normal",
+   "modality": "freezeout",
+   "type": "gs",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_xelo",
+    "p_carlos"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3861,15 +3790,17 @@
    "number": 3,
    "label": "Fecha 3",
    "dateOptions": [
-    "2025-04-18",
-    "2025-04-19"
+    "2026-06-13"
    ],
-   "finalDate": null,
+   "finalDate": "2026-06-13",
    "venue": "Colina",
-   "modality": "freezeout",
+   "modality": "rebuy",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_kc",
+    "p_andres"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
@@ -3911,18 +3842,18 @@
    "number": 4,
    "label": "Fecha 4",
    "dateOptions": [
-    "2025-05-16"
+    "2026-06-27"
    ],
-   "finalDate": "2025-05-16",
+   "finalDate": "2026-06-27",
    "venue": "Colina",
    "modality": "rebuy",
-   "type": "gs",
+   "type": "normal",
    "status": "finished",
    "dealerIds": [
-    "p_kc",
-    "p_rene_lander"
+    "p_kari",
+    "p_nadia"
    ],
-   "trainee": "Pancho y Glenda",
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -3969,18 +3900,18 @@
    "number": 5,
    "label": "Fecha 5",
    "dateOptions": [
-    "2025-06-19"
+    "2026-07-25"
    ],
-   "finalDate": "2025-06-19",
+   "finalDate": "2026-07-25",
    "venue": "Santiago",
    "modality": "freezeout",
-   "type": "normal",
+   "type": "gs",
    "status": "finished",
    "dealerIds": [
-    "p_nadia",
-    "p_kari"
+    "p_serrano",
+    "p_guillermo"
    ],
-   "trainee": "Julio y Meli",
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -4020,18 +3951,18 @@
    "number": 6,
    "label": "Fecha 6",
    "dateOptions": [
-    "2025-07-12"
+    "2026-08-22"
    ],
-   "finalDate": "2025-07-12",
+   "finalDate": "2026-08-22",
    "venue": "Colina",
    "modality": "rebuy",
    "type": "normal",
    "status": "finished",
    "dealerIds": [
-    "p_billy",
-    "p_guillermo"
+    "p_julio",
+    "p_carlos"
    ],
-   "trainee": "Joan y Serrano",
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -4074,18 +4005,18 @@
    "number": 7,
    "label": "Fecha 7",
    "dateOptions": [
-    "2025-08-02"
+    "2026-09-11"
    ],
-   "finalDate": "2025-08-02",
+   "finalDate": "2026-09-11",
    "venue": "Santiago",
    "modality": "freezeout",
    "type": "normal",
    "status": "finished",
    "dealerIds": [
-    "p_andres",
-    "p_andrea"
+    "p_rene_lander",
+    "p_edgar"
    ],
-   "trainee": "Edgar y Les",
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -4132,18 +4063,18 @@
    "number": 8,
    "label": "Fecha 8",
    "dateOptions": [
-    "2025-08-23"
+    "2026-10-03"
    ],
-   "finalDate": "2025-08-23",
+   "finalDate": "2026-10-03",
    "venue": "Colina",
    "modality": "rebuy",
    "type": "gs",
    "status": "finished",
    "dealerIds": [
-    "p_xelo",
-    "p_kc"
+    "p_billy",
+    "p_xelo"
    ],
-   "trainee": "Migue y Carlos",
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -4183,19 +4114,18 @@
    "number": 9,
    "label": "Fecha 9",
    "dateOptions": [
-    "2025-09-05",
-    "2025-09-06"
+    "2026-10-23"
    ],
-   "finalDate": null,
+   "finalDate": "2026-10-23",
    "venue": "Santiago",
    "modality": "freezeout",
    "type": "normal",
    "status": "finished",
    "dealerIds": [
-    "p_rene_lander",
-    "p_nadia"
+    "p_andrea",
+    "p_andres"
    ],
-   "trainee": "Harry y Pancho",
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -4239,18 +4169,16 @@
    "number": 10,
    "label": "Fecha 10",
    "dateOptions": [
-    "2025-10-03"
+    "2026-11-13",
+    "2026-11-14"
    ],
-   "finalDate": "2025-10-03",
+   "finalDate": null,
    "venue": "Colina",
    "modality": "rebuy",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [
-    "p_rene_lander",
-    "p_kari"
-   ],
-   "trainee": "Glenda y Carlos",
+   "dealerIds": [],
+   "trainee": "",
    "entries": [],
    "tables": [],
    "events": [],
@@ -4290,288 +4218,6 @@
    "seasonId": "s6",
    "number": 11,
    "label": "Fecha 11",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "Santiago",
-   "modality": "freezeout",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_andres",
-    "p_rene_lander"
-   ],
-   "trainee": "Meli y Serrano",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s6t12",
-   "seasonId": "s6",
-   "number": 12,
-   "label": "Fecha 12",
-   "dateOptions": [],
-   "finalDate": null,
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_xelo",
-    "p_kc"
-   ],
-   "trainee": "Edgar y Calico",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t1",
-   "seasonId": "s7",
-   "number": 1,
-   "label": "Fecha 1",
-   "dateOptions": [
-    "2026-04-17"
-   ],
-   "finalDate": "2026-04-17",
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_guillermo",
-    "p_billy"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t2",
-   "seasonId": "s7",
-   "number": 2,
-   "label": "Fecha 2",
-   "dateOptions": [
-    "2026-05-21"
-   ],
-   "finalDate": "2026-05-21",
-   "venue": "Santiago",
-   "modality": "freezeout",
-   "type": "gs",
-   "status": "planned",
-   "dealerIds": [
-    "p_xelo",
-    "p_carlos"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t3",
-   "seasonId": "s7",
-   "number": 3,
-   "label": "Fecha 3",
-   "dateOptions": [
-    "2026-06-13"
-   ],
-   "finalDate": "2026-06-13",
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_kc",
-    "p_andres"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t4",
-   "seasonId": "s7",
-   "number": 4,
-   "label": "Fecha 4",
-   "dateOptions": [
-    "2026-06-27"
-   ],
-   "finalDate": "2026-06-27",
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_kari",
-    "p_nadia"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t5",
-   "seasonId": "s7",
-   "number": 5,
-   "label": "Fecha 5",
-   "dateOptions": [
-    "2026-07-25"
-   ],
-   "finalDate": "2026-07-25",
-   "venue": "Santiago",
-   "modality": "freezeout",
-   "type": "gs",
-   "status": "planned",
-   "dealerIds": [
-    "p_serrano",
-    "p_guillermo"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t6",
-   "seasonId": "s7",
-   "number": 6,
-   "label": "Fecha 6",
-   "dateOptions": [
-    "2026-08-22"
-   ],
-   "finalDate": "2026-08-22",
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_julio",
-    "p_carlos"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t7",
-   "seasonId": "s7",
-   "number": 7,
-   "label": "Fecha 7",
-   "dateOptions": [
-    "2026-09-11"
-   ],
-   "finalDate": "2026-09-11",
-   "venue": "Santiago",
-   "modality": "freezeout",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_rene_lander",
-    "p_edgar"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t8",
-   "seasonId": "s7",
-   "number": 8,
-   "label": "Fecha 8",
-   "dateOptions": [
-    "2026-10-03"
-   ],
-   "finalDate": "2026-10-03",
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "gs",
-   "status": "planned",
-   "dealerIds": [
-    "p_billy",
-    "p_xelo"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t9",
-   "seasonId": "s7",
-   "number": 9,
-   "label": "Fecha 9",
-   "dateOptions": [
-    "2026-10-23"
-   ],
-   "finalDate": "2026-10-23",
-   "venue": "Santiago",
-   "modality": "freezeout",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [
-    "p_andrea",
-    "p_andres"
-   ],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t10",
-   "seasonId": "s7",
-   "number": 10,
-   "label": "Fecha 10",
-   "dateOptions": [
-    "2026-11-13",
-    "2026-11-14"
-   ],
-   "finalDate": null,
-   "venue": "Colina",
-   "modality": "rebuy",
-   "type": "normal",
-   "status": "planned",
-   "dealerIds": [],
-   "trainee": "",
-   "entries": [],
-   "tables": [],
-   "events": [],
-   "jackpots": [],
-   "bonus": []
-  },
-  {
-   "id": "s7t11",
-   "seasonId": "s7",
-   "number": 11,
-   "label": "Fecha 11",
    "dateOptions": [
     "2026-12-04",
     "2026-12-05"
@@ -4590,8 +4236,8 @@
    "bonus": []
   },
   {
-   "id": "s7t12",
-   "seasonId": "s7",
+   "id": "s6t12",
+   "seasonId": "s6",
    "number": 12,
    "label": "Fecha 12",
    "dateOptions": [
