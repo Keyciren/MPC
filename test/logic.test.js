@@ -274,3 +274,28 @@ test('fecha en juego preparada antes de la tabla usa la tabla del club', async (
   const t = { config: cfg, status: 'running', prizePercents: [50, 30, 20], entries: Array.from({ length: 17 }, (_, i) => ({ playerId: 'p' + i })) };
   assert.deepEqual(m.prizePercentsOf(t), [38, 26, 18, 11, 7]);
 });
+
+test('ganancias y pérdidas de una fecha jugada en la app', async () => {
+  const m = await import('../public/js/logic.js');
+  const season = { id: 's', config: m.defaultSeasonConfig() };
+  const cfg = m.buildConfig(season, 'rebuy', 'normal');
+  const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const t = {
+    id: 't', seasonId: 's', number: 1, status: 'finished', modality: 'rebuy', type: 'normal', config: cfg,
+    entries: ids.map((id) => ({ playerId: id, rebuys: id === 'b' ? 2 : 0, addon: id !== 'h', luckyLoser: false })),
+    events: ids.slice(1).reverse().map((id, i) => ({ id: 'e' + i, type: 'bust', playerId: id, outcome: 'out' })),
+    jackpots: [{ playerId: 'c', amount: 20000 }],
+  };
+  const db = { settings: { pointTables: m.defaultPointTables() }, players: ids.map((id) => ({ id, name: id, type: 'club' })), seasons: [season], tournaments: [t] };
+  const mt = m.moneyByTournament(t, db.settings, {});
+  assert.equal(mt.b.e, 5000 + 2 * 5000 + 5000);
+  assert.equal(mt.h.e, 5000);
+  assert.equal(mt.a.f, 1000);
+  assert.equal(mt.c.j, 20000);
+  const pool = 8 * 5000 + 2 * 5000 + 7 * 5000; // 85.000; 8 jugadores: 65/35
+  assert.equal(mt.a.p + mt.b.p, pool);
+  const sm = m.seasonMoney(db, 's', {});
+  const totalNet = sm.rows.reduce((s, r) => s + r.net, 0);
+  assert.equal(totalNet, 20000 - 8 * 1000, 'lo que pierden unos lo ganan otros, salvo fee y jackpot');
+  assert.equal(m.seasonMoney(db, 's', { t: { a: { e: 10000, f: 1000, p: 0, j: 0 } } }).rows.length, 1, 'los datos históricos tienen prioridad');
+});

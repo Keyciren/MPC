@@ -612,6 +612,62 @@ export function history(db) {
   return { seasons: list, hall };
 }
 
+// ---------- Dinero: ganancias y pérdidas ----------
+// fin: datos históricos por fecha { tid: { playerId: { e: entradas, f: fee, p: premio, j: jackpot } } }
+export function moneyByTournament(t, settings, fin = {}) {
+  if (fin[t.id]) return fin[t.id];
+  if (t.status !== 'finished' || t.imported || !t.config) return {};
+  const c = t.config;
+  const prize = Object.fromEntries(results(t, settings).map((r) => [r.playerId, r.prize]));
+  const out = {};
+  (t.entries || []).forEach((e) => {
+    out[e.playerId] = {
+      e: c.buyIn + (e.rebuys || 0) * c.rebuyCost + (e.addon ? c.addonCost : 0) + (e.luckyLoser ? c.luckyLoserCost : 0),
+      f: c.fee || 0,
+      p: prize[e.playerId] || 0,
+      j: 0,
+    };
+  });
+  (t.jackpots || []).forEach((j) => {
+    if (out[j.playerId]) out[j.playerId].j += Number(j.amount) || 0;
+  });
+  return out;
+}
+
+export function seasonMoney(db, seasonId, fin = {}) {
+  const per = {};
+  let withData = 0;
+  seasonTournaments(db, seasonId).forEach((t) => {
+    const m = moneyByTournament(t, db.settings, fin);
+    if (Object.keys(m).length) withData++;
+    Object.entries(m).forEach(([pid, v]) => {
+      const r = (per[pid] = per[pid] || { playerId: pid, fechas: 0, e: 0, f: 0, p: 0, j: 0 });
+      r.fechas++;
+      r.e += v.e;
+      r.f += v.f;
+      r.p += v.p;
+      r.j += v.j;
+    });
+  });
+  const rows = Object.values(per).map((r) => ({ ...r, net: r.p + r.j - r.e - r.f }));
+  rows.sort((a, b) => b.net - a.net);
+  return { rows, fechas: withData };
+}
+
+// Neto histórico por jugador y temporada
+export function moneyHistory(db, fin = {}) {
+  const seasons = (db.seasons || []).filter((s) => seasonMoney(db, s.id, fin).fechas > 0);
+  const per = {};
+  seasons.forEach((s) => {
+    seasonMoney(db, s.id, fin).rows.forEach((r) => {
+      const x = (per[r.playerId] = per[r.playerId] || { playerId: r.playerId, bySeason: {}, total: 0 });
+      x.bySeason[s.id] = r.net;
+      x.total += r.net;
+    });
+  });
+  return { seasons, rows: Object.values(per).sort((a, b) => b.total - a.total) };
+}
+
 // ---------- Resumen lúdico ----------
 const ORDINALS = ['', 'Primer', 'Segundo', 'Tercer', 'Cuarto', 'Quinto', 'Sexto', 'Séptimo', 'Octavo', 'Noveno', 'Décimo', 'Onceavo', 'Doceavo'];
 

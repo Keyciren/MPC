@@ -317,3 +317,7 @@ textarea { width: 100%; resize: vertical; }
 .prize-card b { display: block; font-size: clamp(1.6rem, 3.6vw, 2.4rem); color: var(--accent); line-height: 1.15; font-variant-numeric: tabular-nums; }
 .prize-card.first { border-color: var(--accent); background: linear-gradient(180deg, #3a3215, var(--bg2)); }
 .prize-card.first b { font-size: clamp(1.9rem, 4.4vw, 2.9rem); }
+.tbl.money td, .tbl.money th { text-align: right; white-space: nowrap; }
+.tbl.money td:first-child, .tbl.money th:first-child { text-align: left; }
+.pos { color: #4fd18b; }
+.neg { color: #ff7b7f; }

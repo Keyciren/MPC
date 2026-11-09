@@ -21,6 +21,8 @@ import {
   rebuyOpenAt,
   prizePercentsOf,
   defaultPrizeTable,
+  seasonMoney,
+  moneyHistory,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -411,6 +413,42 @@ export function pointsTableHtml(tb) {
 }
 
 // ---------- Estadísticas de temporada ----------
+function moneyCell(v, cur = '$') {
+  const n = Math.round(v || 0);
+  return `<span class="${n > 0 ? 'pos' : n < 0 ? 'neg' : ''}">${n > 0 ? '+' : n < 0 ? '−' : ''}${money(Math.abs(n), cur)}</span>`;
+}
+
+function moneySection(season) {
+  const fin = S.fin || {};
+  const sm = seasonMoney(S.db, season.id, fin);
+  const hist = moneyHistory(S.db, fin);
+  const isGuest = (id) => (playerById(id) || {}).type === 'invitado';
+  const tot = sm.rows.reduce((a, r) => ({ e: a.e + r.e, f: a.f + r.f, p: a.p + r.p, j: a.j + r.j }), { e: 0, f: 0, p: 0, j: 0 });
+  return `<div class="panel"><h3>Ganancias y pérdidas — ${esc(season.name)}</h3>
+    ${
+      sm.rows.length
+        ? `<div class="table-wrap"><table class="tbl money">
+      <thead><tr><th>Jugador</th><th>Fechas</th><th>Entradas</th><th>Fee</th><th>Premios</th><th>Jackpot</th><th>Neto</th></tr></thead>
+      <tbody>${sm.rows
+        .map(
+          (r) => `<tr><td>${esc(pname(r.playerId))}${isGuest(r.playerId) ? ' <span class="tag guest">inv</span>' : ''}</td><td>${r.fechas}</td><td>${money(r.e)}</td><td>${money(r.f)}</td><td>${r.p ? money(r.p) : ''}</td><td>${r.j ? money(r.j) : ''}</td><td><b>${moneyCell(r.net)}</b></td></tr>`
+        )
+        .join('')}</tbody>
+      <tfoot><tr><th>Total</th><th></th><th>${money(tot.e)}</th><th>${money(tot.f)}</th><th>${money(tot.p)}</th><th>${money(tot.j)}</th><th></th></tr></tfoot></table></div>
+      <p class="small muted">Neto = premios + jackpot − entradas (buy-in, recompras, add on, lucky loser) − fee. No incluye la comida. ${sm.fechas} fecha${sm.fechas === 1 ? '' : 's'} con datos de dinero.</p>`
+        : '<p class="muted">Aún no hay datos de dinero para esta temporada.</p>'
+    }</div>
+    ${
+      hist.rows.length
+        ? `<div class="panel"><h3>Ganancias y pérdidas por temporada</h3><div class="table-wrap"><table class="tbl money">
+      <thead><tr><th>Jugador</th>${hist.seasons.map((s) => `<th>${esc(s.name.replace('Temporada ', 'T'))}</th>`).join('')}<th>Total</th></tr></thead>
+      <tbody>${hist.rows
+        .map((r) => `<tr><td>${esc(pname(r.playerId))}</td>${hist.seasons.map((s) => `<td>${r.bySeason[s.id] != null ? moneyCell(r.bySeason[s.id]) : '<span class="muted">—</span>'}</td>`).join('')}<td><b>${moneyCell(r.total)}</b></td></tr>`)
+        .join('')}</tbody></table></div></div>`
+        : ''
+    }`;
+}
+
 export function statsView(q) {
   const season = seasonFromQuery(q);
   const st = seasonStats(S.db, season.id);
@@ -448,7 +486,8 @@ export function statsView(q) {
               .join('')
           : '<p class="muted">Sin jackpots esta temporada.</p>'
       }</div>
-    </div>`,
+    </div>
+    ${moneySection(season)}`,
     bind: bindSeasonPicker,
   };
 }

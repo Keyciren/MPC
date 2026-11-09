@@ -12,6 +12,7 @@ export const S = {
   publishing: false,
   lastPublish: 0,
   noData: false, // aún no hay nada publicado
+  fin: null, // dinero histórico por fecha
 };
 
 export const isAdmin = () => !!S.token;
@@ -28,7 +29,18 @@ export async function fetchPublished() {
   return r.json();
 }
 
+// Datos históricos de dinero (archivo aparte, solo lectura)
+async function loadFinanzas() {
+  try {
+    const r = await fetch('data/finanzas.json?v=' + (window.APP_VERSION || Date.now()));
+    S.fin = r.ok ? await r.json() : {};
+  } catch {
+    S.fin = {};
+  }
+}
+
 export async function loadDb() {
+  if (!S.fin) await loadFinanzas();
   const pub = await fetchPublished().catch(() => null);
   if (!isAdmin()) {
     S.noData = !pub;
