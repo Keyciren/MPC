@@ -266,3 +266,11 @@ test('los premios de fechas finalizadas no cambian con una tabla nueva', async (
   const legacy = { config: cfg, status: 'finished', prizePercents: [50, 30, 20], entries: t.entries };
   assert.deepEqual(m.prizePercentsOf(legacy), [50, 30, 20]);
 });
+
+test('fecha en juego preparada antes de la tabla usa la tabla del club', async () => {
+  const m = await import('../public/js/logic.js');
+  const cfg = m.buildConfig({ config: m.defaultSeasonConfig() }, 'freezeout', 'normal');
+  delete cfg.prizeTable; // como la fecha 11 de prueba
+  const t = { config: cfg, status: 'running', prizePercents: [50, 30, 20], entries: Array.from({ length: 17 }, (_, i) => ({ playerId: 'p' + i })) };
+  assert.deepEqual(m.prizePercentsOf(t), [38, 26, 18, 11, 7]);
+});

@@ -141,6 +141,8 @@ export function prizePercentsOf(t, cfg = t.config || {}) {
   if (t.status === 'finished' && t.prizePercents && t.prizePercents.length) return t.prizePercents;
   if (t.prizePercentsOverride && t.prizePercentsOverride.length) return t.prizePercentsOverride;
   const n = (t.entries || []).length;
+  // Fechas por jugar o en juego: tabla de la fecha o, si se preparó antes de existir la tabla, la del club
+  if (t.status !== 'finished') return prizePercentsFor(cfg.prizeTable || defaultPrizeTable(), n);
   return prizePercentsFor(cfg.prizeTable, n) || t.prizePercents || cfg.prizePercents || [];
 }
 
