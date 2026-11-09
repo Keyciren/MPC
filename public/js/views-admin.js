@@ -809,9 +809,8 @@ function liveTab(t) {
     <div class="panel">
       ${prizeCards(pz, c.currency)}
       <div class="stats-row">
-        <div><b>${tot.alive}</b><span>de ${tot.n} vivos</span></div>
+        <div><b>${tot.alive}/${tot.n}</b><span>jugadores</span></div>
         <div><b>${money(tot.pool, c.currency)}</b><span>pozo</span></div>
-        <div><b>${money(tot.fees, c.currency)}</b><span>fees</span></div>
         <div><b>${tot.avgStack.toLocaleString('es-CL')}</b><span>stack prom.</span></div>
         ${t.modality === 'rebuy' ? `<div><b>${tot.rebuys}</b><span>recompras</span></div><div><b>${tot.addons}</b><span>add on</span></div>` : `<div><b>${tot.lucky}</b><span>lucky loser</span></div>`}
       </div>

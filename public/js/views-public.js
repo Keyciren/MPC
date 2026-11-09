@@ -227,7 +227,7 @@ function liveTournament(t) {
     <div class="panel">
       ${prizeCards(pz, cfg.currency)}
       <div class="stats-row">
-        <div><b>${tot.alive}</b><span>de ${tot.n} en juego</span></div>
+        <div><b>${tot.alive}/${tot.n}</b><span>jugadores</span></div>
         <div><b>${money(tot.pool, cfg.currency)}</b><span>pozo</span></div>
         <div><b>${tot.avgStack.toLocaleString('es-CL')}</b><span>stack promedio</span></div>
         ${t.modality === 'rebuy' ? `<div><b>${tot.rebuys}</b><span>recompras</span></div><div><b>${tot.addons}</b><span>add on</span></div>` : `<div><b>${tot.lucky}</b><span>lucky loser</span></div>`}
