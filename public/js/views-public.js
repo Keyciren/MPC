@@ -25,6 +25,7 @@ import {
   moneyHistory,
   bountyHunter,
   bountyPoints,
+  tournamentJackpots,
 } from './logic.js';
 
 export function seasonPicker(selectedId, route) {
@@ -348,6 +349,7 @@ export function importedTournament(t) {
   const res = results(t, S.db.settings);
   return `<div class="panel"><p class="muted small">Fecha cargada desde la planilla histórica del club: se conocen los puntos${im.prizes ? ', los premios' : ''} y el ganador, pero no el detalle de las eliminaciones.</p>
     ${im.players ? `<p>${im.players} jugadores${im.guests ? ` (${im.guests} invitado${im.guests > 1 ? 's' : ''})` : ''}</p>` : ''}
+    ${tournamentJackpots(t, S.fin || {}).map((j) => `<div class="jackpot">🎰 Jackpot: <b>${esc(pname(j.playerId))}</b> · ${money(j.amount, cur)}</div>`).join('')}
     <div class="table-wrap"><table class="tbl"><thead><tr><th></th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
     <tbody>${res
       .map(
@@ -480,7 +482,8 @@ export function statsView(q) {
     .map((p) => ({ p, s: byId[p.id] || { played: 0, wins: 0, kills: 0, itm: 0, prize: 0, jackpots: 0, final: 0 } }))
     .sort((a, b) => b.s.played - a.s.played || a.p.name.localeCompare(b.p.name));
   const hit = [...st.players].filter((p) => p.kills).sort((a, b) => b.kills - a.kills).slice(0, 10);
-  const jackpots = ts.flatMap((t) => (t.jackpots || []).map((j) => ({ t, j })));
+  const jackpots = ts.flatMap((t) => tournamentJackpots(t, S.fin || {}).map((j) => ({ t, j })));
+  const jpTotal = jackpots.reduce((a, { j }) => a + (Number(j.amount) || 0), 0);
   const attended = (pid) => ts.map((t) => (attendedIds(t).includes(pid) ? '<span class="att yes">●</span>' : '<span class="att no">○</span>')).join('');
 
   return {
@@ -502,9 +505,9 @@ export function statsView(q) {
           ? jackpots
               .map(
                 ({ t, j }) =>
-                  `<div class="jackpot"><p><b>${esc(pname(j.playerId))}</b> · ${esc(j.hand || '')} ${cardsHtml(j.cards, true)} · ${money(j.amount, t.config.currency)} <a href="#/torneo/${t.id}">${esc(t.label)}</a></p>${imgHtml(j.image, 'small')}</div>`
+                  `<div class="jackpot"><p>🎰 <b>${esc(pname(j.playerId))}</b>${j.hand ? ' · ' + esc(j.hand) : ''} ${j.cards && j.cards.length ? cardsHtml(j.cards, true) : ''} · ${money(j.amount)} · <a href="#/torneo/${t.id}">${esc(t.label)}</a></p>${imgHtml(j.image, 'small')}</div>`
               )
-              .join('')
+              .join('') + `<p class="small muted">${jackpots.length} jackpot${jackpots.length === 1 ? '' : 's'} · total ${money(jpTotal)}</p>`
           : '<p class="muted">Sin jackpots esta temporada.</p>'
       }</div>
     </div>

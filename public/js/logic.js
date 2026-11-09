@@ -676,6 +676,14 @@ export function moneyByTournament(t, settings, fin = {}) {
   return out;
 }
 
+// Jackpots de una fecha: los registrados en la app o, en fechas de la planilla, los del archivo de dinero
+export function tournamentJackpots(t, fin = {}) {
+  if (t.jackpots && t.jackpots.length) return t.jackpots;
+  return Object.entries(fin[t.id] || {})
+    .filter(([, v]) => v.j > 0)
+    .map(([playerId, v]) => ({ playerId, amount: v.j }));
+}
+
 export function seasonMoney(db, seasonId, fin = {}) {
   const per = {};
   let withData = 0;
