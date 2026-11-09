@@ -330,3 +330,7 @@ textarea { width: 100%; resize: vertical; }
 .bounty-box .row { margin-top: 6px; }
 .pill.bounty { background: #8a5cf5; }
 .w-xs { width: 64px; }
+.cobro-player { border-bottom: 1px solid var(--line); padding: 8px 0; }
+.cobro-player ul { margin: 4px 0 0; padding-left: 18px; font-size: .92em; }
+.cobro-player li { padding: 2px 0; }
+.tbl.cobros td { vertical-align: middle; }

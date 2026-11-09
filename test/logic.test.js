@@ -392,3 +392,19 @@ test('bounty: si el ganador anterior no juega, pasa al 2°; en la planilla se de
   assert.match(tg.reason, /2° en la Fecha 9 \(pancho no juega esta fecha\)/);
   assert.deepEqual(m.importedBounty(db, t10).hunter, 'joan');
 });
+
+test('cobros: saldo por jugador y pendientes', async () => {
+  const m = await import('../public/js/logic.js');
+  const fin = { t10: { a: { e: 20000, f: 1000, p: 0, j: 0, c: 8650 }, b: { e: 10000, f: 1000, p: 45000, j: 0, c: 0 }, 'g:Coke': { e: 15000, f: 1000, p: 0, j: 0, c: 6650 } } };
+  const t = { id: 't10', status: 'finished', imported: { points: {} }, payments: { 'g:Coke': true } };
+  const db = { settings: { pointTables: m.defaultPointTables() }, players: [], tournaments: [t] };
+  const rows = Object.fromEntries(m.settlement(t, db.settings, fin).map((r) => [r.key, r]));
+  assert.equal(m.settlement({ ...t, charges: { b: 4000 } }, db.settings, fin).find((r) => r.key === 'b').balance, 30000, 'otros se descuenta');
+  assert.equal(rows.a.balance, -29650);
+  assert.equal(rows.b.balance, 34000);
+  assert.equal(rows['g:Coke'].paid, true);
+  const pend = m.pendingDebts(db, fin);
+  assert.deepEqual(pend.map((x) => [x.key, x.total]), [['a', -29650], ['b', 34000]]);
+  assert.equal(m.tracksPayments({ status: 'finished', imported: {} }), false, 'fechas de la planilla sin control de cobros');
+  assert.equal(m.seasonMoney({ ...db, seasons: [{ id: 's' }], tournaments: [{ ...t, seasonId: 's', number: 1 }] }, 's', fin).rows.length, 2, 'los invitados no entran en ganancias y pérdidas');
+});

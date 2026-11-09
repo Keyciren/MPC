@@ -1,6 +1,6 @@
 import { S, loadDb, isAdmin, logout, setRerender, esc, toast, publish, fetchPublished, CONFIG, checkRemote, adoptRemote, confirmDlg } from './core.js';
 import { historyView, homeView, calendarView, tournamentView, rankingView, pointsView, statsView, bindTabs, clockState, fmtMs } from './views-public.js';
-import { loginView, playersView, seasonAdminView, pointsAdminView, tournamentAdminView, settingsView } from './views-admin.js';
+import { loginView, playersView, seasonAdminView, pointsAdminView, tournamentAdminView, settingsView, cobrosView } from './views-admin.js';
 
 const main = document.getElementById('main');
 const nav = document.getElementById('nav');
@@ -31,6 +31,7 @@ function route() {
     if (b === 'puntajes') return pointsAdminView();
     if (b === 'fecha' && c) return tournamentAdminView(c);
     if (b === 'ajustes') return settingsView();
+    if (b === 'cobros') return cobrosView();
     return seasonAdminView(q);
   }
   return { html: '<p>Página no encontrada.</p>' };
@@ -55,7 +56,7 @@ function renderNav() {
       ${link('#/historial', 'Historial')}
       ${
         isAdmin()
-          ? `<span class="sep"></span>${S.remoteNewer ? `<button class="btn sm danger" data-remotenewer title="Se publicó una versión más nueva desde otro lugar">⚠ Hay una versión nueva</button>` : ''}<button class="btn sm ${S.dirty ? '' : 'ghost'} pub-btn" data-publish ${S.publishing ? 'disabled' : ''} title="${S.dirty ? 'Hay cambios guardados solo en este navegador' : 'Todo publicado'}">${S.publishing ? 'Publicando…' : S.dirty ? '⬆ Publicar cambios' : '✓ Publicado'}</button>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`
+          ? `<span class="sep"></span>${S.remoteNewer ? `<button class="btn sm danger" data-remotenewer title="Se publicó una versión más nueva desde otro lugar">⚠ Hay una versión nueva</button>` : ''}<button class="btn sm ${S.dirty ? '' : 'ghost'} pub-btn" data-publish ${S.publishing ? 'disabled' : ''} title="${S.dirty ? 'Hay cambios guardados solo en este navegador' : 'Todo publicado'}">${S.publishing ? 'Publicando…' : S.dirty ? '⬆ Publicar cambios' : '✓ Publicado'}</button>${link('#/admin/temporada', 'Temporada')}${link('#/admin/jugadores', 'Jugadores')}${link('#/admin/cobros', 'Cobros')}${link('#/admin/puntajes', 'Editar puntajes')}${link('#/admin/ajustes', 'Ajustes')}<a href="#" data-logout>Salir</a>`
           : `<a href="#/login" class="admin-link">Admin</a>`
       }
     </div>`;

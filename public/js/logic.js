@@ -705,6 +705,7 @@ export function moneyByTournament(t, settings, fin = {}) {
       f: c.fee || 0,
       p: prize[e.playerId] || 0,
       j: 0,
+      c: 0,
     };
   });
   (t.jackpots || []).forEach((j) => {
@@ -728,6 +729,7 @@ export function seasonMoney(db, seasonId, fin = {}) {
     const m = moneyByTournament(t, db.settings, fin);
     if (Object.keys(m).length) withData++;
     Object.entries(m).forEach(([pid, v]) => {
+      if (pid.startsWith('g:')) return; // invitados de la planilla: solo para cobros
       const r = (per[pid] = per[pid] || { playerId: pid, fechas: 0, e: 0, f: 0, p: 0, j: 0 });
       r.fechas++;
       r.e += v.e;
@@ -753,6 +755,42 @@ export function moneyHistory(db, fin = {}) {
     });
   });
   return { seasons, rows: Object.values(per).sort((a, b) => b.total - a.total) };
+}
+
+// ---------- Cobros: lo que debe pagar o recibir cada jugador en una fecha ----------
+// Se lleva el control en fechas jugadas en la app y en las de la planilla a las que se les activó (t.payments).
+export function tracksPayments(t) {
+  return t.status === 'finished' && (!t.imported || !!t.payments);
+}
+
+export function settlement(t, settings, fin = {}) {
+  const m = moneyByTournament(t, settings, fin);
+  const paid = t.payments || {};
+  const others = t.charges || {}; // "Otros": comida u otros gastos que anota el admin por jugador
+  return Object.entries(m)
+    .map(([key, v]) => {
+      const c = v.c || 0; // comida registrada en la planilla
+      const o = Number(others[key]) || 0;
+      const balance = (v.p || 0) + (v.j || 0) - (v.e || 0) - (v.f || 0) - c - o;
+      return { key, e: v.e || 0, f: v.f || 0, c, o, p: v.p || 0, j: v.j || 0, balance, paid: !!paid[key] };
+    })
+    .sort((a, b) => a.balance - b.balance);
+}
+
+// Saldos pendientes de todas las fechas, agrupados por jugador
+export function pendingDebts(db, fin = {}) {
+  const per = {};
+  (db.tournaments || [])
+    .filter(tracksPayments)
+    .forEach((t) => {
+      settlement(t, db.settings, fin).forEach((r) => {
+        if (r.paid || Math.round(r.balance) === 0) return;
+        const x = (per[r.key] = per[r.key] || { key: r.key, total: 0, items: [] });
+        x.total += r.balance;
+        x.items.push({ t, balance: r.balance });
+      });
+    });
+  return Object.values(per).sort((a, b) => a.total - b.total);
 }
 
 // ---------- Resumen lúdico ----------

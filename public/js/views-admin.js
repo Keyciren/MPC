@@ -55,6 +55,8 @@ import {
   bountyPoints,
   bountyTargetFor,
   resetTournament,
+  settlement,
+  pendingDebts,
   prizePercentsOf,
   defaultPrizeTable,
 } from './logic.js';
@@ -528,22 +530,33 @@ export function tournamentAdminView(id) {
   const t = S.db.tournaments.find((x) => x.id === id);
   if (!t) return { html: '<p>Fecha no encontrada</p>' };
   const season = S.db.seasons.find((s) => s.id === t.seasonId);
-  if (t.imported)
-    return { html: `<h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>${importedTournament(t)}` };
+  if (t.imported) {
+    const cb = t.payments ? cobrosTab(t) : null;
+    return {
+      html: `<h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>${
+        cb ? cb.html : `<div class="panel"><p class="small">Esta fecha viene de la planilla. <button class="btn sm ghost" data-enablepay>💰 Llevar control de cobros de esta fecha</button></p></div>`
+      }${importedTournament(t)}`,
+      bind(root) {
+        if (cb) cb.bind(root);
+        const en = root.querySelector('[data-enablepay]');
+        if (en) en.onclick = () => upT(t.id, (x) => (x.payments = x.payments || {}), false);
+      },
+    };
+  }
   const available = {
     planned: ['config'],
     setup: ['config', 'mesas'],
     running: ['vivo', 'config', 'resumen'],
-    finished: ['resultados', 'resumen', 'vivo'],
+    finished: ['resultados', 'cobros', 'resumen', 'vivo'],
   }[t.status];
   let tab = tabState[id];
   if (!available.includes(tab)) tab = available[0];
-  const labels = { config: 'Inscripción y valores', mesas: 'Mesas', vivo: t.status === 'finished' ? 'Registro' : 'En vivo', resultados: 'Resultados', resumen: 'Resumen' };
+  const labels = { config: 'Inscripción y valores', mesas: 'Mesas', vivo: t.status === 'finished' ? 'Registro' : 'En vivo', resultados: 'Resultados', cobros: 'Cobros', resumen: 'Resumen' };
   const head = `<div class="row between wrap"><div><h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>
     <p>${t.finalDate ? fmtDate(t.finalDate) : 'Sin fecha final'} ${t.venue ? '· ' + esc(t.venue) : ''} ${badges(t)} <span class="status ${t.status}">${STATUS[t.status]}</span></p></div>
     <div class="row">${t.status !== 'planned' ? '<button class="btn ghost sm danger" data-reset>↺ Reiniciar fecha</button>' : ''}<a class="btn ghost sm" href="#/torneo/${t.id}">Vista jugador</a></div></div>
     <div class="tabs">${available.map((k) => `<button class="${k === tab ? 'on' : ''}" data-atab="${k}">${labels[k]}</button>`).join('')}</div>`;
-  const body = { config: setupTab, mesas: tablesTab, vivo: liveTab, resultados: resultsTab, resumen: summaryTab }[tab](t, season);
+  const body = { config: setupTab, mesas: tablesTab, vivo: liveTab, resultados: resultsTab, cobros: (x) => cobrosTab(x), resumen: summaryTab }[tab](t, season);
   return {
     html: head + body.html,
     tick: body.tick,
@@ -1415,6 +1428,84 @@ function summaryTab(t) {
           const img = await pickImage();
           if (img) upT(t.id, (x) => (x.winnerImage = img), false);
         };
+    },
+  };
+}
+
+// ---------- Cobros ----------
+export function keyName(key) {
+  return key.startsWith('g:') ? `${key.slice(2)} (invitado)` : pname(key);
+}
+
+function cobrosTab(t) {
+  const rows = settlement(t, S.db.settings, S.fin || {});
+  const cur = (t.config && t.config.currency) || '$';
+  const hasFood = rows.some((r) => r.c);
+  const pendIn = rows.filter((r) => !r.paid && r.balance < 0).reduce((a, r) => a - r.balance, 0);
+  const pendOut = rows.filter((r) => !r.paid && r.balance > 0).reduce((a, r) => a + r.balance, 0);
+  const st = (r) =>
+    Math.round(r.balance) === 0
+      ? '<span class="muted">sin saldo</span>'
+      : `<button class="btn xs ${r.paid ? 'on' : r.balance < 0 ? 'danger' : ''}" data-paid="${esc(r.key)}">${r.paid ? '✓ Pagado' : r.balance < 0 ? 'Marcar pagado' : 'Marcar entregado'}</button>`;
+  return {
+    html: `<div class="panel"><div class="row between wrap"><h3>💰 Cobros de la fecha</h3>
+      <div class="stats-row"><div><b>${money(pendIn, cur)}</b><span>por cobrar</span></div><div><b>${money(pendOut, cur)}</b><span>premios por entregar</span></div></div></div>
+      <div class="table-wrap"><table class="tbl money cobros">
+      <thead><tr><th>Jugador</th><th>Entradas</th><th>Fee</th>${hasFood ? '<th>Comida (planilla)</th>' : ''}<th>Otros</th><th>Premio</th><th>Jackpot</th><th>Saldo</th><th>Estado</th></tr></thead>
+      <tbody>${rows
+        .map(
+          (r) => `<tr class="${r.paid ? 'dim' : ''}"><td>${esc(keyName(r.key))}</td><td>${money(r.e, cur)}</td><td>${money(r.f, cur)}</td>
+          ${hasFood ? `<td>${r.c ? money(r.c, cur) : ''}</td>` : ''}<td><input type="number" min="0" step="50" class="w-sm" data-charge="${esc(r.key)}" value="${r.o || ''}" placeholder="0" title="Comida u otros gastos de este jugador"></td>
+          <td>${r.p ? money(r.p, cur) : ''}</td><td>${r.j ? money(r.j, cur) : ''}</td>
+          <td><b class="${r.balance < 0 ? 'neg' : r.balance > 0 ? 'pos' : ''}">${r.balance < 0 ? 'Debe ' + money(-r.balance, cur) : r.balance > 0 ? 'Recibe ' + money(r.balance, cur) : '—'}</b></td><td>${st(r)}</td></tr>`
+        )
+        .join('')}</tbody></table></div>
+      <p class="small muted">Saldo = premio + jackpot − entradas (buy-in, recompras, add on, lucky loser) − fee − comida − otros. En "Otros" anota la comida u otros gastos de cada jugador. "Debe" es lo que el jugador tiene que pagar; "Recibe" es lo que se le entrega descontando lo que debía. Esta sección solo la ve el administrador.</p></div>`,
+    bind(root) {
+      on(root, '[data-paid]', 'click', (b) =>
+        upT(t.id, (x) => {
+          x.payments = x.payments || {};
+          if (x.payments[b.dataset.paid]) delete x.payments[b.dataset.paid];
+          else x.payments[b.dataset.paid] = Date.now();
+        }, false)
+      );
+      on(root, '[data-charge]', 'change', (el) =>
+        upT(t.id, (x) => {
+          x.charges = x.charges || {};
+          const v = Number(el.value) || 0;
+          if (v) x.charges[el.dataset.charge] = v;
+          else delete x.charges[el.dataset.charge];
+        }, false)
+      );
+    },
+  };
+}
+
+export function cobrosView() {
+  const pend = pendingDebts(S.db, S.fin || {});
+  const debts = pend.filter((x) => x.total < 0);
+  const credits = pend.filter((x) => x.total > 0);
+  const sum = (l) => l.reduce((a, x) => a + Math.abs(x.total), 0);
+  const block = (x) => `<div class="cobro-player"><div class="row between"><b>${esc(keyName(x.key))}</b><b class="${x.total < 0 ? 'neg' : 'pos'}">${x.total < 0 ? 'Debe ' : 'Recibe '}${money(Math.abs(x.total))}</b></div>
+    <ul>${x.items
+      .map(
+        (it) => `<li><a href="#/admin/fecha/${it.t.id}">${esc(it.t.label)}${S.db.seasons.length > 1 ? ' · ' + esc((S.db.seasons.find((s) => s.id === it.t.seasonId) || {}).name || '') : ''}</a>: ${it.balance < 0 ? 'debe' : 'recibe'} ${money(Math.abs(it.balance))}
+        <button class="btn xs ${it.balance < 0 ? 'danger' : ''}" data-paidt="${it.t.id}" data-key="${esc(x.key)}">${it.balance < 0 ? 'Marcar pagado' : 'Marcar entregado'}</button></li>`
+      )
+      .join('')}</ul></div>`;
+  return {
+    html: `<h2>Cobros pendientes</h2>
+    <div class="stats-row"><div><b>${money(sum(debts))}</b><span>por cobrar (${debts.length} jugador${debts.length === 1 ? '' : 'es'})</span></div><div><b>${money(sum(credits))}</b><span>premios por entregar</span></div></div>
+    <div class="grid2"><div class="panel"><h3>Deben pagar</h3>${debts.map(block).join('') || '<p class="muted">Nadie debe nada. 🎉</p>'}</div>
+    <div class="panel"><h3>Por entregar</h3>${credits.map(block).join('') || '<p class="muted">No hay premios pendientes de entrega.</p>'}</div></div>
+    <p class="small muted">Incluye las fechas jugadas en la app y las de la planilla a las que se activó el control de cobros (desde la fecha, botón "Llevar control de cobros").</p>`,
+    bind(root) {
+      on(root, '[data-paidt]', 'click', (b) =>
+        upT(b.dataset.paidt, (x) => {
+          x.payments = x.payments || {};
+          x.payments[b.dataset.key] = Date.now();
+        }, false)
+      );
     },
   };
 }
