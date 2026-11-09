@@ -1,5 +1,5 @@
 {
- "version": 1,
+ "version": 2,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -4169,15 +4169,17 @@
    "number": 10,
    "label": "Fecha 10",
    "dateOptions": [
-    "2026-11-13",
-    "2026-11-14"
+    "2026-11-07"
    ],
-   "finalDate": null,
+   "finalDate": "2026-11-07",
    "venue": "Colina",
    "modality": "rebuy",
    "type": "normal",
    "status": "finished",
-   "dealerIds": [],
+   "dealerIds": [
+    "p_kc",
+    "p_kari"
+   ],
    "trainee": "",
    "entries": [],
    "tables": [],
