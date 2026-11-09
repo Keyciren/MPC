@@ -105,7 +105,7 @@ export function defaultSeasonConfig() {
     levels: defaultLevels(),
     // Estructuras de ciegas por modalidad y tipo de fecha: 'rebuy-normal', 'rebuy-gs', 'freezeout-normal', 'freezeout-gs'
     // Montos distintos para Grand Slam (vacío = igual que la fecha normal)
-    rebuyGs: { buyIn: 7500, rebuyCost: 7500 },
+    rebuyGs: { buyIn: 7500, rebuyCost: 7500, addonCost: 7500 },
     freezeoutGs: {},
     structures: { 'rebuy-normal': clubRebuyLevels(), 'rebuy-gs': clubRebuyLevels(), 'freezeout-normal': clubFreezeoutLevels() },
   };

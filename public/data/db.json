@@ -1,5 +1,5 @@
 {
- "version": 6,
+ "version": 7,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1610,7 +1610,8 @@
     },
     "rebuyGs": {
      "buyIn": 7500,
-     "rebuyCost": 7500
+     "rebuyCost": 7500,
+     "addonCost": 7500
     },
     "freezeoutGs": {}
    }

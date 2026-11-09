@@ -169,6 +169,8 @@ test('Grand Slam rebuy: misma estructura, buy-in y recompra de $7.500', async ()
   const nr = m.buildConfig({ config: sc }, 'rebuy', 'normal');
   assert.equal(gs.buyIn, 7500);
   assert.equal(gs.rebuyCost, 7500);
+  assert.equal(gs.addonCost, 7500);
+  assert.equal(nr.addonCost, 5000);
   assert.equal(gs.startChips, 20000);
   assert.equal(gs.rebuyUntilLevel, 8);
   assert.equal(nr.buyIn, 5000);
