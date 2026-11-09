@@ -10,5 +10,5 @@ export const CONFIG = {
   // carpeta del repositorio que se publica como sitio web
   siteDir: 'public',
   // cada cuántos minutos se publica sola la información mientras hay un torneo en juego (0 = nunca)
-  autoPublishMinutes: 3,
+  autoPublishMinutes: 6,
 };

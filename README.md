@@ -13,17 +13,16 @@ Todo funciona con tu cuenta de GitHub, sin servidores ni cuentas extra:
   `public/data/uploads/`. Los jugadores leen desde ahí.
 - **El administrador** trabaja sobre una **base de datos local** en su navegador (IndexedDB): todo se guarda al instante,
   aunque se corte internet. Con el botón **⬆ Publicar cambios** se suben los datos y las fotos al repositorio en un
-  solo commit. Durante un torneo en juego se publica solo cada 3 minutos. Los jugadores ven lo nuevo en 1–2 minutos
+  solo commit. Durante un torneo en juego se publica solo cada 6 minutos (GitHub permite unas 10 publicaciones por hora). Los jugadores ven lo nuevo en 1–2 minutos
   (y la página se refresca sola).
 - Los **correos** de los jugadores no se publican (el repositorio es público): quedan solo en el navegador del
   administrador y en el respaldo.
 
-### Activar GitHub Pages (una sola vez)
+### GitHub Pages
 
-1. En GitHub, abre el repositorio → **Settings → Pages**.
-2. En **Build and deployment → Source**, elige **GitHub Actions**.
-3. Ve a **Actions → Publicar web en GitHub Pages → Run workflow** (o espera al próximo cambio en `main`).
-   En 1–2 minutos la web queda en `https://keyciren.github.io/MPC/`.
+GitHub Pages está configurado en **Settings → Pages → Deploy from a branch → `main` / (root)**. La raíz del repositorio
+redirige a la carpeta `public/`, que es la web. Cada publicación de datos es un commit en `main` y GitHub vuelve a
+publicar el sitio solo (1–2 minutos).
 
 ### Ingresar como administrador
 
@@ -99,4 +98,4 @@ npm test
 - `public/js/store.js`: base local (IndexedDB) y publicación en GitHub (un commit por publicación).
 - `public/js/config.js`: repositorio y rama donde se publica, y cada cuántos minutos se publica sola durante un torneo.
 - `public/js/word.js` + `public/vendor/docx.iife.js`: resumen en Word.
-- `.github/workflows/pages.yml`: publica `public/` en GitHub Pages en cada cambio de `main`.
+- `index.html` (raíz): redirige a `public/` para GitHub Pages.
