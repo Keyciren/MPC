@@ -1,5 +1,5 @@
 {
- "version": 5,
+ "version": 6,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1109,7 +1109,7 @@
     "freezeout": {
      "buyIn": 10000,
      "startChips": 30000,
-     "luckyLoserUntilLevel": 6
+     "luckyLoserUntilLevel": 8
     },
     "rebuy": {
      "buyIn": 5000,

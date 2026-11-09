@@ -90,7 +90,7 @@ export function defaultSeasonConfig() {
     prizePercents: [50, 30, 20],
     roundTo: 1000,
     luckyLoserCost: 10000,
-    freezeout: { buyIn: 10000, startChips: 30000, luckyLoserUntilLevel: 6 },
+    freezeout: { buyIn: 10000, startChips: 30000, luckyLoserUntilLevel: 8 },
     rebuy: {
       buyIn: 5000,
       startChips: 20000,

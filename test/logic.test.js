@@ -158,8 +158,8 @@ test('estructuras por modalidad y tipo, descansos y periodo de recompra', async 
   assert.equal(m.rebuyOpenAt(cfg, 'rebuy', 8), false, 'en el descanso ya no');
   const fcfg = { ...m.buildConfig({ config: sc }, 'freezeout', 'normal'), luckyLoserAllowed: true };
   assert.equal(fcfg.buyIn, 10000);
-  assert.equal(m.luckyLoserOpenAt(fcfg, 'freezeout', 5), true);
-  assert.equal(m.luckyLoserOpenAt(fcfg, 'freezeout', 6), false);
+  assert.equal(m.luckyLoserOpenAt(fcfg, 'freezeout', 7), true, 'nivel 8 abierto');
+  assert.equal(m.luckyLoserOpenAt(fcfg, 'freezeout', 8), false, 'nivel 9 cerrado');
 });
 
 test('Grand Slam rebuy: misma estructura, buy-in y recompra de $7.500', async () => {
