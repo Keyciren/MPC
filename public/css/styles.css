@@ -292,3 +292,22 @@ textarea { width: 100%; resize: vertical; }
 .felt ul.seats { list-style: none; padding-left: 0; }
 .pill.dealer { background: #fff; color: #111; }
 .felt.final { border-color: #c9a227; box-shadow: inset 0 0 30px rgba(0,0,0,.4), 0 0 0 2px #f2c14e; }
+
+/* ---------- Fecha en juego: reloj grande arriba, el resto más chico abajo ---------- */
+.live-layout { display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+.live-layout > .panel { margin: 0; }
+.clock-panel { padding: 22px 16px 26px; background: radial-gradient(ellipse at center, #17503d, var(--panel)); }
+.clock-panel .clock .lvl { font-size: clamp(1.1rem, 2.6vw, 1.8rem); }
+.clock-panel .clock .time { font-size: clamp(4.5rem, 17vw, 11rem); line-height: 1; margin: 6px 0 10px; }
+.clock-panel .clock .blinds { font-size: clamp(2.2rem, 7vw, 5rem); line-height: 1.1; }
+.clock-panel .clock .blinds small { font-size: .5em; color: var(--text); font-weight: 600; display: block; }
+.clock-panel .clock .nextlvl { font-size: clamp(1rem, 2.4vw, 1.5rem); margin-top: 8px; }
+.clock-panel .rebuy-flag { font-size: clamp(.9rem, 2vw, 1.2rem); padding: 5px 14px; }
+.clock-panel .btn { font-size: 1.05rem; }
+.live-view > .panel, .live-layout > .panel:not(.clock-panel) { font-size: .88em; padding: 12px 14px; }
+.live-view h3 { font-size: 1.05em; }
+.live-view .stats-row { margin-bottom: 8px; gap: 8px; }
+.live-view .stats-row > div { padding: 5px 8px; flex-basis: 80px; }
+.live-view .stats-row b { font-size: 1.1em; }
+.live-view .tables { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.live-view .felt { padding: 10px 14px; border-width: 5px; border-radius: 30px; }

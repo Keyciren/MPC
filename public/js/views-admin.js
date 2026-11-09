@@ -796,9 +796,9 @@ function liveTab(t) {
     </li>`;
   };
 
-  const html = `
-  <div class="grid2">
-    <div class="panel center">${clockHtml(t)}
+  const html = `<div class="live-view">
+  <div class="live-layout">
+    <div class="panel center clock-panel">${clockHtml(t)}
       ${
         running
           ? `<div class="row center mt"><button class="btn sm ghost" data-clk="prev">◀ Nivel</button><button class="btn" data-clk="toggle">${cs.running ? '❚❚ Pausa' : '▶ Iniciar reloj'}</button><button class="btn sm ghost" data-clk="next">Nivel ▶</button></div>
@@ -871,7 +871,7 @@ function liveTab(t) {
           .reverse()
           .join('')}</ol>`
       : '<p class="muted">Sin eliminaciones registradas.</p>'
-  }</div>`;
+  }</div></div>`;
 
   return {
     html,

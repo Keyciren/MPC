@@ -221,9 +221,9 @@ function liveTournament(t) {
   const alive = new Set(alivePlayers(t).map((e) => e.playerId));
   const outs = outEvents(t);
   const n = (t.entries || []).length;
-  return `
-  <div class="grid2">
-    <div class="panel center">${clockHtml(t)}</div>
+  return `<div class="live-view">
+  <div class="live-layout">
+    <div class="panel center clock-panel">${clockHtml(t)}</div>
     <div class="panel">
       <div class="stats-row">
         <div><b>${tot.alive}</b><span>de ${tot.n} en juego</span></div>
@@ -245,7 +245,7 @@ function liveTournament(t) {
     outs.length
       ? `<ol class="busts">${outs.map((e, i) => `<li><b>${n - i}°</b> ${esc(pname(e.playerId))} ${e.byPlayerId ? `<span class="muted">por</span> ${esc(pname(e.byPlayerId))}` : ''} ${cardsHtml(e.playerCards, true)} ${e.byCards && e.byCards.length ? 'vs ' + cardsHtml(e.byCards, true) : ''}</li>`).reverse().join('')}</ol>`
       : '<p class="muted">Aún no hay eliminados.</p>'
-  }</div>`;
+  }</div></div>`;
 }
 
 export function resultsTable(t) {
