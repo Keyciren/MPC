@@ -693,6 +693,7 @@ function tablesTab(t) {
 
 function moveSelect(t, pid, fromId) {
   if ((t.tables || []).length < 2) return '';
+  if (isTableDealer(t.tables.find((tb) => tb.id === fromId), pid)) return '<span class="muted small" title="El dealer no se mueve de su mesa">🔒</span>';
   return `<select class="mv" data-move="${pid}" data-from="${fromId}" title="Mover a otra mesa"><option value="">⇄</option>${t.tables
     .filter((tb) => tb.id !== fromId)
     .map((tb) => `<option value="${tb.id}">Mesa ${tb.number}</option>`)

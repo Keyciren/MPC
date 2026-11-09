@@ -203,3 +203,15 @@ test('el crupier que juega siempre va en el puesto 1', async () => {
   assert.equal(merged.length, 1);
   assert.equal(merged[0].seats[0], merged[0].dealer.playerId);
 });
+
+test('al romper una mesa se prefiere la que no tiene dealer jugando', async () => {
+  const m = await import('../public/js/logic.js');
+  const tb = [
+    { id: 'a', number: 1, dealer: { playerId: 'd1' }, seats: ['d1', 'x1', 'x2'] },
+    { id: 'b', number: 2, dealer: { name: 'Externo' }, seats: ['y1', 'y2', 'y3', 'y4'] },
+    { id: 'c', number: 3, dealer: { playerId: 'd3' }, seats: ['d3', 'z1', 'z2', 'z3'] },
+  ];
+  const bal = m.balanceSuggestions(tb, ['d1', 'x1', 'x2', 'y1', 'y2', 'y3', 'y4', 'd3', 'z1', 'z2', 'z3'], 6);
+  assert.equal(bal.breakTable, 'b', 'se rompe la mesa sin dealer jugando aunque tenga más jugadores');
+  assert.ok(bal.moves.every((mv) => mv.playerId !== 'd1' && mv.playerId !== 'd3'));
+});

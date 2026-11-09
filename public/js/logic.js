@@ -339,7 +339,9 @@ export function balanceSuggestions(tables, aliveIds, perTable) {
   const total = active.reduce((s, tb) => s + tb.players.length, 0);
   // ¿Se puede romper una mesa?
   if (total <= (active.length - 1) * perTable) {
-    const sorted = [...active].sort((a, b) => a.players.length - b.players.length || b.number - a.number);
+    // se rompe preferentemente una mesa cuyo crupier no esté jugando, para no sacar a un dealer de su mesa
+    const dealerPlays = (tb) => (tb.dealer && tb.dealer.playerId && tb.players.includes(tb.dealer.playerId) ? 1 : 0);
+    const sorted = [...active].sort((a, b) => dealerPlays(a) - dealerPlays(b) || a.players.length - b.players.length || b.number - a.number);
     const victim = sorted[0];
     const others = active.filter((tb) => tb.id !== victim.id).map((tb) => ({ ...tb, count: tb.players.length }));
     victim.players.forEach((pid) => {
