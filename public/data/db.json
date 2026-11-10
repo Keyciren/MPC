@@ -1,5 +1,5 @@
 {
- "version": 52,
+ "version": 53,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -2004,6 +2004,12 @@
     },
     "winnerId": "p_rene_lander",
     "kills": {}
+   },
+   "placesManual": {
+    "p_pancho": 15,
+    "p_rene_harb": 14,
+    "p_les": 13,
+    "p_pollito": 12
    }
   },
   {
