@@ -1,5 +1,5 @@
 {
- "version": 35,
+ "version": 36,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -3145,7 +3145,11 @@
    "placesManual": {
     "p_andres": 15,
     "p_edgar": 14,
-    "p_joan": 13
+    "p_joan": 13,
+    "p_kc": 12,
+    "p_les": 11,
+    "p_andrea": 10,
+    "p_carlos": 9
    }
   },
   {
