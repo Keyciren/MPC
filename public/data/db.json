@@ -1,5 +1,5 @@
 {
- "version": 39,
+ "version": 40,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -2445,6 +2445,10 @@
      "p_glenda": 1,
      "p_kc": 1
     }
+   },
+   "placesManual": {
+    "p_glenda": 9,
+    "g:Dani": 6
    }
   },
   {
