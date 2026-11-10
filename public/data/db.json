@@ -1,5 +1,5 @@
 {
- "version": 25,
+ "version": 26,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -3290,6 +3290,9 @@
     },
     "winnerId": "p_serrano",
     "kills": {}
+   },
+   "placesManual": {
+    "p_edgar": 14
    }
   },
   {
@@ -3328,6 +3331,13 @@
     },
     "winnerId": "p_serrano",
     "kills": {}
+   },
+   "placesManual": {
+    "g:Will": 12,
+    "p_guillermo": 10,
+    "p_carlos": 9,
+    "p_andres": 8,
+    "g:Jose Luis": 5
    }
   },
   {
@@ -3370,6 +3380,12 @@
     },
     "winnerId": "p_xelo",
     "kills": {}
+   },
+   "placesManual": {
+    "p_guillermo": 18,
+    "p_carlos": 12,
+    "p_joan": 13,
+    "g:Jose Luis": 10
    }
   },
   {
@@ -3408,6 +3424,10 @@
     },
     "winnerId": "p_guillermo",
     "kills": {}
+   },
+   "placesManual": {
+    "p_kc": 16,
+    "p_les": 15
    }
   },
   {
