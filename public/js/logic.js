@@ -751,6 +751,8 @@ export function placeIn(db, t, pid, extra = null, finT = null) {
 
 // Bounty de una fecha cargada de la planilla: { target, hunter }
 export function importedBounty(db, t) {
+  const sn = seasonNumber(db, t.seasonId);
+  if (sn && sn < BOUNTY_FROM_SEASON) return null; // aún no existía la regla
   const hunter = importedBountyHunter(db, t);
   if (!hunter) return null;
   const target = bountyTargetFor(db, t);
@@ -772,8 +774,8 @@ export function seasonNumber(db, seasonId) {
   const s = (db.seasons || []).find((x) => x.id === seasonId);
   return Number(((s && s.name) || '').replace(/\D+/g, '')) || Number(String(seasonId).replace(/\D+/g, '')) || 0;
 }
-// El bounty existe desde la temporada 3; el de la primera fecha (campeón de la temporada anterior), desde la 7
-export const BOUNTY_FROM_SEASON = 3;
+// El bounty existe desde la temporada 4; el de la primera fecha (campeón de la temporada anterior), desde la 7
+export const BOUNTY_FROM_SEASON = 4;
 export const FIRST_DATE_BOUNTY_FROM_SEASON = 7;
 
 export function bountyTargetFor(db, t) {

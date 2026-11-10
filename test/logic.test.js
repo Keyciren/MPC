@@ -451,7 +451,7 @@ test('lugares: el relato completa a quienes no sumaron puntos y el admin puede f
   assert.equal(m.importedPositions(db, { ...t, placesManual: { e: 10 } }, extra).e, 10);
 });
 
-test('bounty: desde la temporada 3; en la fecha 1, solo desde la temporada 7', async () => {
+test('bounty: desde la temporada 4; en la fecha 1, solo desde la temporada 7', async () => {
   const m = await import('../public/js/logic.js');
   const done = (sid, n, winner) => ({ ...m.newTournament(sid, n), id: `${sid}t${n}`, status: 'finished', imported: { points: { a: winner === 'a' ? 9 : 7, b: winner === 'b' ? 9 : 7 }, winnerId: winner } });
   const todo = (sid, n) => ({ ...m.newTournament(sid, n), id: `${sid}t${n}` });
@@ -463,6 +463,8 @@ test('bounty: desde la temporada 3; en la fecha 1, solo desde la temporada 7', a
   };
   const get = (id) => db.tournaments.find((t) => t.id === id);
   assert.equal(m.bountyTargetFor(db, get('x2t2')), null, 'temporada 2: aún no existía el bounty');
+  db.seasons[0].name = 'Temporada 3';
+  assert.equal(m.bountyTargetFor(db, get('x2t2')), null, 'temporada 3: tampoco');
   assert.equal(m.bountyTargetFor(db, get('x6t1')), null, 'temporada 6, fecha 1: sin bounty');
   assert.equal(m.bountyTargetFor(db, get('x6t2')).playerId, 'b', 'temporada 6, fecha 2: ganador de la fecha 1');
   get('x6t2').status = 'finished';
