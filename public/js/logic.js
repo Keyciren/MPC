@@ -723,8 +723,19 @@ export function bountyHunter(t) {
 // Regla del club: el bounty es quien ganó la fecha anterior de la temporada; en la primera fecha, el campeón
 // de la temporada anterior. Si ese jugador es invitado o no juega esta fecha, pasa al siguiente mejor ubicado
 // (2°, 3°, ...) del club que sí juegue.
+// Número de temporada (de su nombre "Temporada N" o de su id "sN")
+export function seasonNumber(db, seasonId) {
+  const s = (db.seasons || []).find((x) => x.id === seasonId);
+  return Number(((s && s.name) || '').replace(/\D+/g, '')) || Number(String(seasonId).replace(/\D+/g, '')) || 0;
+}
+// El bounty existe desde la temporada 3; el de la primera fecha (campeón de la temporada anterior), desde la 7
+export const BOUNTY_FROM_SEASON = 3;
+export const FIRST_DATE_BOUNTY_FROM_SEASON = 7;
+
 export function bountyTargetFor(db, t) {
   if (t.friendly) return null;
+  const sn = seasonNumber(db, t.seasonId);
+  if (sn && sn < BOUNTY_FROM_SEASON) return null;
   const isClub = (id) => {
     const p = (db.players || []).find((x) => x.id === id);
     return !!p && p.type !== 'invitado';
@@ -758,6 +769,7 @@ export function bountyTargetFor(db, t) {
       : res.slice().sort((a, b) => (a.position || 999) - (b.position || 999));
     return pick(ordered.map((r, i) => ({ playerId: r.playerId, place: prev.imported ? i + 1 : r.position })), { label: prev.label });
   }
+  if (sn && sn < FIRST_DATE_BOUNTY_FROM_SEASON) return null; // primera fecha sin bounty hasta la temporada 6
   const seasons = db.seasons || [];
   const i = seasons.findIndex((s) => s.id === t.seasonId);
   const prevSeason = i > 0 ? seasons[i - 1] : null;

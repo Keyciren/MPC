@@ -335,7 +335,7 @@ test('bounty según la regla del club', async () => {
       { id: 'a', name: 'A', type: 'club' }, { id: 'b', name: 'B', type: 'club' }, { id: 'c', name: 'C', type: 'club' },
       { id: 'g', name: 'Invitado', type: 'invitado' },
     ],
-    seasons: [{ id: 's1', name: 'Temporada 1', finalOrder: ['b', 'a', 'c'] }, { id: 's2', name: 'Temporada 2', config: m.defaultSeasonConfig() }],
+    seasons: [{ id: 's1', name: 'Temporada 7', finalOrder: ['b', 'a', 'c'] }, { id: 's2', name: 'Temporada 8', config: m.defaultSeasonConfig() }],
     tournaments: [
       mkT('s1', 1, { status: 'finished', imported: { points: { a: 10, b: 20, c: 5 }, winnerId: 'b' } }),
       mkT('s2', 1, {}),
@@ -344,7 +344,7 @@ test('bounty según la regla del club', async () => {
   };
   // primera fecha de la temporada: campeón de la temporada anterior
   const t1 = db.tournaments[1];
-  assert.deepEqual(m.bountyTargetFor(db, t1), { playerId: 'b', reason: 'campeón de la Temporada 1' });
+  assert.deepEqual(m.bountyTargetFor(db, t1), { playerId: 'b', reason: 'campeón de la Temporada 7' });
   // fecha 1 jugada en la app y ganada por un invitado: el bounty de la fecha 2 es el mejor del club
   Object.assign(t1, {
     status: 'finished', modality: 'freezeout', config: m.buildConfig(db.seasons[1], 'freezeout', 'normal'),
@@ -380,7 +380,7 @@ test('bounty: si el ganador anterior no juega, pasa al 2°; en la planilla se de
   const db = {
     settings: { pointTables: pt },
     players: ['pancho', 'julio', 'joan', 'kc', 'x'].map((id) => ({ id, name: id, type: 'club' })),
-    seasons: [{ id: 's' }],
+    seasons: [{ id: 's', name: 'Temporada 6' }],
     tournaments: [
       { ...m.newTournament('s', 9), id: 't9', status: 'finished', imported: { points: { pancho: 19, julio: 13, joan: 0, kc: 0 }, winnerId: 'pancho', players: 16 } },
       { ...m.newTournament('s', 10), id: 't10', status: 'finished', imported: { points: { kc: 18, joan: 14, julio: 0, x: 10 }, winnerId: 'kc', players: 15 } },
@@ -449,4 +449,25 @@ test('lugares: el relato completa a quienes no sumaron puntos y el admin puede f
   assert.equal(pp.d, null, 'no puede estar sobre quienes sumaron puntos');
   assert.equal(pp.e, null, 'fuera de rango');
   assert.equal(m.importedPositions(db, { ...t, placesManual: { e: 10 } }, extra).e, 10);
+});
+
+test('bounty: desde la temporada 3; en la fecha 1, solo desde la temporada 7', async () => {
+  const m = await import('../public/js/logic.js');
+  const done = (sid, n, winner) => ({ ...m.newTournament(sid, n), id: `${sid}t${n}`, status: 'finished', imported: { points: { a: winner === 'a' ? 9 : 7, b: winner === 'b' ? 9 : 7 }, winnerId: winner } });
+  const todo = (sid, n) => ({ ...m.newTournament(sid, n), id: `${sid}t${n}` });
+  const db = {
+    settings: { pointTables: m.defaultPointTables() },
+    players: ['a', 'b'].map((id) => ({ id, name: id, type: 'club' })),
+    seasons: [{ id: 'x2', name: 'Temporada 2' }, { id: 'x5', name: 'Temporada 5', finalOrder: ['a', 'b'] }, { id: 'x6', name: 'Temporada 6', finalOrder: ['b', 'a'] }, { id: 'x7', name: 'Temporada 7' }],
+    tournaments: [done('x2', 1, 'a'), todo('x2', 2), done('x5', 1, 'a'), done('x6', 1, 'b'), todo('x6', 2), todo('x7', 1)],
+  };
+  const get = (id) => db.tournaments.find((t) => t.id === id);
+  assert.equal(m.bountyTargetFor(db, get('x2t2')), null, 'temporada 2: aún no existía el bounty');
+  assert.equal(m.bountyTargetFor(db, get('x6t1')), null, 'temporada 6, fecha 1: sin bounty');
+  assert.equal(m.bountyTargetFor(db, get('x6t2')).playerId, 'b', 'temporada 6, fecha 2: ganador de la fecha 1');
+  get('x6t2').status = 'finished';
+  get('x6t2').imported = { points: { a: 9, b: 7 }, winnerId: 'a' };
+  const r = m.bountyTargetFor(db, get('x7t1'));
+  assert.equal(r.playerId, 'b');
+  assert.equal(r.reason, 'campeón de la Temporada 6', 'temporada 7, fecha 1: campeón de la temporada anterior');
 });
