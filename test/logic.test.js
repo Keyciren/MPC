@@ -473,3 +473,19 @@ test('bounty: desde la temporada 4; en la fecha 1, solo desde la temporada 7', a
   assert.equal(r.playerId, 'b');
   assert.equal(r.reason, 'campeón de la Temporada 6', 'temporada 7, fecha 1: campeón de la temporada anterior');
 });
+
+test('miembros de cada temporada: solo quienes jugaron; en la temporada en curso, también los activos', async () => {
+  const m = await import('../public/js/logic.js');
+  const done = (sid, n, pts) => ({ ...m.newTournament(sid, n), id: `${sid}t${n}`, status: 'finished', imported: { points: pts, winnerId: Object.keys(pts)[0] } });
+  const db = {
+    settings: { pointTables: m.defaultPointTables() },
+    players: [
+      { id: 'a', name: 'A', type: 'club' }, { id: 'nuevo', name: 'Nuevo', type: 'club' }, { id: 'ex', name: 'Ex', type: 'club', active: false },
+    ],
+    seasons: [{ id: 's1', name: 'Temporada 1', finalOrder: ['a', 'ex'] }, { id: 's2', name: 'Temporada 2' }],
+    tournaments: [done('s1', 1, { a: 9 }), done('s2', 1, { a: 9, nuevo: 7 }), { ...m.newTournament('s2', 2), id: 's2t2' }],
+  };
+  assert.deepEqual(m.ranking(db, 's1').rows.map((r) => r.player.id), ['a'], 'ex miembro con todas x no aparece');
+  assert.deepEqual(m.seasonMembers(db, 's1').map((p) => p.id), ['a'], 'el que entró después no aparece en la temporada 1');
+  assert.deepEqual(m.seasonMembers(db, 's2').map((p) => p.id).sort(), ['a', 'nuevo']);
+});

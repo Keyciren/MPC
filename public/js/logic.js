@@ -537,7 +537,7 @@ export function ranking(db, seasonId) {
   const order = season && season.finalOrder; // orden final oficial (temporadas cargadas de la planilla)
   const players = order
     ? order.map((id) => (db.players || []).find((p) => p.id === id)).filter(Boolean)
-    : (db.players || []).filter((p) => p.type !== 'invitado' && (p.active !== false || ts.some((t) => attendedIds(t).includes(p.id))));
+    : seasonMembers(db, seasonId);
   const resByT = {};
   ts.forEach((t) => {
     if (t.status === 'finished') resByT[t.id] = Object.fromEntries(results(t, db.settings).map((r) => [r.playerId, r]));
@@ -558,8 +558,10 @@ export function ranking(db, seasonId) {
     return { player: p, total, wins, played, cells };
   });
   if (order) {
-    rows.forEach((r, i) => (r.position = i + 1));
-    return { tournaments: ts, rows };
+    // Solo quienes jugaron alguna fecha esa temporada (la planilla deja a algunos ex miembros con todas "x")
+    const kept = rows.filter((r) => r.played > 0);
+    kept.forEach((r, i) => (r.position = i + 1));
+    return { tournaments: ts, rows: kept };
   }
   rows.sort((a, b) => b.total - a.total || b.wins - a.wins || a.player.name.localeCompare(b.player.name));
   let pos = 0;
@@ -596,6 +598,15 @@ export function seasonStats(db, seasonId) {
     });
   });
   return { finished: finished.length, total: ts.length, players: Object.values(per) };
+}
+
+// Miembros de una temporada: quienes jugaron al menos una fecha como miembros. En la temporada en curso
+// (o una que aún no termina) se suman los jugadores activos del club, aunque todavía no hayan jugado.
+export function seasonMembers(db, seasonId) {
+  const ts = seasonTournaments(db, seasonId);
+  const ids = new Set(ts.filter((t) => t.status === 'finished').flatMap((t) => attendedIds(t)));
+  if (!seasonFinished(db, seasonId)) (db.players || []).filter((p) => p.type !== 'invitado' && p.active !== false).forEach((p) => ids.add(p.id));
+  return (db.players || []).filter((p) => ids.has(p.id) && p.type !== 'invitado');
 }
 
 export function seasonFinished(db, seasonId) {

@@ -26,6 +26,7 @@ import {
   bountyHunter,
   bountyPoints,
   tournamentJackpots,
+  seasonMembers,
   importedBounty,
   importedPositions,
   allSeasonTournaments,
@@ -584,7 +585,7 @@ export function statsView(q) {
   const season = seasonFromQuery(q);
   const st = seasonStats(S.db, season.id);
   const ts = seasonTournaments(S.db, season.id).filter((t) => t.status === 'finished');
-  const club = S.db.players.filter((p) => p.type !== 'invitado');
+  const club = seasonMembers(S.db, season.id); // solo quienes eran del club esa temporada
   const byId = Object.fromEntries(st.players.map((p) => [p.playerId, p]));
   const att = club
     .map((p) => ({ p, s: byId[p.id] || { played: 0, wins: 0, kills: 0, itm: 0, prize: 0, jackpots: 0, final: 0 } }))
