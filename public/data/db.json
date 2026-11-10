@@ -1,5 +1,5 @@
 {
- "version": 51,
+ "version": 52,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1957,6 +1957,11 @@
     },
     "winnerId": "p_gaby",
     "kills": {}
+   },
+   "placesManual": {
+    "p_les": 13,
+    "p_pancho": 12,
+    "g:Rammus": 2
    }
   },
   {
