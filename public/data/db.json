@@ -1,5 +1,5 @@
 {
- "version": 27,
+ "version": 28,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -3467,7 +3467,9 @@
     "kills": {}
    },
    "placesManual": {
-    "p_les": 13
+    "p_les": 12,
+    "p_kari": 6,
+    "p_nadia": 8
    }
   },
   {
