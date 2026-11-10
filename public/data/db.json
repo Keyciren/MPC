@@ -1,5 +1,5 @@
 {
- "version": 43,
+ "version": 44,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1679,6 +1679,13 @@
     },
     "winnerId": "p_nadia",
     "kills": {}
+   },
+   "placesManual": {
+    "p_rene_harb": 12,
+    "p_serrano": 11,
+    "p_pancho": 10,
+    "p_meli": 9,
+    "p_glenda": 8
    }
   },
   {
