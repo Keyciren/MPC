@@ -369,7 +369,7 @@ export function importedTournament(t) {
   const pos = importedPositions(S.db, t, (S.lugares || {})[t.id], finT);
   // Invitados de la fecha: aparecen en su lugar, destacados y sin puntos
   const guestRows = Object.keys(pos)
-    .filter((k) => k.startsWith('g:'))
+    .filter((k) => !(k in (im.points || {})))
     .map((k) => ({ playerId: k, guest: true, points: null, prize: (finT[k] || {}).p || 0, position: null }));
   const res = [...results(t, S.db.settings).map((r) => ({ ...r, prize: r.prize || (finT[r.playerId] || {}).p || 0 })), ...guestRows].sort((a, b) => (pos[a.playerId] || 99) - (pos[b.playerId] || 99) || (b.points || 0) - (a.points || 0));
   const showPrize = res.some((r) => r.prize);
@@ -388,7 +388,7 @@ export function importedTournament(t) {
     <div class="table-wrap"><table class="tbl"><thead><tr><th>Lugar</th><th>Jugador</th><th>Puntos</th>${showPrize ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
     <tbody>${res
       .map(
-        (r) => `<tr class="${pos[r.playerId] === 1 ? 'gold' : ''} ${r.guest ? 'guest-row' : ''}"><td class="nowrap"><b>${pos[r.playerId] ? pos[r.playerId] + '°' : '<span class="muted">—</span>'}</b>${pos[r.playerId] === 1 ? ' 🏆' : ''}</td><td>${r.guest ? `${esc(r.playerId.slice(2))} <span class="tag guest">invitado</span>` : esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td>${r.guest ? '<span class="muted" title="Los invitados no suman puntos">—</span>' : `<b>${r.points}</b>`}${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${showPrize ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
+        (r) => `<tr class="${pos[r.playerId] === 1 ? 'gold' : ''} ${r.guest ? 'guest-row' : ''}"><td class="nowrap"><b>${pos[r.playerId] ? pos[r.playerId] + '°' : '<span class="muted">—</span>'}</b>${pos[r.playerId] === 1 ? ' 🏆' : ''}</td><td>${r.guest ? `${esc(r.playerId.startsWith('g:') ? r.playerId.slice(2) : pname(r.playerId))} <span class="tag guest">invitado</span>` : esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td>${r.guest ? '<span class="muted" title="Los invitados no suman puntos">—</span>' : `<b>${r.points}</b>`}${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${showPrize ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
       )
       .join('')}</tbody></table></div></div>`;
 }

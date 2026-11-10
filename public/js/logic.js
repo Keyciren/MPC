@@ -637,7 +637,8 @@ export function importedPositions(db, t, extra = null, finT = null) {
   const tables = db.settings.pointTables;
   const type = t.type || 'normal';
   const raw = Object.entries(im.points || {});
-  const guests = (extra && extra.guests) || [];
+  // Invitados de la fecha: los de la planilla y los jugadores (hoy del club) que pagaron pero no estaban en el ranking
+  const guests = [...new Set([...((extra && extra.guests) || []), ...Object.keys(finT || {}).filter((k) => !(k in (im.points || {})))])];
   const valid = (col, v) => v <= 0 || col.points.includes(v);
   // Cómo calza una columna: sin diferencias, o con un único +1 (el bounty)
   const tryCol = (col) => {
@@ -701,7 +702,7 @@ export function importedPositions(db, t, extra = null, finT = null) {
   const freePaid = [];
   for (let p = 1; p <= paid; p++) if (!used.has(p)) freePaid.push(p);
   Object.keys(prizeRank)
-    .filter((k) => k.startsWith('g:'))
+    .filter((k) => guests.includes(k))
     .sort((a, b) => prizeRank[a] - prizeRank[b])
     .forEach((g) => take(g, freePaid.shift()));
   raw.forEach(([pid]) => (out[pid] = out[pid] || null));
@@ -716,7 +717,7 @@ export function importedPositions(db, t, extra = null, finT = null) {
       .forEach(([key, p]) => {
         if (out[key] || !(key in out)) return;
         if (n && p > n) return;
-        if (!key.startsWith('g:') && p <= lowest) return;
+        if (!guests.includes(key) && p <= lowest) return;
         take(key, p);
       });
     // Si queda un solo jugador sin lugar y un solo lugar libre, es ese
