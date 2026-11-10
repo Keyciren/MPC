@@ -355,6 +355,12 @@ export function bindTabs(root) {
   });
 }
 
+// Invitados de una fecha de la planilla: jugadores de la fecha que no son del club (no están en el ranking)
+function guestsIn(t) {
+  const im = t.imported || {};
+  return Math.max(0, (Number(im.players) || 0) - Object.keys(im.points || {}).length);
+}
+
 export function importedTournament(t) {
   const im = t.imported;
   const cur = (t.config && t.config.currency) || '$';
@@ -369,7 +375,7 @@ export function importedTournament(t) {
       }</div>`
     : '';
   return `<div class="panel"><p class="muted small">Fecha cargada desde la planilla histórica del club: se conocen los puntos${im.prizes ? ', los premios' : ''} y el ganador, pero no el detalle de las eliminaciones.</p>
-    ${im.players ? `<p>${im.players} jugadores${im.guests ? ` (${im.guests} invitado${im.guests > 1 ? 's' : ''})` : ''}</p>` : ''}
+    ${im.players ? `<p>${im.players} jugadores${guestsIn(t) ? ` (${guestsIn(t)} invitado${guestsIn(t) > 1 ? 's' : ''})` : ''}</p>` : ''}
     ${bountyBox}
     ${tournamentJackpots(t, S.fin || {}).map((j) => `<div class="jackpot">🎰 Jackpot: <b>${esc(pname(j.playerId))}</b> · ${money(j.amount, cur)}</div>`).join('')}
     <div class="table-wrap"><table class="tbl"><thead><tr><th>Lugar</th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
