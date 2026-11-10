@@ -1,5 +1,5 @@
 {
- "version": 24,
+ "version": 25,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -3245,6 +3245,10 @@
     },
     "winnerId": "p_carlos",
     "kills": {}
+   },
+   "placesManual": {
+    "p_les": 18,
+    "p_xelo": 11
    }
   },
   {
