@@ -440,21 +440,30 @@ export function tableOf(t, playerId) {
 
 // ---------- Resultados ----------
 // Fechas cargadas desde la planilla histórica: solo puntos, premios y ganador
-function importedResults(t) {
+// Datos auxiliares de las fechas de la planilla (dinero y lugares deducidos de los relatos): los carga la web
+const EXTRAS = { fin: {}, lugares: {} };
+export function setExtras({ fin, lugares } = {}) {
+  if (fin) EXTRAS.fin = fin;
+  if (lugares) EXTRAS.lugares = lugares;
+}
+
+function importedResults(t, settings) {
   const im = t.imported;
+  const finT = EXTRAS.fin[t.id] || null;
+  const pos = settings ? importedPositions({ settings }, t, EXTRAS.lugares[t.id] || null, finT) : {};
   return Object.entries(im.points || {})
     .map(([pid, pts]) => ({
       playerId: pid,
-      position: im.winnerId === pid ? 1 : null,
+      position: pos[pid] || (!settings && im.winnerId === pid ? 1 : null),
       points: Number(pts) || 0,
       bonus: 0,
-      prize: (im.prizes || {})[pid] || 0,
+      prize: (im.prizes || {})[pid] || ((finT || {})[pid] || {}).p || 0,
       kills: (im.kills || {})[pid] || 0,
       rebuys: 0,
       addon: false,
       luckyLoser: false,
     }))
-    .sort((a, b) => (a.position === 1 ? -1 : b.position === 1 ? 1 : b.points - a.points));
+    .sort((a, b) => (a.position || 999) - (b.position || 999) || b.points - a.points);
 }
 
 export function attendedIds(t) {
@@ -463,7 +472,7 @@ export function attendedIds(t) {
 }
 
 export function results(t, settings) {
-  if (t.imported) return importedResults(t);
+  if (t.imported) return importedResults(t, settings);
   const st = entryState(t);
   const n = st.length;
   const cfg = t.config || {};
@@ -582,8 +591,8 @@ export function seasonStats(db, seasonId) {
       }
       if (r.position && r.position <= perTable) s.final++;
     });
-    (t.jackpots || []).forEach((j) => {
-      if (j.playerId) get(j.playerId).jackpots++;
+    tournamentJackpots(t, EXTRAS.fin).forEach((j) => {
+      if (j.playerId && !String(j.playerId).startsWith('g:')) get(j.playerId).jackpots++;
     });
   });
   return { finished: finished.length, total: ts.length, players: Object.values(per) };
@@ -810,10 +819,8 @@ export function bountyTargetFor(db, t) {
     .pop();
   if (prev) {
     const res = results(prev, db.settings);
-    const ordered = prev.imported
-      ? res.slice().sort((a, b) => (a.position === 1 ? -1 : b.position === 1 ? 1 : b.points - a.points))
-      : res.slice().sort((a, b) => (a.position || 999) - (b.position || 999));
-    return pick(ordered.map((r, i) => ({ playerId: r.playerId, place: prev.imported ? i + 1 : r.position })), { label: prev.label });
+    const ordered = res.slice().sort((a, b) => (a.position || 999) - (b.position || 999) || b.points - a.points);
+    return pick(ordered.map((r, i) => ({ playerId: r.playerId, place: r.position || i + 1 })), { label: prev.label });
   }
   if (sn && sn < FIRST_DATE_BOUNTY_FROM_SEASON) return null; // primera fecha sin bounty hasta la temporada 6
   const seasons = db.seasons || [];

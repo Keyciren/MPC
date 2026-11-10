@@ -2,7 +2,7 @@ import { RANKS, SUITS, cardLabel, isRed } from './logic.js';
 
 import { local, checkToken, commitFiles, remoteVersion, remoteDb } from './store.js';
 import { CONFIG } from './config.js';
-import { emptyDb, publicCopy, uid } from './logic.js';
+import { emptyDb, publicCopy, uid, setExtras } from './logic.js';
 
 export const S = {
   db: null,
@@ -41,6 +41,7 @@ async function loadFinanzas() {
     }
   };
   [S.fin, S.lugares] = await Promise.all([get('finanzas.json'), get('lugares.json')]);
+  setExtras({ fin: S.fin, lugares: S.lugares });
 }
 
 export async function loadDb() {
