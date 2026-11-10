@@ -1,5 +1,5 @@
 {
- "version": 16,
+ "version": 17,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1607,8 +1607,10 @@
    "seasonId": "s1",
    "number": 1,
    "label": "Fecha 1",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-03-06"
+   ],
+   "finalDate": "2020-03-06",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1645,8 +1647,10 @@
    "seasonId": "s1",
    "number": 2,
    "label": "Fecha 2",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-04-03"
+   ],
+   "finalDate": "2020-04-03",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1682,8 +1686,10 @@
    "seasonId": "s1",
    "number": 3,
    "label": "Fecha 3",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-04-24"
+   ],
+   "finalDate": "2020-04-24",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1720,8 +1726,10 @@
    "seasonId": "s1",
    "number": 4,
    "label": "Fecha 4",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-05-16"
+   ],
+   "finalDate": "2020-05-16",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1759,8 +1767,10 @@
    "seasonId": "s1",
    "number": 5,
    "label": "Fecha 5",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-05-23"
+   ],
+   "finalDate": "2020-05-23",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1799,8 +1809,10 @@
    "seasonId": "s1",
    "number": 6,
    "label": "Fecha 6",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-06-05"
+   ],
+   "finalDate": "2020-06-05",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1839,8 +1851,10 @@
    "seasonId": "s1",
    "number": 7,
    "label": "Fecha 7",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-06-20"
+   ],
+   "finalDate": "2020-06-20",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1877,8 +1891,10 @@
    "seasonId": "s1",
    "number": 8,
    "label": "Fecha 8",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-06-27"
+   ],
+   "finalDate": "2020-06-27",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1916,8 +1932,10 @@
    "seasonId": "s1",
    "number": 9,
    "label": "Fecha 9",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-07-10"
+   ],
+   "finalDate": "2020-07-10",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1956,8 +1974,10 @@
    "seasonId": "s1",
    "number": 10,
    "label": "Fecha 10",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-07-25"
+   ],
+   "finalDate": "2020-07-25",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -1994,8 +2014,10 @@
    "seasonId": "s1",
    "number": 11,
    "label": "Fecha 11",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-08-07"
+   ],
+   "finalDate": "2020-08-07",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2033,8 +2055,10 @@
    "seasonId": "s1",
    "number": 12,
    "label": "Fecha 12",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-08-22"
+   ],
+   "finalDate": "2020-08-22",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2071,8 +2095,10 @@
    "seasonId": "s2",
    "number": 1,
    "label": "Fecha 1",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2020-10-17"
+   ],
+   "finalDate": "2020-10-17",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2114,8 +2140,10 @@
    "seasonId": "s2",
    "number": 2,
    "label": "Fecha 2",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2021-08-08"
+   ],
+   "finalDate": "2021-08-08",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2155,8 +2183,10 @@
    "seasonId": "s2",
    "number": 3,
    "label": "Fecha 3",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2021-10-02"
+   ],
+   "finalDate": "2021-10-02",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2193,8 +2223,10 @@
    "seasonId": "s2",
    "number": 4,
    "label": "Fecha 4",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2021-10-22"
+   ],
+   "finalDate": "2021-10-22",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2234,8 +2266,10 @@
    "seasonId": "s2",
    "number": 5,
    "label": "Fecha 5",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2021-12-17"
+   ],
+   "finalDate": "2021-12-17",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2279,8 +2313,10 @@
    "seasonId": "s2",
    "number": 6,
    "label": "Fecha 6",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-01-14"
+   ],
+   "finalDate": "2022-01-14",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2319,8 +2355,10 @@
    "seasonId": "s2",
    "number": 7,
    "label": "Fecha 7",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-03-11"
+   ],
+   "finalDate": "2022-03-11",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2359,8 +2397,10 @@
    "seasonId": "s2",
    "number": 8,
    "label": "Fecha 8",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-04-09"
+   ],
+   "finalDate": "2022-04-09",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2399,8 +2439,10 @@
    "seasonId": "s2",
    "number": 9,
    "label": "Fecha 9",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-04-30"
+   ],
+   "finalDate": "2022-04-30",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2441,8 +2483,10 @@
    "seasonId": "s2",
    "number": 10,
    "label": "Fecha 10",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-05-20"
+   ],
+   "finalDate": "2022-05-20",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2483,8 +2527,10 @@
    "seasonId": "s2",
    "number": 11,
    "label": "Fecha 11",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-06-03"
+   ],
+   "finalDate": "2022-06-03",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2527,8 +2573,10 @@
    "seasonId": "s2",
    "number": 12,
    "label": "Fecha 12",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-06-17"
+   ],
+   "finalDate": "2022-06-17",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2570,8 +2618,10 @@
    "seasonId": "s3",
    "number": 1,
    "label": "Fecha 1",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-08-05"
+   ],
+   "finalDate": "2022-08-05",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2611,8 +2661,10 @@
    "seasonId": "s3",
    "number": 2,
    "label": "Fecha 2",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-09-23"
+   ],
+   "finalDate": "2022-09-23",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2653,8 +2705,10 @@
    "seasonId": "s3",
    "number": 3,
    "label": "Fecha 3",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2022-12-07"
+   ],
+   "finalDate": "2022-12-07",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2694,8 +2748,10 @@
    "seasonId": "s3",
    "number": 4,
    "label": "Fecha 4",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-01-21"
+   ],
+   "finalDate": "2023-01-21",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2734,8 +2790,10 @@
    "seasonId": "s3",
    "number": 5,
    "label": "Fecha 5",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-03-18"
+   ],
+   "finalDate": "2023-03-18",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2772,8 +2830,10 @@
    "seasonId": "s3",
    "number": 6,
    "label": "Fecha 6",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-05-05"
+   ],
+   "finalDate": "2023-05-05",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2815,8 +2875,10 @@
    "seasonId": "s3",
    "number": 7,
    "label": "Fecha 7",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-05-26"
+   ],
+   "finalDate": "2023-05-26",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2861,8 +2923,10 @@
    "seasonId": "s3",
    "number": 8,
    "label": "Fecha 8",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-06-23"
+   ],
+   "finalDate": "2023-06-23",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2901,8 +2965,10 @@
    "seasonId": "s3",
    "number": 9,
    "label": "Fecha 9",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-08-04"
+   ],
+   "finalDate": "2023-08-04",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2939,8 +3005,10 @@
    "seasonId": "s3",
    "number": 10,
    "label": "Fecha 10",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-09-01"
+   ],
+   "finalDate": "2023-09-01",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -2980,8 +3048,10 @@
    "seasonId": "s3",
    "number": 11,
    "label": "Fecha 11",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-10-13"
+   ],
+   "finalDate": "2023-10-13",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3017,8 +3087,10 @@
    "seasonId": "s3",
    "number": 12,
    "label": "Fecha 12",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2023-11-11"
+   ],
+   "finalDate": "2023-11-11",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3057,8 +3129,10 @@
    "seasonId": "s4",
    "number": 1,
    "label": "Fecha 1",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-04-05"
+   ],
+   "finalDate": "2024-04-05",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3092,8 +3166,10 @@
    "seasonId": "s4",
    "number": 2,
    "label": "Fecha 2",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-04-26"
+   ],
+   "finalDate": "2024-04-26",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3129,8 +3205,10 @@
    "seasonId": "s4",
    "number": 3,
    "label": "Fecha 3",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-05-17"
+   ],
+   "finalDate": "2024-05-17",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3170,8 +3248,10 @@
    "seasonId": "s4",
    "number": 4,
    "label": "Fecha 4",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-06-22"
+   ],
+   "finalDate": "2024-06-22",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3209,8 +3289,10 @@
    "seasonId": "s4",
    "number": 5,
    "label": "Fecha 5",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-07-12"
+   ],
+   "finalDate": "2024-07-12",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3245,8 +3327,10 @@
    "seasonId": "s4",
    "number": 6,
    "label": "Fecha 6",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-08-09"
+   ],
+   "finalDate": "2024-08-09",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3285,8 +3369,10 @@
    "seasonId": "s4",
    "number": 7,
    "label": "Fecha 7",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-08-24"
+   ],
+   "finalDate": "2024-08-24",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3321,8 +3407,10 @@
    "seasonId": "s4",
    "number": 8,
    "label": "Fecha 8",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-09-27"
+   ],
+   "finalDate": "2024-09-27",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3356,8 +3444,10 @@
    "seasonId": "s4",
    "number": 9,
    "label": "Fecha 9",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-10-11"
+   ],
+   "finalDate": "2024-10-11",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3392,8 +3482,10 @@
    "seasonId": "s4",
    "number": 10,
    "label": "Fecha 10",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-10-25"
+   ],
+   "finalDate": "2024-10-25",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3429,8 +3521,10 @@
    "seasonId": "s4",
    "number": 11,
    "label": "Fecha 11",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-11-15"
+   ],
+   "finalDate": "2024-11-15",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3471,8 +3565,10 @@
    "seasonId": "s4",
    "number": 12,
    "label": "Fecha 12",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2024-12-14"
+   ],
+   "finalDate": "2024-12-14",
    "venue": "",
    "modality": "rebuy",
    "type": "normal",
@@ -3598,7 +3694,7 @@
     "2025-04-18",
     "2025-04-19"
    ],
-   "finalDate": null,
+   "finalDate": "2025-04-17",
    "venue": "Colina",
    "modality": "freezeout",
    "type": "normal",
@@ -3880,7 +3976,7 @@
     "2025-09-05",
     "2025-09-06"
    ],
-   "finalDate": null,
+   "finalDate": "2025-09-12",
    "venue": "Santiago",
    "modality": "freezeout",
    "type": "normal",
@@ -3970,8 +4066,10 @@
    "seasonId": "s5",
    "number": 11,
    "label": "Fecha 11",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2025-12-07"
+   ],
+   "finalDate": "2025-12-07",
    "venue": "Santiago",
    "modality": "freezeout",
    "type": "normal",
@@ -4012,8 +4110,10 @@
    "seasonId": "s5",
    "number": 12,
    "label": "Fecha 12",
-   "dateOptions": [],
-   "finalDate": null,
+   "dateOptions": [
+    "2025-12-27"
+   ],
+   "finalDate": "2025-12-27",
    "venue": "Colina",
    "modality": "rebuy",
    "type": "gs",
