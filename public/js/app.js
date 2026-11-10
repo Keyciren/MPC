@@ -96,10 +96,15 @@ function render() {
 
 setRerender(render);
 
+let lastPath = parseHash().path;
 window.addEventListener('hashchange', () => {
   document.body.classList.remove('menu-open');
+  const { path } = parseHash();
+  const y = window.scrollY;
   render();
-  window.scrollTo(0, 0);
+  // Al elegir otra fecha dentro de la misma página (p. ej. resumen bajo la tabla de posiciones) no saltar arriba
+  window.scrollTo(0, path === lastPath ? y : 0);
+  lastPath = path;
 });
 
 // Reloj en pantalla (vista jugador y admin)

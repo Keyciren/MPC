@@ -55,6 +55,9 @@ import {
   bountyPoints,
   bountyTargetFor,
   resetTournament,
+  allSeasonTournaments,
+  newFriendly,
+  importedPositions,
   settlement,
   pendingDebts,
   prizePercentsOf,
@@ -284,10 +287,10 @@ export function seasonAdminView(q) {
   const c = season.config;
   const ts = seasonTournaments(S.db, season.id);
   const isCurrent = S.db.settings.currentSeasonId === season.id;
-  const rows = ts
+  const rows = allSeasonTournaments(S.db, season.id)
     .map((t) => {
       const opts = t.dateOptions || [];
-      return `<tr data-t="${t.id}" class="${t.type === 'gs' ? 'gs-row' : ''}">
+      return `<tr data-t="${t.id}" class="${t.type === 'gs' ? 'gs-row' : ''} ${t.friendly ? 'friendly-row' : ''}">
         <td><input class="w-sm" data-tf="label" value="${esc(t.label)}"></td>
         <td class="dates">${opts
           .map(
@@ -299,7 +302,7 @@ export function seasonAdminView(q) {
         <td>${formatSelect(t, t.status === 'running' || t.status === 'finished' ? 'disabled' : '')}</td>
         <td><button class="btn sm ghost" data-dealers>${(t.dealerIds || []).map(pname).join(', ') || 'Asignar'}</button>${t.trainee ? `<br><small class="muted">Trainee: ${esc(t.trainee)}</small>` : ''}</td>
         <td><span class="status ${t.status}">${STATUS[t.status]}</span></td>
-        <td><a class="btn sm" href="#/admin/fecha/${t.id}">Abrir</a></td>
+        <td class="nowrap"><a class="btn sm" href="#/admin/fecha/${t.id}">Abrir</a>${t.friendly ? ` <button class="btn xs ghost danger" data-delfriendly title="Eliminar fecha amistosa">✕</button>` : ''}</td>
       </tr>`;
     })
     .join('');
@@ -314,7 +317,8 @@ export function seasonAdminView(q) {
         <label class="fld"><span>Cantidad de fechas</span><input type="number" min="1" max="60" data-count value="${ts.length}"></label>
       </div>
     </div>
-    <div class="panel"><h3>Calendario de fechas</h3>
+    <div class="panel"><div class="row between wrap"><h3>Calendario de fechas</h3><button class="btn sm ghost" data-newfriendly>🤝 + Fecha amistosa</button></div>
+      <p class="muted small">Las fechas amistosas se juegan igual en la app (mesas, reloj, eliminaciones, resumen y cobros), pero no suman puntos ni cuentan para la tabla de posiciones ni las estadísticas.</p>
       <p class="muted small">Agrega opciones de fecha con el selector y luego haz clic sobre una opción para dejarla como fecha final (queda destacada).</p>
       <div class="table-wrap"><table class="tbl cal-edit"><thead><tr><th>Fecha</th><th>Opciones / Día final</th><th>Sede</th><th>Formato</th><th>Dealers</th><th>Estado</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     </div>
@@ -385,6 +389,14 @@ export function seasonAdminView(q) {
       const cur = root.querySelector('[data-current]');
       if (cur) cur.onclick = () => mutate((db) => (db.settings.currentSeasonId = season.id)).catch(() => {});
       root.querySelector('[data-newseason]').onclick = () => newSeason();
+      root.querySelector('[data-newfriendly]').onclick = () =>
+        mutate((db) => db.tournaments.push(newFriendly(db, season.id)), { silent: false }).catch(() => {});
+      on(root, '[data-delfriendly]', 'click', async (b) => {
+        const tid = b.closest('tr').dataset.t;
+        const t = S.db.tournaments.find((x) => x.id === tid);
+        if (!(await confirmDlg(`¿Eliminar ${t.label}?${t.status !== 'planned' ? ' Se borrará todo lo registrado en ella.' : ''}`, 'Eliminar'))) return;
+        mutate((db) => (db.tournaments = db.tournaments.filter((x) => x.id !== tid)), { silent: false }).catch(() => {});
+      });
       root.querySelector('[data-count]').onchange = async (e) => {
         const n = Math.max(1, Number(e.target.value) || 1);
         const extra = ts.slice(n);
@@ -538,9 +550,17 @@ export function tournamentAdminView(id) {
     return {
       html: `<h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>${
         cb ? cb.html : `<div class="panel"><p class="small">Esta fecha viene de la planilla. <button class="btn sm ghost" data-enablepay>💰 Llevar control de cobros de esta fecha</button></p></div>`
-      }${importedTournament(t)}`,
+      }${placesEditor(t)}${importedTournament(t)}`,
       bind(root) {
         if (cb) cb.bind(root);
+        on(root, '[data-place]', 'change', (el) =>
+          upT(t.id, (x) => {
+            x.placesManual = x.placesManual || {};
+            const v = Number(el.value) || 0;
+            if (v > 0) x.placesManual[el.dataset.place] = v;
+            else delete x.placesManual[el.dataset.place];
+          }, false)
+        );
         const en = root.querySelector('[data-enablepay]');
         if (en) en.onclick = () => upT(t.id, (x) => (x.payments = x.payments || {}), false);
       },
@@ -1433,6 +1453,19 @@ function summaryTab(t) {
         };
     },
   };
+}
+
+// Lugares que faltan en una fecha de la planilla (sin puntos y sin dato en el relato): el admin los ingresa
+function placesEditor(t) {
+  const auto = importedPositions(S.db, { ...t, placesManual: {} }, (S.lugares || {})[t.id]);
+  const manual = t.placesManual || {};
+  const ids = Object.keys(auto).filter((pid) => !auto[pid] || manual[pid]);
+  if (!ids.length) return '';
+  return `<div class="panel"><h3>Lugares por completar</h3>
+    <p class="small muted">La planilla no tiene el lugar de estos jugadores (no sumaron puntos y el resumen no lo menciona). Si lo sabes, escríbelo y se mostrará en la tabla de posiciones.</p>
+    <div class="places-edit">${ids
+      .map((pid) => `<label class="fld inline"><span>${esc(pname(pid))}</span><input type="number" min="1" max="40" class="w-xs" data-place="${pid}" value="${manual[pid] || ''}" placeholder="°"></label>`)
+      .join('')}</div></div>`;
 }
 
 // ---------- Cobros ----------

@@ -28,6 +28,8 @@ import {
   tournamentJackpots,
   importedBounty,
   importedPositions,
+  allSeasonTournaments,
+  placeIn,
   bountyTargetFor,
 } from './logic.js';
 
@@ -49,7 +51,7 @@ const TYPE = { normal: 'Normal', gs: 'Grand Slam' };
 const STATUS = { planned: 'Programada', setup: 'Preparando', running: 'En juego', finished: 'Finalizada' };
 
 export function badges(t) {
-  return `<span class="tag ${t.modality}">${MODALITY[t.modality] || ''}</span><span class="tag ${t.type}">${TYPE[t.type] || ''}</span>`;
+  return `${t.friendly ? '<span class="tag friendly">Amistoso</span>' : ''}<span class="tag ${t.modality}">${MODALITY[t.modality] || ''}</span><span class="tag ${t.type}">${TYPE[t.type] || ''}</span>`;
 }
 
 // ---------- Inicio ----------
@@ -111,7 +113,7 @@ export function homeView() {
 // ---------- Calendario ----------
 export function calendarView(q) {
   const season = seasonFromQuery(q);
-  const ts = seasonTournaments(S.db, season.id);
+  const ts = allSeasonTournaments(S.db, season.id);
   const rows = ts
     .map((t) => {
       const opts = t.dateOptions || [];
@@ -178,10 +180,16 @@ export function tournamentView(id) {
   const head = `<div class="row between wrap"><div><h2>${esc(t.label)} <small class="muted">${esc(season ? season.name : '')}</small></h2>
     <p>${t.finalDate ? fmtDate(t.finalDate) : 'Fecha por definir'} ${t.venue ? '· ' + esc(t.venue) : ''} ${badges(t)}</p></div>${adminLink}</div>`;
 
-  if (t.status === 'finished' && t.imported) return { html: head + importedTournament(t) };
+  if (t.status === 'finished' && t.imported)
+    return {
+      html: head + importedTournament(t) + `<div class="panel"><h3>Resumen de la fecha</h3><div data-archivo="${t.id}"><p class="muted">Cargando resumen…</p></div></div>`,
+      bind(root) {
+        fillSummary(root.querySelector('[data-archivo]'), t);
+      },
+    };
   if (t.status === 'finished')
     return {
-      html: head + finishedTournament(t),
+      html: head + (t.friendly ? '<div class="panel small">🤝 Fecha amistosa: no suma puntos ni cuenta para posiciones ni estadísticas.</div>' : '') + finishedTournament(t),
       bind(root) {
         const b = root.querySelector('[data-word]');
         if (b) b.onclick = () => import('./word.js').then((m) => m.downloadWord(t)).catch((e) => alert(e.message));
@@ -350,7 +358,7 @@ export function bindTabs(root) {
 export function importedTournament(t) {
   const im = t.imported;
   const cur = (t.config && t.config.currency) || '$';
-  const pos = importedPositions(S.db, t);
+  const pos = importedPositions(S.db, t, (S.lugares || {})[t.id]);
   const res = results(t, S.db.settings).sort((a, b) => (pos[a.playerId] || 99) - (pos[b.playerId] || 99) || b.points - a.points);
   const ib = importedBounty(S.db, t);
   const target = ib ? ib.target : (bountyTargetFor(S.db, t) || {}).playerId;
@@ -405,21 +413,89 @@ export function historyView() {
 export function rankingView(q) {
   const season = seasonFromQuery(q);
   const { tournaments, rows } = ranking(S.db, season.id);
+  // Lugar de cada jugador en cada fecha (de la app, de los puntos o del relato del archivo)
+  const places = Object.fromEntries(
+    tournaments
+      .filter((t) => t.status === 'finished')
+      .map((t) => [t.id, t.imported ? importedPositions(S.db, t, (S.lugares || {})[t.id]) : Object.fromEntries(results(t, S.db.settings).map((r) => [r.playerId, r.position]))])
+  );
+  const played = tournaments.filter((t) => t.status === 'finished');
+  const sel = played.find((t) => t.id === q.f) || played[played.length - 1];
   return {
     html: `
     <div class="row between wrap"><h2>Tabla de posiciones</h2>${seasonPicker(season.id, '#/ranking')}</div>
     <div class="panel"><div class="table-wrap"><table class="tbl ranking">
-      <thead><tr><th>Pos</th><th class="sticky">Jugador</th><th>Total</th>${tournaments.map((t) => `<th title="${esc(t.label)}"><a href="#/torneo/${t.id}">F${t.number}</a>${t.type === 'gs' ? '<sup>GS</sup>' : ''}</th>`).join('')}</tr></thead>
+      <thead><tr><th>Pos</th><th class="sticky">Jugador</th><th>Total</th>${tournaments.map((t) => `<th title="${esc(t.label)}"><a href="#/ranking?s=${season.id}&f=${t.id}" class="${sel && sel.id === t.id ? 'on' : ''}">F${t.number}</a>${t.type === 'gs' ? '<sup>GS</sup>' : ''}</th>`).join('')}</tr></thead>
       <tbody>${rows
         .map(
           (r) => `<tr><td>${r.position}</td><td class="sticky">${esc(r.player.nickname || r.player.name)}</td><td><b>${r.total}</b></td>${r.cells
-            .map((c) => `<td class="${c.value === 'x' ? 'absent' : ''} ${c.position === 1 ? 'win' : ''}">${c.value}</td>`)
+            .map((c) => {
+              const pl = places[c.tournamentId] ? places[c.tournamentId][r.player.id] : null;
+              return `<td class="${c.value === 'x' ? 'absent' : ''} ${c.position === 1 ? 'win' : ''}">${c.value}${c.value !== 'x' && c.value !== '' ? `<small class="cell-place">${pl ? pl + '°' : '—'}</small>` : ''}</td>`;
+            })
             .join('')}</tr>`
         )
         .join('')}</tbody></table></div>
-      <p class="small muted">x = no asistió · celda dorada = ganó la fecha · Solo se listan jugadores del club (no invitados).</p></div>`,
-    bind: bindSeasonPicker,
+      <p class="small muted">Cada celda: puntos y, debajo, el lugar en que terminó ese día · x = no asistió · celda dorada = ganó la fecha · Solo se listan jugadores del club (no invitados).</p></div>
+    ${
+      played.length
+        ? `<div class="panel"><div class="row between wrap"><h3>Resumen de la fecha</h3><a class="btn sm ghost" href="#/torneo/${sel.id}">Ver resultados de ${esc(sel.label)}</a></div>
+      <div class="fecha-chips">${played.map((t) => `<a class="chip-f ${t.id === sel.id ? 'on' : ''}" href="#/ranking?s=${season.id}&f=${t.id}">F${t.number}</a>`).join('')}</div>
+      <div data-archivo="${sel.id}"><p class="muted">Cargando resumen…</p></div></div>`
+        : ''
+    }`,
+    bind(root) {
+      bindSeasonPicker(root);
+      const box = root.querySelector('[data-archivo]');
+      if (box) fillSummary(box, S.db.tournaments.find((t) => t.id === box.dataset.archivo));
+    },
   };
+}
+
+// ---------- Resúmenes del archivo (temporadas 1 a 6) ----------
+let archivoIndex = null;
+async function archivoEntry(t) {
+  if (!archivoIndex) archivoIndex = await fetch('archivo/index.json?v=' + (window.APP_VERSION || '')).then((r) => (r.ok ? r.json() : [])).catch(() => []);
+  const season = S.db.seasons.find((s) => s.id === t.seasonId);
+  const sn = Number(((season && season.name) || '').replace(/\D+/g, '')) || Number(String(t.seasonId).replace(/\D+/g, ''));
+  return t.friendly ? null : archivoIndex.find((e) => e.s === sn && e.f === t.number) || null;
+}
+function archivoHands(tb) {
+  const hands = (tb.hands || []).map((h) => `<b>${esc(h.who)}</b> ${esc((h.hand || '').replace(/T/g, '10'))}`).join(' <span class="muted">vs</span> ');
+  return `<div class="hand-line arch-hand">🃏 ${esc(tb.title.replace(/\s+-\s+/, ' · '))}: ${hands}${tb.board ? ` · <span class="muted">mesa</span> ${esc(tb.board.replace(/T/g, '10'))}` : ''}</div>`;
+}
+export async function fillSummary(box, t) {
+  if (!t) return;
+  const e = await archivoEntry(t);
+  if (!e) {
+    if (t.imported) box.innerHTML = '<p class="muted">No hay resumen escrito de esta fecha.</p>';
+    else box.innerHTML = appSummaryHtml(t);
+    return;
+  }
+  try {
+    const d = await fetch('archivo/' + e.file).then((r) => r.json());
+    const fmtP = (x) => esc(x).replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+    const body = d.blocks
+      .map((b) => {
+        if (b.h !== undefined && b.img === undefined) return '';
+        if (b.p !== undefined) return `<p>${fmtP(b.p)}</p>`;
+        if (b.img) return `<a href="archivo/${b.img}" target="_blank" rel="noopener"><img class="photo" src="archivo/${b.img}" width="${b.w || ''}" height="${b.h || ''}" loading="lazy" alt="Foto de la fecha"></a>`;
+        if (b.table) return archivoHands(b.table);
+        if (b.points) return `<table class="tbl" style="max-width:360px">${b.points.map((r) => `<tr><td>${esc(r[0])}</td><td class="right">${r[1]}</td></tr>`).join('')}</table>`;
+        return '';
+      })
+      .join('');
+    const title = (d.blocks.find((b) => b.h !== undefined && b.img === undefined) || {}).h || d.title;
+    const fecha = new Date(d.date + 'T12:00:00').toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    box.innerHTML = `<div class="summary arch"><p class="muted small">${esc(t.label)} · ${fecha}</p><h2 class="sum-title">${esc(title)}</h2><div class="arch-body">${body}</div></div>`;
+  } catch {
+    box.innerHTML = '<p class="muted">No se pudo cargar el resumen. Recarga la página para reintentar.</p>';
+  }
+}
+function appSummaryHtml(t) {
+  return `<div class="summary">${buildSummary(S.db, t)
+    .map((b) => (b.kind === 'title' ? `<h2 class="sum-title">${esc(b.text)}</h2>` : `<div class="sum-p">${b.kind === 'bust' || b.kind === 'winner' ? `<span class="place-badge ${b.kind === 'winner' ? 'first' : ''}">${b.kind === 'winner' ? 1 : b.position}°</span>` : ''}<p>${esc(b.text)}</p>${imgHtml(b.image)}</div>`))
+    .join('')}</div>`;
 }
 
 // ---------- Tablas de puntaje ----------

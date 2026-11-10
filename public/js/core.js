@@ -32,12 +32,15 @@ export async function fetchPublished() {
 
 // Datos históricos de dinero (archivo aparte, solo lectura)
 async function loadFinanzas() {
-  try {
-    const r = await fetch('data/finanzas.json?v=' + (window.APP_VERSION || Date.now()));
-    S.fin = r.ok ? await r.json() : {};
-  } catch {
-    S.fin = {};
-  }
+  const get = async (f) => {
+    try {
+      const r = await fetch(`data/${f}?v=` + (window.APP_VERSION || Date.now()));
+      return r.ok ? await r.json() : {};
+    } catch {
+      return {};
+    }
+  };
+  [S.fin, S.lugares] = await Promise.all([get('finanzas.json'), get('lugares.json')]);
 }
 
 export async function loadDb() {

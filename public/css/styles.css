@@ -342,3 +342,16 @@ textarea { width: 100%; resize: vertical; }
 .place-badge { position: absolute; left: 0; top: 2px; min-width: 40px; text-align: center; background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; padding: 2px 6px; font-weight: 800; color: var(--accent); }
 .place-badge.first { background: var(--accent); color: #1a1405; border-color: var(--accent); }
 @media print { .place-badge { color: #000; border-color: #000; } }
+.tbl.ranking .cell-place { display: block; font-size: .72em; color: var(--muted); font-weight: 400; line-height: 1; margin-top: 2px; }
+.tbl.ranking td.win .cell-place { color: var(--accent); }
+.tbl.ranking th a.on { background: var(--accent); color: #1a1405; border-radius: 6px; padding: 0 4px; text-decoration: none; }
+.fecha-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.chip-f { padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--text); font-weight: 600; }
+.chip-f.on { background: var(--accent); border-color: var(--accent); color: #1a1405; }
+.summary.arch { max-width: 820px; }
+.arch-body p { margin: 0 0 14px; text-align: justify; line-height: 1.6; }
+.arch-body .photo { max-height: 520px; }
+.arch-hand { background: var(--bg2); border-radius: 8px; padding: 6px 10px; margin: -6px 0 14px; }
+.tag.friendly { background: #5c3d1e; color: #ffd9a8; }
+.tbl tr.friendly-row td:first-child { box-shadow: inset 4px 0 0 #c98a3a; }
+.places-edit { display: flex; flex-wrap: wrap; gap: 8px 18px; }

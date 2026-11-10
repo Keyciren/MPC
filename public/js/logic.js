@@ -474,13 +474,13 @@ export function results(t, settings) {
   (t.bonus || []).forEach((b) => {
     bonus[b.playerId] = (bonus[b.playerId] || 0) + (Number(b.points) || 0);
   });
-  const bh = bountyHunter(t);
+  const bh = t.friendly ? null : bountyHunter(t);
   if (bh) bonus[bh] = (bonus[bh] || 0) + bountyPoints(t);
   return st
     .map((e) => ({
       playerId: e.playerId,
       position: e.position,
-      points: e.position ? pointsFor(settings.pointTables, t.type || 'normal', n, e.position) + (bonus[e.playerId] || 0) : 0,
+      points: t.friendly ? 0 : e.position ? pointsFor(settings.pointTables, t.type || 'normal', n, e.position) + (bonus[e.playerId] || 0) : 0,
       bonus: bonus[e.playerId] || 0,
       prize: e.position && e.position <= pz.length ? pz[e.position - 1] : 0,
       kills: kills[e.playerId] || 0,
@@ -507,8 +507,19 @@ export function hitman(t) {
 }
 
 // ---------- Temporada ----------
+// Fechas oficiales de la temporada (las amistosas no cuentan para puntos, posiciones ni estadísticas)
 export function seasonTournaments(db, seasonId) {
-  return (db.tournaments || []).filter((t) => t.seasonId === seasonId).sort((a, b) => a.number - b.number);
+  return (db.tournaments || []).filter((t) => t.seasonId === seasonId && !t.friendly).sort((a, b) => a.number - b.number);
+}
+// Todas las fechas, incluidas las amistosas (calendario y administración)
+export function allSeasonTournaments(db, seasonId) {
+  return (db.tournaments || [])
+    .filter((t) => t.seasonId === seasonId)
+    .sort((a, b) => (a.friendly ? 1 : 0) - (b.friendly ? 1 : 0) || a.number - b.number);
+}
+export function newFriendly(db, seasonId) {
+  const k = (db.tournaments || []).filter((t) => t.seasonId === seasonId && t.friendly).length + 1;
+  return { ...newTournament(seasonId, 1000 + k), label: `Amistoso ${k}`, friendly: true };
 }
 
 export function ranking(db, seasonId) {
@@ -620,7 +631,7 @@ export function bountyPoints(t) {
 }
 // Lugar de cada jugador en una fecha de la planilla, deducido de sus puntos: cada lugar de la tabla tiene un
 // puntaje distinto. Se usa la columna según la cantidad de jugadores; si no se conoce, la columna en que calzan todos.
-export function importedPositions(db, t) {
+export function importedPositions(db, t, extra = null) {
   const im = t.imported;
   if (!im) return {};
   const tables = db.settings.pointTables;
@@ -659,7 +670,39 @@ export function importedPositions(db, t) {
       used.add(p);
       out[pid] = p;
     });
+  // Jugadores sin puntos: lugar sacado del relato de la fecha (archivo), solo si es coherente:
+  // bajo todos los que sumaron puntos, dentro de la cantidad de jugadores y sin repetir lugares.
+  if (extra && extra.pos) {
+    const n = Number(im.players || extra.players) || 0;
+    const lowest = Math.max(0, ...Object.values(out).filter(Boolean));
+    Object.entries(extra.pos)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([pid, p]) => {
+        if (out[pid] || !(pid in out)) return;
+        if (p <= lowest || (n && p > n) || used.has(p)) return;
+        used.add(p);
+        out[pid] = p;
+      });
+    // Si queda un solo jugador sin lugar y un solo lugar libre, es ese (se aplica más abajo también)
+    const missing = Object.keys(out).filter((pid) => !out[pid]);
+    if (n && missing.length === 1) {
+      const free = [];
+      for (let p = 1; p <= n; p++) if (!used.has(p)) free.push(p);
+      if (free.length === 1) out[missing[0]] = free[0];
+    }
+  }
+  // Lugares ingresados a mano por el administrador
+  Object.entries(t.placesManual || {}).forEach(([pid, p]) => {
+    if (pid in out && Number(p) > 0) out[pid] = Number(p);
+  });
   return out;
+}
+
+// Lugar de un jugador en una fecha (de la app o de la planilla)
+export function placeIn(db, t, pid, extra = null) {
+  if (t.imported) return importedPositions(db, t, extra)[pid] || null;
+  const r = results(t, db.settings).find((x) => x.playerId === pid);
+  return r ? r.position : null;
 }
 
 // Bounty de una fecha cargada de la planilla: { target, hunter }
@@ -681,6 +724,7 @@ export function bountyHunter(t) {
 // de la temporada anterior. Si ese jugador es invitado o no juega esta fecha, pasa al siguiente mejor ubicado
 // (2°, 3°, ...) del club que sí juegue.
 export function bountyTargetFor(db, t) {
+  if (t.friendly) return null;
   const isClub = (id) => {
     const p = (db.players || []).find((x) => x.id === id);
     return !!p && p.type !== 'invitado';

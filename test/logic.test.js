@@ -420,3 +420,33 @@ test('lugares de las fechas de la planilla a partir de los puntos', async () => 
   const pe = m.importedPositions(db, empate);
   assert.notEqual(pe.b, pe.c, 'no repite lugares');
 });
+
+test('fechas amistosas no cuentan para puntos, posiciones ni estadísticas', async () => {
+  const m = await import('../public/js/logic.js');
+  const season = { id: 's', config: m.defaultSeasonConfig() };
+  const ids = ['a', 'b', 'c', 'd'];
+  const db = { settings: { pointTables: m.defaultPointTables() }, players: ids.map((id) => ({ id, name: id, type: 'club' })), seasons: [season], tournaments: [] };
+  const am = { ...m.newFriendly(db, 's'), status: 'finished', modality: 'freezeout', config: m.buildConfig(season, 'freezeout', 'normal'),
+    entries: ids.map((id) => ({ playerId: id })), events: [['d', 'a'], ['c', 'a'], ['b', 'a']].map(([p, by], i) => ({ id: 'e' + i, type: 'bust', playerId: p, byPlayerId: by, outcome: 'out' })) };
+  db.tournaments.push(am);
+  assert.equal(am.label, 'Amistoso 1');
+  assert.equal(m.seasonTournaments(db, 's').length, 0);
+  assert.equal(m.allSeasonTournaments(db, 's').length, 1);
+  assert.ok(m.results(am, db.settings).every((r) => r.points === 0));
+  assert.equal(m.ranking(db, 's').rows.every((r) => r.total === 0 && r.played === 0), true);
+  assert.equal(m.seasonStats(db, 's').finished, 0);
+  assert.equal(m.bountyTargetFor(db, am), null);
+  assert.equal(m.tracksPayments(am), true, 'los cobros sí aplican');
+});
+
+test('lugares: el relato completa a quienes no sumaron puntos y el admin puede fijarlos', async () => {
+  const m = await import('../public/js/logic.js');
+  const db = { settings: { pointTables: m.defaultPointTables() }, players: [] };
+  const t = { type: 'normal', imported: { players: 10, winnerId: 'a', points: { a: 11, b: 8, c: 0, d: 0, e: 0 } } };
+  const extra = { players: 10, pos: { c: 9, d: 2, e: 30 } };
+  const pp = m.importedPositions(db, t, extra);
+  assert.equal(pp.c, 9);
+  assert.equal(pp.d, null, 'no puede estar sobre quienes sumaron puntos');
+  assert.equal(pp.e, null, 'fuera de rango');
+  assert.equal(m.importedPositions(db, { ...t, placesManual: { e: 10 } }, extra).e, 10);
+});
