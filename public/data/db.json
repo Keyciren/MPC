@@ -1,5 +1,5 @@
 {
- "version": 15,
+ "version": 16,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -4597,7 +4597,14 @@
     "p_serrano": 1,
     "p_xelo": 1,
     "g:Coke": 1,
-    "p_nadia": 1
+    "p_nadia": 1,
+    "p_julio": 1794266065602,
+    "p_carlos": 1794267777422,
+    "p_rene_lander": 1794270189617,
+    "p_glenda": 1794270190343,
+    "p_billy": 1794270380263,
+    "p_joan": 1794270455527,
+    "p_kc": 1794270586317
    }
   },
   {
