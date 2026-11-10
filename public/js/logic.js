@@ -631,12 +631,13 @@ export function bountyPoints(t) {
 }
 // Lugar de cada jugador en una fecha de la planilla, deducido de sus puntos: cada lugar de la tabla tiene un
 // puntaje distinto. Se usa la columna según la cantidad de jugadores; si no se conoce, la columna en que calzan todos.
-export function importedPositions(db, t, extra = null) {
+export function importedPositions(db, t, extra = null, finT = null) {
   const im = t.imported;
   if (!im) return {};
   const tables = db.settings.pointTables;
   const type = t.type || 'normal';
   const raw = Object.entries(im.points || {});
+  const guests = (extra && extra.guests) || [];
   const valid = (col, v) => v <= 0 || col.points.includes(v);
   // Cómo calza una columna: sin diferencias, o con un único +1 (el bounty)
   const tryCol = (col) => {
@@ -646,61 +647,95 @@ export function importedPositions(db, t, extra = null) {
     if (odd.length === 1 && valid(col, odd[0][1] - 1)) return { col, hunter: odd[0][0] };
     return null;
   };
-  let fit = im.players ? tryCol(pointColumn(tables, type, im.players)) : null;
-  if (!fit) {
-    const top = Number((im.points || {})[im.winnerId]) || 0;
-    const cols = [...(tables[type] ? tables[type].columns : []), ...Object.values(tables).flatMap((tb) => tb.columns)];
-    const fits = cols.map(tryCol).filter(Boolean);
-    fit = fits.find((f) => Number(f.col.points[0]) === top || (f.hunter === im.winnerId && Number(f.col.points[0]) === top - 1)) || fits[0] || null;
+  // Orden de los premios (incluye invitados): sirve para elegir la columna de puntos correcta cuando ganó un invitado
+  const prizeRank = {};
+  if (finT)
+    Object.entries(finT)
+      .filter(([, v]) => v.p > 0)
+      .sort((a, b) => b[1].p - a[1].p)
+      .forEach(([key], i) => (prizeRank[key] = i + 1));
+  const paid = Object.keys(prizeRank).length;
+  const cols = [...(tables[type] ? tables[type].columns : []), ...Object.values(tables).flatMap((tb) => tb.columns)];
+  const sized = im.players ? tryCol(pointColumn(tables, type, im.players)) : null;
+  const top = Number((im.points || {})[im.winnerId]) || 0;
+  const score = (f) => {
+    // cuántos jugadores del club con premio calzan: su puntaje es el del lugar que indica su premio
+    let ok = 0;
+    raw.forEach(([pid, v]) => {
+      if (!prizeRank[pid]) return;
+      const pv = v - (f.hunter === pid ? 1 : 0);
+      if (Number(f.col.points[prizeRank[pid] - 1]) === pv) ok++;
+    });
+    return ok;
+  };
+  const fits = [sized, ...cols.map(tryCol)].filter(Boolean);
+  let fit = null;
+  if (fits.length) {
+    const best = Math.max(...fits.map(score));
+    const cands = fits.filter((f) => score(f) === best);
+    fit = (sized && cands.includes(sized) && sized) || cands.find((f) => Number(f.col.points[0]) === top || (f.hunter === im.winnerId && Number(f.col.points[0]) === top - 1)) || cands[0];
   }
   const out = {};
-  raw.forEach(([pid, v]) => {
-    const pv = v - (fit && fit.hunter === pid ? 1 : 0);
-    const i = fit && pv > 0 ? fit.col.points.indexOf(pv) : -1;
-    out[pid] = pid === im.winnerId ? 1 : i >= 0 ? i + 1 : null;
-  });
-  // Si la planilla deja dos jugadores en el mismo lugar, el de menos puntos pasa al siguiente lugar libre
   const used = new Set();
+  const take = (key, p) => {
+    if (!p || used.has(p)) return false;
+    used.add(p);
+    out[key] = p;
+    return true;
+  };
+  // 1) Jugadores del club con puntos: el lugar sale del puntaje (descontando el bounty)
+  const guestWonByPrize = Object.keys(prizeRank).some((k) => k.startsWith('g:') && prizeRank[k] === 1);
   raw
-    .filter(([pid]) => out[pid])
-    .sort((a, b) => out[a[0]] - out[b[0]] || b[1] - a[1])
-    .forEach(([pid]) => {
-      let p = out[pid];
-      while (used.has(p)) p++;
-      used.add(p);
-      out[pid] = p;
+    .map(([pid, v]) => {
+      const pv = v - (fit && fit.hunter === pid ? 1 : 0);
+      const i = fit && pv > 0 ? fit.col.points.indexOf(pv) : -1;
+      return [pid, i >= 0 ? i + 1 : pid === im.winnerId && !guestWonByPrize ? 1 : null, v];
+    })
+    .sort((a, b) => (a[1] || 99) - (b[1] || 99) || b[2] - a[2])
+    .forEach(([pid, p]) => {
+      if (out[pid] || !p) return;
+      while (used.has(p)) p++; // si la planilla deja dos en el mismo lugar, el de menos puntos pasa al siguiente
+      take(pid, p);
     });
-  // Jugadores sin puntos: lugar sacado del relato de la fecha (archivo), solo si es coherente:
-  // bajo todos los que sumaron puntos, dentro de la cantidad de jugadores y sin repetir lugares.
+  // 2) Invitados con premio: ocupan los lugares pagados que quedaron libres, en orden de premio
+  const freePaid = [];
+  for (let p = 1; p <= paid; p++) if (!used.has(p)) freePaid.push(p);
+  Object.keys(prizeRank)
+    .filter((k) => k.startsWith('g:'))
+    .sort((a, b) => prizeRank[a] - prizeRank[b])
+    .forEach((g) => take(g, freePaid.shift()));
+  raw.forEach(([pid]) => (out[pid] = out[pid] || null));
+  guests.forEach((g) => (out[g] = out[g] || null));
+  // 3) Relato de la fecha (archivo): invitados en cualquier lugar libre; del club sin puntos, solo bajo los que sumaron
   if (extra && extra.pos) {
     const n = Number(im.players || extra.players) || 0;
-    const lowest = Math.max(0, ...Object.values(out).filter(Boolean));
+    const lowest = Math.max(0, ...raw.filter(([, v]) => v > 0).map(([pid]) => out[pid] || 0));
     Object.entries(extra.pos)
       .sort((a, b) => b[1] - a[1])
-      .forEach(([pid, p]) => {
-        if (out[pid] || !(pid in out)) return;
-        if (p <= lowest || (n && p > n) || used.has(p)) return;
-        used.add(p);
-        out[pid] = p;
+      .forEach(([key, p]) => {
+        if (out[key] || !(key in out)) return;
+        if (n && p > n) return;
+        if (!key.startsWith('g:') && p <= lowest) return;
+        take(key, p);
       });
-    // Si queda un solo jugador sin lugar y un solo lugar libre, es ese (se aplica más abajo también)
-    const missing = Object.keys(out).filter((pid) => !out[pid]);
+    // Si queda un solo jugador sin lugar y un solo lugar libre, es ese
+    const missing = Object.keys(out).filter((k) => !out[k]);
     if (n && missing.length === 1) {
       const free = [];
       for (let p = 1; p <= n; p++) if (!used.has(p)) free.push(p);
-      if (free.length === 1) out[missing[0]] = free[0];
+      if (free.length === 1) take(missing[0], free[0]);
     }
   }
-  // Lugares ingresados a mano por el administrador
-  Object.entries(t.placesManual || {}).forEach(([pid, p]) => {
-    if (pid in out && Number(p) > 0) out[pid] = Number(p);
+  // 4) Lugares ingresados a mano por el administrador
+  Object.entries(t.placesManual || {}).forEach(([key, p]) => {
+    if (key in out && Number(p) > 0) out[key] = Number(p);
   });
   return out;
 }
 
 // Lugar de un jugador en una fecha (de la app o de la planilla)
-export function placeIn(db, t, pid, extra = null) {
-  if (t.imported) return importedPositions(db, t, extra)[pid] || null;
+export function placeIn(db, t, pid, extra = null, finT = null) {
+  if (t.imported) return importedPositions(db, t, extra, finT)[pid] || null;
   const r = results(t, db.settings).find((x) => x.playerId === pid);
   return r ? r.position : null;
 }

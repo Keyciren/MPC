@@ -355,3 +355,6 @@ textarea { width: 100%; resize: vertical; }
 .tag.friendly { background: #5c3d1e; color: #ffd9a8; }
 .tbl tr.friendly-row td:first-child { box-shadow: inset 4px 0 0 #c98a3a; }
 .places-edit { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.tbl tr.guest-row td { background: rgba(176, 125, 255, .14); }
+.tbl tr.guest-row td:first-child { box-shadow: inset 4px 0 0 #b07dff; }
+.tbl tr.guest-row.gold td { background: linear-gradient(90deg, #3a3215, rgba(176, 125, 255, .2)); }

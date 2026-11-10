@@ -1457,14 +1457,14 @@ function summaryTab(t) {
 
 // Lugares que faltan en una fecha de la planilla (sin puntos y sin dato en el relato): el admin los ingresa
 function placesEditor(t) {
-  const auto = importedPositions(S.db, { ...t, placesManual: {} }, (S.lugares || {})[t.id]);
+  const auto = importedPositions(S.db, { ...t, placesManual: {} }, (S.lugares || {})[t.id], (S.fin || {})[t.id]);
   const manual = t.placesManual || {};
   const ids = Object.keys(auto).filter((pid) => !auto[pid] || manual[pid]);
   if (!ids.length) return '';
   return `<div class="panel"><h3>Lugares por completar</h3>
     <p class="small muted">La planilla no tiene el lugar de estos jugadores (no sumaron puntos y el resumen no lo menciona). Si lo sabes, escríbelo y se mostrará en la tabla de posiciones.</p>
     <div class="places-edit">${ids
-      .map((pid) => `<label class="fld inline"><span>${esc(pname(pid))}</span><input type="number" min="1" max="40" class="w-xs" data-place="${pid}" value="${manual[pid] || ''}" placeholder="°"></label>`)
+      .map((pid) => `<label class="fld inline"><span>${esc(keyName(pid))}</span><input type="number" min="1" max="40" class="w-xs" data-place="${pid}" value="${manual[pid] || ''}" placeholder="°"></label>`)
       .join('')}</div></div>`;
 }
 

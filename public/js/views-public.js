@@ -297,8 +297,9 @@ export function resultsTable(t) {
     <tbody>${res
       .map((r) => {
         const p = playerById(r.playerId);
-        return `<tr class="${r.position === 1 ? 'gold' : ''}"><td>${r.position || ''}</td><td>${esc(pname(r.playerId))}${p && p.type === 'invitado' ? ' <span class="tag guest">invitado</span>' : ''}${r.playerId === hunter ? ` <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +${bpts} bounty</span>` : ''}${r.playerId === t.bountyPlayerId ? ' <span class="tag">era el bounty</span>' : ''}</td>
-        <td><b>${r.points}</b>${r.bonus ? ` <small class="muted">(+${r.bonus} extra)</small>` : ''}</td><td>${r.prize ? money(r.prize, cfg.currency) : ''}</td><td>${r.kills || ''}</td>
+        const guest = p && p.type === 'invitado';
+        return `<tr class="${r.position === 1 ? 'gold' : ''} ${guest ? 'guest-row' : ''}"><td>${r.position || ''}</td><td>${esc(pname(r.playerId))}${p && p.type === 'invitado' ? ' <span class="tag guest">invitado</span>' : ''}${r.playerId === hunter ? ` <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +${bpts} bounty</span>` : ''}${r.playerId === t.bountyPlayerId ? ' <span class="tag">era el bounty</span>' : ''}</td>
+        <td>${guest ? '<span class="muted" title="Los invitados no suman puntos">—</span>' : `<b>${r.points}</b>${r.bonus ? ` <small class="muted">(+${r.bonus} extra)</small>` : ''}`}</td><td>${r.prize ? money(r.prize, cfg.currency) : ''}</td><td>${r.kills || ''}</td>
         ${t.modality === 'rebuy' ? `<td>${r.rebuys || ''}</td><td>${r.addon ? '✔' : ''}</td>` : `<td>${r.luckyLoser ? '✔' : ''}</td>`}</tr>`;
       })
       .join('')}</tbody></table></div>`;
@@ -364,8 +365,14 @@ function guestsIn(t) {
 export function importedTournament(t) {
   const im = t.imported;
   const cur = (t.config && t.config.currency) || '$';
-  const pos = importedPositions(S.db, t, (S.lugares || {})[t.id]);
-  const res = results(t, S.db.settings).sort((a, b) => (pos[a.playerId] || 99) - (pos[b.playerId] || 99) || b.points - a.points);
+  const finT = (S.fin || {})[t.id] || {};
+  const pos = importedPositions(S.db, t, (S.lugares || {})[t.id], finT);
+  // Invitados de la fecha: aparecen en su lugar, destacados y sin puntos
+  const guestRows = Object.keys(pos)
+    .filter((k) => k.startsWith('g:'))
+    .map((k) => ({ playerId: k, guest: true, points: null, prize: (finT[k] || {}).p || 0, position: null }));
+  const res = [...results(t, S.db.settings).map((r) => ({ ...r, prize: r.prize || (finT[r.playerId] || {}).p || 0 })), ...guestRows].sort((a, b) => (pos[a.playerId] || 99) - (pos[b.playerId] || 99) || (b.points || 0) - (a.points || 0));
+  const showPrize = res.some((r) => r.prize);
   const ib = importedBounty(S.db, t);
   const target = ib ? ib.target : (bountyTargetFor(S.db, t) || {}).playerId;
   const reason = ib ? ib.reason : (bountyTargetFor(S.db, t) || {}).reason;
@@ -378,10 +385,10 @@ export function importedTournament(t) {
     ${im.players ? `<p>${im.players} jugadores${guestsIn(t) ? ` (${guestsIn(t)} invitado${guestsIn(t) > 1 ? 's' : ''})` : ''}</p>` : ''}
     ${bountyBox}
     ${tournamentJackpots(t, S.fin || {}).map((j) => `<div class="jackpot">🎰 Jackpot: <b>${esc(pname(j.playerId))}</b> · ${money(j.amount, cur)}</div>`).join('')}
-    <div class="table-wrap"><table class="tbl"><thead><tr><th>Lugar</th><th>Jugador</th><th>Puntos</th>${im.prizes ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Lugar</th><th>Jugador</th><th>Puntos</th>${showPrize ? '<th>Premio</th>' : ''}${Object.keys(im.kills || {}).length ? '<th>Elim.</th>' : ''}</tr></thead>
     <tbody>${res
       .map(
-        (r) => `<tr class="${r.position === 1 ? 'gold' : ''}"><td class="nowrap"><b>${pos[r.playerId] ? pos[r.playerId] + '°' : '<span class="muted">—</span>'}</b>${r.position === 1 ? ' 🏆' : ''}</td><td>${esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td><b>${r.points}</b>${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${im.prizes ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
+        (r) => `<tr class="${pos[r.playerId] === 1 ? 'gold' : ''} ${r.guest ? 'guest-row' : ''}"><td class="nowrap"><b>${pos[r.playerId] ? pos[r.playerId] + '°' : '<span class="muted">—</span>'}</b>${pos[r.playerId] === 1 ? ' 🏆' : ''}</td><td>${r.guest ? `${esc(r.playerId.slice(2))} <span class="tag guest">invitado</span>` : esc(pname(r.playerId))}${ib && r.playerId === ib.hunter ? ' <span class="pill bounty" title="Ganó el punto extra por eliminar al bounty">🎯 +1 bounty</span>' : ''}${r.playerId === target ? ' <span class="tag">era el bounty</span>' : ''}</td><td>${r.guest ? '<span class="muted" title="Los invitados no suman puntos">—</span>' : `<b>${r.points}</b>`}${ib && r.playerId === ib.hunter ? ' <small class="muted">(incluye +1)</small>' : ''}</td>${showPrize ? `<td>${r.prize ? money(r.prize, cur) : ''}</td>` : ''}${Object.keys(im.kills || {}).length ? `<td>${r.kills || ''}</td>` : ''}</tr>`
       )
       .join('')}</tbody></table></div></div>`;
 }
@@ -423,7 +430,7 @@ export function rankingView(q) {
   const places = Object.fromEntries(
     tournaments
       .filter((t) => t.status === 'finished')
-      .map((t) => [t.id, t.imported ? importedPositions(S.db, t, (S.lugares || {})[t.id]) : Object.fromEntries(results(t, S.db.settings).map((r) => [r.playerId, r.position]))])
+      .map((t) => [t.id, t.imported ? importedPositions(S.db, t, (S.lugares || {})[t.id], (S.fin || {})[t.id]) : Object.fromEntries(results(t, S.db.settings).map((r) => [r.playerId, r.position]))])
   );
   const played = tournaments.filter((t) => t.status === 'finished');
   const sel = played.find((t) => t.id === q.f) || played[played.length - 1];
