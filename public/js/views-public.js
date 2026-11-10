@@ -444,12 +444,17 @@ export function rankingView(q) {
           (r) => `<tr><td>${r.position}</td><td class="sticky">${esc(r.player.nickname || r.player.name)}</td><td><b>${r.total}</b></td>${r.cells
             .map((c) => {
               const pl = places[c.tournamentId] ? places[c.tournamentId][r.player.id] : null;
+              // Jugó esa fecha como invitado (antes de ser del club): no suma puntos
+              if (c.value === 'x' && ((S.fin || {})[c.tournamentId] || {})[r.player.id]) {
+                const gp = places[c.tournamentId] ? places[c.tournamentId][r.player.id] : null;
+                return `<td class="as-guest" title="Jugó como invitado: no suma puntos">inv<small class="cell-place">${gp ? gp + '°' : '—'}</small></td>`;
+              }
               return `<td class="${c.value === 'x' ? 'absent' : ''} ${c.position === 1 ? 'win' : ''}">${c.value}${c.value !== 'x' && c.value !== '' ? `<small class="cell-place">${pl ? pl + '°' : '—'}</small>` : ''}</td>`;
             })
             .join('')}</tr>`
         )
         .join('')}</tbody></table></div>
-      <p class="small muted">Cada celda: puntos y, debajo, el lugar en que terminó ese día · x = no asistió · celda dorada = ganó la fecha · Solo se listan jugadores del club (no invitados).</p></div>
+      <p class="small muted">Cada celda: puntos y, debajo, el lugar en que terminó ese día · x = no asistió · inv = jugó como invitado (no suma puntos) · celda dorada = ganó la fecha · Solo se listan jugadores del club (no invitados).</p></div>
     ${
       played.length
         ? `<div class="panel"><div class="row between wrap"><h3>Resumen de la fecha</h3><a class="btn sm ghost" href="#/torneo/${sel.id}">Ver resultados de ${esc(sel.label)}</a></div>
