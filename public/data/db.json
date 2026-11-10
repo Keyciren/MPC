@@ -1,5 +1,5 @@
 {
- "version": 44,
+ "version": 45,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -1726,6 +1726,9 @@
     },
     "winnerId": "p_serrano",
     "kills": {}
+   },
+   "placesManual": {
+    "p_pancho": 13
    }
   },
   {
