@@ -1,5 +1,5 @@
 {
- "version": 17,
+ "version": 18,
  "settings": {
   "clubName": "Poker Marginales",
   "pointTables": {
@@ -4309,6 +4309,12 @@
     },
     "players": 18,
     "guests": 6
+   },
+   "placesManual": {
+    "g:Kiki": 18,
+    "p_guillermo": 17,
+    "p_meli": 15,
+    "g:Daniel": 14
    }
   },
   {
@@ -4418,6 +4424,11 @@
     },
     "players": 13,
     "guests": 0
+   },
+   "placesManual": {
+    "p_pancho": 13,
+    "p_nadia": 12,
+    "p_rene_lander": 11
    }
   },
   {
@@ -4530,6 +4541,10 @@
     },
     "players": 20,
     "guests": 1
+   },
+   "placesManual": {
+    "p_guillermo": 20,
+    "p_meli": 19
    }
   },
   {
@@ -4636,6 +4651,10 @@
     },
     "players": 16,
     "guests": 0
+   },
+   "placesManual": {
+    "p_miguel": 16,
+    "p_billy": 15
    }
   },
   {
