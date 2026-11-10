@@ -708,7 +708,8 @@ export function importedPositions(db, t, extra = null, finT = null) {
   guests.forEach((g) => (out[g] = out[g] || null));
   // 3) Relato de la fecha (archivo): invitados en cualquier lugar libre; del club sin puntos, solo bajo los que sumaron
   if (extra && extra.pos) {
-    const n = Number(im.players || extra.players) || 0;
+    // cantidad de jugadores: la registrada, la del relato o, si no, cuántos pagaron ese día (club + invitados)
+    const n = Number(im.players || extra.players) || (finT ? Object.keys(finT).length : 0);
     const lowest = Math.max(0, ...raw.filter(([, v]) => v > 0).map(([pid]) => out[pid] || 0));
     Object.entries(extra.pos)
       .sort((a, b) => b[1] - a[1])
