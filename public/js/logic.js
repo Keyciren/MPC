@@ -730,7 +730,14 @@ export function importedPositions(db, t, extra = null, finT = null) {
   }
   // 4) Lugares ingresados a mano por el administrador
   Object.entries(t.placesManual || {}).forEach(([key, p]) => {
-    if (key in out && Number(p) > 0) out[key] = Number(p);
+    let k = key;
+    // un invitado ingresado con el nombre que usaba (p. ej. "José Luis") se aplica al jugador que hoy es (Billy)
+    if (!(k in out) && k.startsWith('g:') && finT) {
+      const norm = (x) => String(x).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const hit = Object.keys(finT).find((x) => finT[x].alias && norm(finT[x].alias) === norm(k.slice(2)));
+      if (hit) k = hit;
+    }
+    if (k in out && Number(p) > 0) out[k] = Number(p);
   });
   return out;
 }
